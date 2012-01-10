@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3EE8D675-D333-413F-86FE-1BAD917C9A7F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Amleto</RootNamespace>
+    <AssemblyName>Amleto</AssemblyName>
+    <TargetZone>LocalIntranet</TargetZone>
+    <GenerateManifests>false</GenerateManifests>
+    <ApplicationIcon>amletod.ico</ApplicationIcon>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutServer.Designer.cs">
+      <DependentUpon>AboutServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddProject.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddProject.Designer.cs">
+      <DependentUpon>AddProject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CameraSettings.cs" />
+    <Compile Include="ClientActiveWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClientActiveWin.Designer.cs">
+      <DependentUpon>ClientActiveWin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClientLogWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClientLogWin.Designer.cs">
+      <DependentUpon>ClientLogWin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PromptNewConfigWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PromptNewConfigWin.Designer.cs">
+      <DependentUpon>PromptNewConfigWin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ServerWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ServerWin.Designer.cs">
+      <DependentUpon>ServerWin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AboutServer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AboutServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddProject.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AddProject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClientActiveWin.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ClientActiveWin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClientLogWin.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ClientLogWin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PromptNewConfigWin.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PromptNewConfigWin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServerWin.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ServerWin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetupWin.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SetupWin.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="SetupWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetupWin.Designer.cs">
+      <DependentUpon>SetupWin.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteExecution\RemoteExecution.csproj">
+      <Project>{F89E73B1-07F2-4DF1-A894-51627760466B}</Project>
+      <Name>RemoteExecution</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\parent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\file.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\add_project.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="amletod.ico" />
+    <None Include="images\table_save.png" />
+    <None Include="images\folder_table.png" />
+    <None Include="images\folder_explore.png" />
+    <None Include="images\comment.png" />
+    <None Include="images\door_in.png" />
+    <None Include="images\clock_pause.png" />
+    <None Include="images\cog.png" />
+    <None Include="images\clock_go.png" />
+    <None Include="images\clock_edit.png" />
+    <None Include="images\clock.png" />
+    <None Include="images\bomb.png" />
+    <None Include="images\bin_closed.png" />
+    <None Include="images\application_view_list.png" />
+    <None Include="images\application_form_edit.png" />
+    <None Include="images\application_form_delete.png" />
+    <None Include="images\application_form_add.png" />
+    <None Include="images\resultset_next.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
