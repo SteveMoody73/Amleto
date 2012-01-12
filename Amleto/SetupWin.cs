@@ -197,7 +197,10 @@ namespace Amleto
                 return;
             }
 
-            if (!(_server.FileExists(dlg.SelectedPath + "\\LW10-64.CFG") || _server.FileExists(dlg.SelectedPath + "\\LW10.CFG") || _server.FileExists(dlg.SelectedPath + "\\LW9.CFG") || _server.FileExists(dlg.SelectedPath + "\\LW9-64.CFG") || _server.FileExists(dlg.SelectedPath + "\\LW8.CFG") || _server.FileExists(dlg.SelectedPath + "\\LW3.CFG") || _server.FileExists(dlg.SelectedPath + "\\LW.CFG")))
+			DirectoryInfo cfgFolder = new DirectoryInfo(dlg.SelectedPath);
+        	FileInfo[] cfgFiles = cfgFolder.GetFiles("LW*.CFG");
+
+			if (cfgFiles.Length == 0)
             {
                 MessageBox.Show("LW*.CFG file not found in the specified directory.", "Wrong config directory", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 dlg.Dispose();
@@ -235,22 +238,18 @@ namespace Amleto
                 searchConfig = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName;
                 string newtekFolder = searchConfig + "\\.NewTek";
 
-                if (Directory.Exists(newtekFolder))
-                {
-                    DirectoryInfo dir = new DirectoryInfo(newtekFolder);
-                    FileInfo[] files = dir.GetFiles("LW*.CFG", SearchOption.AllDirectories);
-                }
-
-
-
-                if (Directory.Exists(searchConfig + "\\.NewTek\\LightWave\\10.1"))
+				if (Directory.Exists(searchConfig + "\\.NewTek\\LightWave\\11.0"))
+					searchConfig += "\\.NewTek\\LightWave\\11.1";
+				else if (Directory.Exists(searchConfig + "\\.NewTek\\LightWave\\10.1"))
                     searchConfig += "\\.NewTek\\LightWave\\10.1";
                 else if (Directory.Exists(searchConfig + "\\.NewTek\\LightWave\\10.0"))
                     searchConfig += "\\.NewTek\\LightWave\\10.0";
                 else
                     searchConfig += "\\.NewTek\\LightWave\\9.0";
 
-                if (_server.FileExists(searchConfig + "\\LW10-64.CFG") || 
+				if (_server.FileExists(searchConfig + "\\LW11-64.CFG") ||
+					_server.FileExists(searchConfig + "\\LW11.CFG") || 
+					_server.FileExists(searchConfig + "\\LW10-64.CFG") || 
                     _server.FileExists(searchConfig + "\\LW10.CFG") || 
                     _server.FileExists(searchConfig + "\\LW9.CFG") || 
                     _server.FileExists(searchConfig + "\\LW9-64.CFG") || 
@@ -264,7 +263,11 @@ namespace Amleto
             {
                 string[] configLines=null;
 
-                if (_server.FileExists(ConfigPath + "\\LW10-64.CFG"))
+				if (_server.FileExists(ConfigPath + "\\LW11-64.CFG"))
+					configLines = _server.FileReadAllLines(ConfigPath + "\\LW11-64.CFG");
+				else if (_server.FileExists(ConfigPath + "\\LW11.CFG"))
+					configLines = _server.FileReadAllLines(ConfigPath + "\\LW11.CFG");
+				else if (_server.FileExists(ConfigPath + "\\LW10-64.CFG"))
                     configLines = _server.FileReadAllLines(ConfigPath + "\\LW10-64.CFG");
                 else if (_server.FileExists(ConfigPath + "\\LW10.CFG"))
                     configLines = _server.FileReadAllLines(ConfigPath + "\\LW10.CFG"); 
@@ -291,7 +294,11 @@ namespace Amleto
             			}
             		}
 
-            		if (_server.FileExists(ConfigPath + "\\LWEXT10-64.CFG"))
+					if (_server.FileExists(ConfigPath + "\\LWEXT11-64.CFG"))
+						configLines = _server.FileReadAllLines(ConfigPath + "\\LWEXT11-64.CFG");
+					else if (_server.FileExists(ConfigPath + "\\LWEXT11.CFG"))
+						configLines = _server.FileReadAllLines(ConfigPath + "\\LWEXT11.CFG");
+					else if (_server.FileExists(ConfigPath + "\\LWEXT10-64.CFG"))
             			configLines = _server.FileReadAllLines(ConfigPath + "\\LWEXT10-64.CFG");
             		else if (_server.FileExists(ConfigPath + "\\LWEXT10.CFG"))
             			configLines = _server.FileReadAllLines(ConfigPath + "\\LWEXT10.CFG");
@@ -330,7 +337,7 @@ namespace Amleto
             	}
             }
 
-            if (_server.FileExists(ConfigPath + "\\LWEXT9-64.CFG") || _server.FileExists(ConfigPath + "\\LWEXT10-64.CFG"))
+			if (_server.FileExists(ConfigPath + "\\LWEXT9-64.CFG") || _server.FileExists(ConfigPath + "\\LWEXT10-64.CFG") || _server.FileExists(ConfigPath + "\\LWEXT11-64.CFG"))
                 bits64.Checked = true;
         }
 

@@ -89,7 +89,8 @@ namespace RemoteExecution
                 string[] lines;
                 try
                 {
-                    if (File.Exists(config.ServerConfigPath + "\\LW10-64.CFG") || File.Exists(config.ServerConfigPath + "\\LW10.CFG"))
+                    if (File.Exists(config.ServerConfigPath + "\\LW10-64.CFG") || File.Exists(config.ServerConfigPath + "\\LW10.CFG") ||
+						File.Exists(config.ServerConfigPath + "\\LW11-64.CFG") || File.Exists(config.ServerConfigPath + "\\LW11.CFG"))
                     {
                         config.ImageFormats = new List<string>(LW10.FileFormat);
                         continue;

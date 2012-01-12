@@ -33,24 +33,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5EEAC311713B4293144FA90BF928C12C"
-        "OwnerKey" = "8:_1C9B2C24108C458FA26710D849716202"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5EEAC311713B4293144FA90BF928C12C"
-        "OwnerKey" = "8:_7048159AD97543E6A075821E50519BAF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5EEAC311713B4293144FA90BF928C12C"
-        "OwnerKey" = "8:_89217BB0489AED48FA3253AEB84F57B7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_7048159AD97543E6A075821E50519BAF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -85,12 +67,6 @@
         "OwnerKey" = "8:_89217BB0489AED48FA3253AEB84F57B7"
         "MsmSig" = "8:_UNDEFINED"
         }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5EEAC311713B4293144FA90BF928C12C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
     }
     "Configurations"
     {
@@ -118,6 +94,11 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5.SP1"
+                    {
+                    "Name" = "8:.NET Framework 3.5 SP1"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5.SP1"
+                    }
                 }
             }
         }
@@ -216,42 +197,11 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5EEAC311713B4293144FA90BF928C12C"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:BitFactory.Logging, Version=1.5.2.0, Culture=neutral, PublicKeyToken=de68848483a294a9, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_5EEAC311713B4293144FA90BF928C12C"
-                    {
-                    "Name" = "8:BitFactory.Logging.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:BitFactory.Logging.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_FB4D8E1218F341A091B1B4C00B1114CB"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_89217BB0489AED48FA3253AEB84F57B7"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:RemoteExecution, Version=3.0.0.20147, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:RemoteExecution, Version=3.0.0.18251, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_89217BB0489AED48FA3253AEB84F57B7"
@@ -346,7 +296,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Amleto"
         "ProductCode" = "8:{A404E9CD-E679-4857-9091-9B4B56804A71}"
-        "PackageCode" = "8:{352C3E64-2468-48FD-BD48-0D6306D12219}"
+        "PackageCode" = "8:{CF925876-8093-4A7E-BD47-C6F746C7585A}"
         "UpgradeCode" = "8:{DA9D0123-6FC4-4182-A54B-AF0D2C6E62CD}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
