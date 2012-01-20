@@ -28,7 +28,15 @@ namespace RemoteExecution.Jobs
                 }
                 foreach (string s in config)
                 {
-                    if (s.ToUpper().EndsWith("LW10-64.CFG") || s.ToUpper().EndsWith("LW10.CFG") || s.ToUpper().EndsWith("LW9.CFG") || s.ToUpper().EndsWith("LW9-64.CFG") || s.ToUpper().EndsWith("LW8.CFG") || s.ToUpper().EndsWith("LW3.CFG") || !File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + s))
+					if (s.ToUpper().EndsWith("LW11-64.CFG") ||
+						s.ToUpper().EndsWith("LW11.CFG") || 
+						s.ToUpper().EndsWith("LW10-64.CFG") ||
+						s.ToUpper().EndsWith("LW10.CFG") || 						
+						s.ToUpper().EndsWith("LW9.CFG") || 
+						s.ToUpper().EndsWith("LW9-64.CFG") || 
+						s.ToUpper().EndsWith("LW8.CFG") || 
+						s.ToUpper().EndsWith("LW3.CFG") || 
+						!File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + s))
                         jobs.Enqueue(new DownloadConfigJob(s));
                 }
                 jobs.Enqueue(new ClientReadyJob());

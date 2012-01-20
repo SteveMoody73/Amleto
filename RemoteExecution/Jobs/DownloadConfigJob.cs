@@ -16,10 +16,14 @@ namespace RemoteExecution.Jobs
 
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            messageBack(0,"Downloading config " + _file);
+            messageBack(0, "Downloading config " + _file);
             string baseDir = Directory.GetParent(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file).FullName;
             Directory.CreateDirectory(baseDir);
-            if (_file.ToUpper().EndsWith("LW10-64.CFG") || _file.ToUpper().EndsWith("LW10.CFG") || _file.ToUpper().EndsWith("LW9.CFG") || _file.ToUpper().EndsWith("LW9-64.CFG") || _file.ToUpper().EndsWith("LW8.CFG") || _file.ToUpper().EndsWith("LW3.CFG") || !File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file))
+			if (_file.ToUpper().EndsWith("LW11-64.CFG") || _file.ToUpper().EndsWith("LW11.CFG") || 
+				_file.ToUpper().EndsWith("LW10-64.CFG") || _file.ToUpper().EndsWith("LW10.CFG") || 
+				_file.ToUpper().EndsWith("LW9.CFG") || _file.ToUpper().EndsWith("LW9-64.CFG") || 
+				_file.ToUpper().EndsWith("LW8.CFG") || _file.ToUpper().EndsWith("LW3.CFG") || 
+				!File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file))
             {
                 byte[] res = Server.GetFile(FileType.Config, _file);
                 FileStream stream = File.Create(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file, res.Length);
@@ -27,7 +31,10 @@ namespace RemoteExecution.Jobs
                 stream.Close();
                 stream.Dispose();
 
-                if (_file.ToUpper().EndsWith("LW10-64.CFG") || _file.ToUpper().EndsWith("LW10.CFG") || _file.ToUpper().EndsWith("LW9.CFG") || _file.ToUpper().EndsWith("LW9-64.CFG") || _file.ToUpper().EndsWith("LW8.CFG") || _file.ToUpper().EndsWith("LW3.CFG"))
+				if (_file.ToUpper().EndsWith("LW11-64.CFG") || _file.ToUpper().EndsWith("LW11.CFG") || 
+					_file.ToUpper().EndsWith("LW10-64.CFG") || _file.ToUpper().EndsWith("LW10.CFG") || 
+					_file.ToUpper().EndsWith("LW9.CFG") || _file.ToUpper().EndsWith("LW9-64.CFG") || 
+					_file.ToUpper().EndsWith("LW8.CFG") || _file.ToUpper().EndsWith("LW3.CFG"))
                 {
                     string[] lines = File.ReadAllLines(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file);
                     StreamWriter writer = new StreamWriter(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file);
