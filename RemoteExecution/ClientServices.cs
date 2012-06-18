@@ -563,7 +563,8 @@ namespace RemoteExecution
 
         public static void ChangePriority()
         {
-            CurrentInstance._server.ChangeClientPriority(RenderPriority);
+            if (CurrentInstance._server != null)
+                CurrentInstance._server.ChangeClientPriority(RenderPriority);
         }
     }
 }
