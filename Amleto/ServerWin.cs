@@ -216,44 +216,51 @@ namespace Amleto
 
         private void DoConsumeMessage(string msg)
         {
-            string[] p = msg.Split('|');
-            DataGridViewRow row = new DataGridViewRow();
-            
-			if (p.Length == 1)
+            try
             {
-                DataGridViewCell cell = new DataGridViewImageCell();
-                cell.Value = iconList.Images[0];
-                row.Cells.Add(cell);
-                cell = new DataGridViewTextBoxCell();
-                cell.Value = DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString();
-                row.Cells.Add(cell);
-                cell = new DataGridViewTextBoxCell();
-                cell.Value = p[0];
-                row.Cells.Add(cell);
-            }
-            else
-            {
-                DataGridViewCell cell = new DataGridViewImageCell();
-                cell.Value = iconList.Images[Convert.ToInt32(p[0])];
-                row.Cells.Add(cell);
-                cell = new DataGridViewTextBoxCell();
-                cell.Value = p[1];
-                row.Cells.Add(cell);
-                cell = new DataGridViewTextBoxCell();
-                cell.Value = p[2];
-                row.Cells.Add(cell);
-            }
+                string[] p = msg.Split('|');
+                DataGridViewRow row = new DataGridViewRow();
 
-			while (messageList.Rows.Count > 300)
-                messageList.Rows.RemoveAt(0);
-            
-			if (messageList.SelectedRows.Count > 0)
-                messageList.SelectedRows[0].Selected = false;
-            
-			row.Height = 17;
-            messageList.Rows.Add(row);
-            row.Selected = true;
-            messageList.FirstDisplayedScrollingRowIndex = messageList.Rows.Count - 1;
+                if (p.Length == 1)
+                {
+                    DataGridViewCell cell = new DataGridViewImageCell();
+                    cell.Value = iconList.Images[0];
+                    row.Cells.Add(cell);
+                    cell = new DataGridViewTextBoxCell();
+                    cell.Value = DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString();
+                    row.Cells.Add(cell);
+                    cell = new DataGridViewTextBoxCell();
+                    cell.Value = p[0];
+                    row.Cells.Add(cell);
+                }
+                else
+                {
+                    DataGridViewCell cell = new DataGridViewImageCell();
+                    cell.Value = iconList.Images[Convert.ToInt32(p[0])];
+                    row.Cells.Add(cell);
+                    cell = new DataGridViewTextBoxCell();
+                    cell.Value = p[1];
+                    row.Cells.Add(cell);
+                    cell = new DataGridViewTextBoxCell();
+                    cell.Value = p[2];
+                    row.Cells.Add(cell);
+                }
+
+                while (messageList.Rows.Count > 300)
+                    messageList.Rows.RemoveAt(0);
+
+                if (messageList.SelectedRows.Count > 0)
+                    messageList.SelectedRows[0].Selected = false;
+
+                row.Height = 17;
+                messageList.Rows.Add(row);
+                row.Selected = true;
+                messageList.FirstDisplayedScrollingRowIndex = messageList.Rows.Count - 1;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Invalid message: " + msg);
+            }
         }
 
         private void RestoreClientList()
@@ -996,7 +1003,7 @@ namespace Amleto
 
         private void closeNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to stop the selected node(s) remotly?", "Stop node", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
+            if (MessageBox.Show("Are you sure you want to stop the selected node(s) remotely?", "Stop node", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
                 return;
             foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
             {
@@ -1007,7 +1014,7 @@ namespace Amleto
 
         private void stopAllNodesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to stop ALL the connected nodes remotly?", "Stop all nodes", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
+            if (MessageBox.Show("Are you sure you want to stop ALL the connected nodes remotely?", "Stop all nodes", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
                 return;
             foreach (DataGridViewRow row in clientStatusGrid.Rows)
             {
