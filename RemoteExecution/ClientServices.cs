@@ -118,15 +118,10 @@ namespace RemoteExecution
         {
             try
             {
-<<<<<<< HEAD
-                ClientDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Amleto\\Cache";
-                File.AppendAllText(@"d:\amleto.log", "AppDataPath = " + ClientDir + "\r\n");
-=======
                 if (_isService)
                     ClientDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Amleto\\Cache";
                 else
                     ClientDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Amleto\\Cache";
->>>>>>> Possible fix for not rendering as a service
 
             	var openSubKey = Registry.CurrentUser.OpenSubKey("Software");
             	if (openSubKey != null)

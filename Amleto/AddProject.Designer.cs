@@ -40,6 +40,7 @@ namespace Amleto
             this.label3 = new System.Windows.Forms.Label();
             this.renderSetupTabs = new System.Windows.Forms.TabControl();
             this.sceneTab = new System.Windows.Forms.TabPage();
+            this.OverwriteFrames = new System.Windows.Forms.CheckBox();
             this.OverrideSettings = new System.Windows.Forms.CheckBox();
             this.label9 = new System.Windows.Forms.Label();
             this.listOuputFormat = new System.Windows.Forms.ComboBox();
@@ -146,7 +147,6 @@ namespace Amleto
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.btnSaveProject = new System.Windows.Forms.Button();
             this.btnLoadProject = new System.Windows.Forms.Button();
-            this.OverwriteFrames = new System.Windows.Forms.CheckBox();
             this.renderSetupTabs.SuspendLayout();
             this.sceneTab.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -277,6 +277,18 @@ namespace Amleto
             this.sceneTab.TabIndex = 3;
             this.sceneTab.Text = "Scene setup";
             this.sceneTab.UseVisualStyleBackColor = true;
+            // 
+            // OverwriteFrames
+            // 
+            this.OverwriteFrames.AutoSize = true;
+            this.OverwriteFrames.Location = new System.Drawing.Point(97, 142);
+            this.OverwriteFrames.Name = "OverwriteFrames";
+            this.OverwriteFrames.Size = new System.Drawing.Size(143, 17);
+            this.OverwriteFrames.TabIndex = 23;
+            this.OverwriteFrames.Text = "Overwrite existing frames";
+            this.toolTips.SetToolTip(this.OverwriteFrames, "If checked any frames that already exist in the output path are going to be overw" +
+                    "ritten");
+            this.OverwriteFrames.UseVisualStyleBackColor = true;
             // 
             // OverrideSettings
             // 
@@ -1494,18 +1506,6 @@ namespace Amleto
             this.btnLoadProject.UseVisualStyleBackColor = true;
             this.btnLoadProject.Click += new System.EventHandler(this.btnLoadProject_Click);
             // 
-            // OverwriteFrames
-            // 
-            this.OverwriteFrames.AutoSize = true;
-            this.OverwriteFrames.Location = new System.Drawing.Point(97, 142);
-            this.OverwriteFrames.Name = "OverwriteFrames";
-            this.OverwriteFrames.Size = new System.Drawing.Size(143, 17);
-            this.OverwriteFrames.TabIndex = 23;
-            this.OverwriteFrames.Text = "Overwrite existing frames";
-            this.toolTips.SetToolTip(this.OverwriteFrames, "If checked any frames that already exist in the output path are going to be overw" +
-                    "ritten");
-            this.OverwriteFrames.UseVisualStyleBackColor = true;
-            // 
             // AddProject
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1524,6 +1524,7 @@ namespace Amleto
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Add project to the queue";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddProject_FormClosing);
+            this.Load += new System.EventHandler(this.AddProject_Load);
             this.renderSetupTabs.ResumeLayout(false);
             this.sceneTab.ResumeLayout(false);
             this.sceneTab.PerformLayout();

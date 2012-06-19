@@ -1190,9 +1190,13 @@ namespace Amleto
 			}
 		}
 
-		private void textEndFrame_TextChanged(object sender, EventArgs e)
-		{
-
-		}
+        private void AddProject_Load(object sender, EventArgs e)
+        {
+            nbSlices.Text = "1";
+            nbSlices.Enabled = false;
+            slicesOverlap.Enabled = false;
+            lblNbSlices.Enabled = false;
+            lblSlicesOverlap.Enabled = false;
+        }
     }
 }
