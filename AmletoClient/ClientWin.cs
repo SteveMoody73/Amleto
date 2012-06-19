@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Windows.Forms;
 using RemoteExecution;
 
@@ -91,6 +92,7 @@ namespace AmletoClient
 
         private void ClientWin_Load(object sender, EventArgs e)
         {
+            Text = "Amleto Client " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             _messageAdder = DoAddMessage;
             ClientServices.MessageConsumer += AddMessage;
             _clientService.StartService();

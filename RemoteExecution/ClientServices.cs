@@ -116,6 +116,8 @@ namespace RemoteExecution
             try
             {
                 ClientDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Amleto\\Cache";
+                File.AppendAllText(@"d:\amleto.log", "AppDataPath = " + ClientDir + "\r\n");
+
             	var openSubKey = Registry.CurrentUser.OpenSubKey("Software");
             	if (openSubKey != null)
             	{

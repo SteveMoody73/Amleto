@@ -415,7 +415,7 @@ namespace Amleto
             this.messages.Location = new System.Drawing.Point(4, 22);
             this.messages.Name = "messages";
             this.messages.Padding = new System.Windows.Forms.Padding(3);
-            this.messages.Size = new System.Drawing.Size(793, 439);
+            this.messages.Size = new System.Drawing.Size(690, 439);
             this.messages.TabIndex = 1;
             this.messages.Text = "Messages";
             this.messages.UseVisualStyleBackColor = true;
@@ -448,7 +448,7 @@ namespace Amleto
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
             this.messageList.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.messageList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.messageList.Size = new System.Drawing.Size(787, 433);
+            this.messageList.Size = new System.Drawing.Size(684, 433);
             this.messageList.TabIndex = 0;
             this.messageList.Tag = "Shows the system messages.";
             this.messageList.MouseEnter += new System.EventHandler(this.tool_MouseHover);
@@ -485,7 +485,7 @@ namespace Amleto
             this.tabRender.Location = new System.Drawing.Point(4, 22);
             this.tabRender.Name = "tabRender";
             this.tabRender.Padding = new System.Windows.Forms.Padding(3);
-            this.tabRender.Size = new System.Drawing.Size(793, 439);
+            this.tabRender.Size = new System.Drawing.Size(690, 439);
             this.tabRender.TabIndex = 2;
             this.tabRender.Text = "Renders preview";
             this.tabRender.UseVisualStyleBackColor = true;
@@ -509,7 +509,7 @@ namespace Amleto
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer2.Size = new System.Drawing.Size(787, 433);
+            this.splitContainer2.Size = new System.Drawing.Size(684, 433);
             this.splitContainer2.SplitterDistance = 35;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -569,8 +569,8 @@ namespace Amleto
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
             this.splitContainer3.Panel2.Controls.Add(this.pictureRender);
-            this.splitContainer3.Size = new System.Drawing.Size(787, 394);
-            this.splitContainer3.SplitterDistance = 261;
+            this.splitContainer3.Size = new System.Drawing.Size(684, 394);
+            this.splitContainer3.SplitterDistance = 226;
             this.splitContainer3.TabIndex = 1;
             // 
             // renderTree
@@ -580,7 +580,7 @@ namespace Amleto
             this.renderTree.HideSelection = false;
             this.renderTree.Location = new System.Drawing.Point(0, 0);
             this.renderTree.Name = "renderTree";
-            this.renderTree.Size = new System.Drawing.Size(257, 390);
+            this.renderTree.Size = new System.Drawing.Size(222, 390);
             this.renderTree.TabIndex = 0;
             this.renderTree.Tag = "Shows the projects which have some rendered frames.";
             this.renderTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.renderTree_AfterSelect);
@@ -615,7 +615,7 @@ namespace Amleto
             this.pictureRender.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureRender.Location = new System.Drawing.Point(0, 0);
             this.pictureRender.Name = "pictureRender";
-            this.pictureRender.Size = new System.Drawing.Size(518, 390);
+            this.pictureRender.Size = new System.Drawing.Size(450, 390);
             this.pictureRender.TabIndex = 0;
             this.pictureRender.TabStop = false;
             // 
@@ -646,7 +646,7 @@ namespace Amleto
             // 
             this.mnuExit.Image = global::Amleto.Properties.Resources.door_in;
             this.mnuExit.Name = "mnuExit";
-            this.mnuExit.Size = new System.Drawing.Size(152, 22);
+            this.mnuExit.Size = new System.Drawing.Size(92, 22);
             this.mnuExit.Text = "&Exit";
             this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
             // 
@@ -1077,7 +1077,7 @@ namespace Amleto
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenu;
             this.Name = "ServerWin";
-            this.Text = "Amleto Server - 3.1";
+            this.Text = "Amleto Server - 3.1.1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ServerWin_FormClosing);
             this.Load += new System.EventHandler(this.ServerWin_Load);
             this.Shown += new System.EventHandler(this.ServerWin_Shown);

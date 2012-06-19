@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Diagnostics;
 using RemoteExecution;
@@ -1228,6 +1229,7 @@ namespace Amleto
 
         private void ServerWin_Shown(object sender, EventArgs e)
         {
+            Text = "Amleto Server " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             BroadcastFinder findMaster = new BroadcastFinder();
             if (findMaster.Server != "") // Let's connect to the master
             {
