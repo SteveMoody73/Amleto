@@ -17,6 +17,7 @@ namespace RemoteExecution
 		public bool IsOnline { get; set; }
 		public int Id { get; private set; }
 		public string HostName { get; private set; }
+        public string IPAddress { get; private set; }
 		public int Instance { get; private set; }
 		public List<Job> Jobs { get; set; }
 		public List<Job> PriorityJobs { get; set; }
@@ -29,7 +30,7 @@ namespace RemoteExecution
 		public int PtrSize { get; set; }
 		public string ActiveHours { get; set; }
 
-		public ClientConnection(string hostName, int instance, ProcessPriorityClass priority, int ptrSize)
+		public ClientConnection(string hostName, string ipAddress, int instance, ProcessPriorityClass priority, int ptrSize)
         {
 			IsOnline = true;
 			Jobs = new List<Job>();
@@ -38,6 +39,7 @@ namespace RemoteExecution
 			ActiveHours = "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY";
 			Id = (_nextClientId++);
             HostName = hostName;
+		    IPAddress = ipAddress;
             Instance = instance;
             Priority = priority;
             PtrSize = ptrSize;

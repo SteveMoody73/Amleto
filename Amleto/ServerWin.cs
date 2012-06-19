@@ -315,7 +315,7 @@ namespace Amleto
 					catch (Exception ex) { Debug.WriteLine("Error adding cell client id: " + ex); }
 
                     cell = new DataGridViewTextBoxCell();
-                    try { cell.Value = client.HostName; }
+                    try { cell.Value = client.HostName + " (" + client.IPAddress + ")"; }
 					catch (Exception ex) { Debug.WriteLine("Error setting hostname: " + ex); }
 					try { row.Cells.Add(cell); }
 					catch (Exception ex) { Debug.WriteLine("Error adding hostname: " + ex); }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Runtime.Remoting.Channels.Tcp;
 using Microsoft.Win32;
@@ -321,6 +323,21 @@ namespace RemoteExecution
             }
         }
 
+        private string GetIP()
+        {
+            IPHostEntry host;
+            string localIP = "?";
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                }
+            }
+            return localIP;
+        }
+
 	   	private void ConnectToServer(object obj)
         {
             if (ServerHost == "" || AutoServerFinder)
@@ -362,7 +379,7 @@ namespace RemoteExecution
             }
             else
             {
-                _server.RegisterClient(Environment.MachineName,RenderPriority,IntPtr.Size);
+                _server.RegisterClient(Environment.MachineName, GetIP(), RenderPriority, IntPtr.Size);
                 AddMessage(0,"Connected to the server " + ServerHost + " on port " + ServerPort + ".");
                 try
                 {

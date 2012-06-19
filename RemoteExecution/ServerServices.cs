@@ -39,7 +39,7 @@ namespace RemoteExecution
         public static List<RenderProject> FinishedProjects = new List<RenderProject>();
 		public static List<ConfigSet> Configs = new List<ConfigSet>();
 
-        public void RegisterClient(string hostName, ProcessPriorityClass priority, int ptrSize)
+        public void RegisterClient(string hostName, string ipAddress, ProcessPriorityClass priority, int ptrSize)
         {
             lock (_clients)
             {
@@ -50,7 +50,7 @@ namespace RemoteExecution
                     foundInstance = true;
                     foreach (ClientConnection c in _clients)
                     {
-                        if (c.HostName == hostName && c.Instance == nextInstance)
+                        if (c.HostName == hostName && c.IPAddress == ipAddress && c.Instance == nextInstance)
                         {
                             nextInstance++;
                             foundInstance = false;
@@ -59,10 +59,10 @@ namespace RemoteExecution
                     }
                 }
 
-                _currConnection = new ClientConnection(hostName, nextInstance, priority, ptrSize);
+                _currConnection = new ClientConnection(hostName, ipAddress, nextInstance, priority, ptrSize);
                 _clients.Add(_currConnection);
             }
-            AddMessage(0, "Node " + _currConnection.HostName + ":" + _currConnection.Instance + " connected (" + (ptrSize * 8) + "-bit).");
+            AddMessage(0, "Node " + _currConnection.HostName + " (" + ipAddress + ")" + ":" + _currConnection.Instance + " connected (" + (ptrSize * 8) + "-bit).");
             CallUpdateClientList();
         }
 
@@ -75,9 +75,9 @@ namespace RemoteExecution
                 {
                     if (_clients[i].ElapsedTime > 10000)
                     {
-                        AddMessage(1, "Node " + _clients[i].HostName + ":" + _clients[i].Instance + " timed out and removed.");
+                        AddMessage(1, "Node " + _clients[i].HostName + ":" + " (" + _clients[i].IPAddress + ")" + _clients[i].Instance + " timed out and removed.");
                         if (_clients[i].CurrentRender != null)
-                            _clients[i].CurrentRender.ReleaseClientAllFrames(_clients[i].Id, _clients[i].HostName + ":" + _clients[i].Instance);
+                            _clients[i].CurrentRender.ReleaseClientAllFrames(_clients[i].Id, _clients[i].HostName + " (" + _clients[i].IPAddress + ")" + ":" + _clients[i].Instance);
                         _clients[i].StoreSettings();
                         _clients[i].IsOnline = false;
                         _clients.RemoveAt(i);
@@ -100,11 +100,11 @@ namespace RemoteExecution
         {
             if (_currConnection == null)
                 return;
-            AddMessage(0, "Node " + _currConnection.HostName + ":" + _currConnection.Instance + " disconnected.");
+            AddMessage(0, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " disconnected.");
             lock (_clients)
             {
                 if (_currConnection.CurrentRender != null)
-                    _currConnection.CurrentRender.ReleaseClientAllFrames(_currConnection.Id, _currConnection.HostName + ":" + _currConnection.Instance);
+                    _currConnection.CurrentRender.ReleaseClientAllFrames(_currConnection.Id, _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance);
                 _currConnection.StoreSettings();
                 _clients.Remove(_currConnection);
             }
@@ -164,7 +164,7 @@ namespace RemoteExecution
                         		_currConnection.CurrentRender = t;
                         		if (IsFirstClient())
                         		{
-                        			AddMessage(2, "Sending scene " + _currConnection.CurrentRender.SceneId + " to " + _currConnection.HostName);
+                                    AddMessage(2, "Sending scene " + _currConnection.CurrentRender.SceneId + " to " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")");
                         			ChangeCurrentJobLabel("Downloading content for " + _currConnection.CurrentRender.SceneId);
                         			_currConnection.IsReady = false;
                         			_currConnection.Jobs.AddRange(_currConnection.CurrentRender.GetContentJobs());
@@ -182,7 +182,7 @@ namespace RemoteExecution
                     {
                         if (_currConnection.CurrentRender.Paused == false && _currConnection.CurrentRender.HasFreeJobs())
                         {
-                            AddMessage(4, "Node " + _currConnection.HostName + ":" + _currConnection.Instance + " getting frame(s) job");
+                            AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " getting frame(s) job");
                             _currConnection.Jobs.Add(_currConnection.CurrentRender.GetRenderJob(_currConnection.Id, _currConnection.Instance));
                         }
                     }
@@ -217,7 +217,7 @@ namespace RemoteExecution
             	{
             		if (t == _currConnection)
             			return true;
-            		if (t.HostName == _currConnection.HostName)
+            		if (t.HostName == _currConnection.HostName && t.IPAddress == _currConnection.IPAddress)
             			return false;
             	}
             	// ??? We should  not reach this...
@@ -235,7 +235,7 @@ namespace RemoteExecution
             {
             	foreach (ClientConnection t in _clients)
             	{
-            		if (t.HostName == _currConnection.HostName)
+            		if (t.HostName == _currConnection.HostName && t.IPAddress == _currConnection.IPAddress)
             			return t.IsReady;
             	}
             	// ??? We should  not reach this...
@@ -404,7 +404,7 @@ namespace RemoteExecution
                 {
                     if (_currConnection.CurrentRender.Slices > 1)
                         hasSlices = true;
-                    fname = _currConnection.CurrentRender.FinishFrame(frame, sliceNumber, _currConnection.HostName + ":" + _currConnection.Instance);
+                    fname = _currConnection.CurrentRender.FinishFrame(frame, sliceNumber, _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance);
                     if (fname != null)
                         sceneId = _currConnection.CurrentRender.SceneId;
                     if (_currConnection.CurrentRender.NbRemainingJobs() == 0)
@@ -415,9 +415,9 @@ namespace RemoteExecution
                 }
             }
             if (hasSlices)
-                AddMessage(4, "Node " + _currConnection.HostName + ":" + _currConnection.Instance + " uploaded slice " + sliceNumber + " of frame " + frame + ".");
+                AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " uploaded slice " + sliceNumber + " of frame " + frame + ".");
             else
-                AddMessage(4, "Node " + _currConnection.HostName + ":" + _currConnection.Instance + " uploaded frame " + frame + ".");
+                AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " uploaded frame " + frame + ".");
             if (fname != null)
             {
                 AddMessage(4, "Frame " + frame + " rebuilt.");
@@ -436,10 +436,10 @@ namespace RemoteExecution
             {
                 lock (Projects)
                 {
-                    _currConnection.CurrentRender.ReleaseFrame(frame, sliceNumber, _currConnection.HostName + ":" + _currConnection.Instance);
+                    _currConnection.CurrentRender.ReleaseFrame(frame, sliceNumber, _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance);
                 }
             }
-            AddMessage(1, "Node " + _currConnection.HostName + " " + _currConnection.Instance + " lost frame " + frame + ".");
+            AddMessage(1, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ") " + _currConnection.Instance + " lost frame " + frame + ".");
         }
 
         public List<Job> GetJobs()
