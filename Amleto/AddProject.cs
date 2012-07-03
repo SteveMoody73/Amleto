@@ -487,7 +487,7 @@ namespace Amleto
             {
                 if (l.StartsWith("CameraName "))
                 {
-                    _cameras.Add(new CameraSettings { Width = 640, Height = 480, Aspect = 1.0, UseGlobalResolution = true });
+                    _cameras.Add(new CameraSettings { Width = 640, Height = 480, Aspect = 1.0, UseGlobalResolution = false });
                     camerapos++;
                     cameraName.Items.Add(l.Substring(l.LastIndexOf(' ') + 1));
                     cameraName.SelectedIndex = 0;

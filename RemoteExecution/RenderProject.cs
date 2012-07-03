@@ -188,7 +188,7 @@ namespace RemoteExecution
             job.EnhanceAA = EnhanceAA;
             job.AntialiasLevel = AntialiasLevel;
             job.SliceNumber = 0;
-            job.TotSlices = Slices;
+            job.TotalSlices = Slices;
             job.Overlap = Overlap;
             job.Camera = Camera;
             job.SamplingPattern = SamplingPattern;
@@ -383,23 +383,29 @@ namespace RemoteExecution
 				{
 					fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + Prefix, StartFrame, ext);
 
-					double realTopLine = (double) i*(double) Height/(double) Slices;
-					double sliceHeight = (double) 1*(double) Height/(double) Slices;
+                    double sliceSize = (1.0 / (double)Slices) * Height;
+                    double overlapPct = sliceSize * (Overlap / 100.0);
+                    double realTopLine = sliceSize * i;
+                    double sliceHeight = realTopLine + sliceSize;
+                    double topLine = realTopLine - overlapPct;
 
-					double topLine = realTopLine - (double) Height*Overlap/200.0;
-					if (Overlap > 0)
-						sliceHeight += (double) Height*Overlap/100.0;
-					else
-						sliceHeight += 1;
-					if (topLine < 0.0)
-					{
-						sliceHeight -= topLine;
-						topLine = 0;
-					}
-					if (topLine + sliceHeight >= Height)
-						sliceHeight = (int) (Height - topLine);
+                    //topLine = Height * topLine;
+                    if (Overlap > 0)
+                        sliceHeight += overlapPct;
+                    else
+                        sliceHeight += 1;
 
-					try
+                    if (topLine < 0.0)
+                    {
+                        sliceHeight -= topLine;
+                        topLine = 0;
+                    }
+
+                    if (topLine + sliceHeight >= Height)
+                        sliceHeight = (int)(Height - topLine);
+
+
+                    try
 					{
 						Bitmap part = new Bitmap(fname);
 						BitmapData src = part.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadOnly,
@@ -412,9 +418,9 @@ namespace RemoteExecution
 							{
 								if (j < 0 || j >= Height)
 									continue;
-								if (j < realTopLine)
+                                if (j < realTopLine)
 								{
-									double mult = 1.0 - Math.Abs(realTopLine - j)/((double) Height*Overlap/200.0);
+                                    double mult = 1.0 - Math.Abs(realTopLine - j) / ((double)Height * Overlap / 200.0);
 									double other = (1.0 - mult);
 									for (int k = 0; k < Width; k++)
 									{

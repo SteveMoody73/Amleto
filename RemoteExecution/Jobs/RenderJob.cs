@@ -39,7 +39,7 @@ namespace RemoteExecution.Jobs
         public int ClientId = -1;
         public List<string> StrippedMaster = new List<string>();
         public int SliceNumber = 1;
-        public int TotSlices = 1;
+        public int TotalSlices = 1;
         public double Overlap = 5;
         public int Camera;
         public int SamplingPattern;
@@ -130,22 +130,9 @@ namespace RemoteExecution.Jobs
                 writer.WriteLine("RGBImageSaver " + ImageFormat);
                 writer.WriteLine("AlphaImageSaver " + AlphaImageFormat);
 
-                double topLine = (double)SliceNumber * (double)Height / (double)TotSlices;
-                double sliceHeight = (double)1 * (double)Height / (double)TotSlices;
-
-                topLine -= (double)Height * Overlap / 200.0;
-                if(Overlap > 0)
-                    sliceHeight += (double)Height * Overlap / 100.0;
-                else
-                    sliceHeight +=1.0;
-
-                if (topLine < 0.0)
-                    topLine = 0;
-                if ((int)topLine + (int)sliceHeight >= Height)
-                    sliceHeight = (int)(Height - topLine);
-
                 bool inMaster = false;
                 int lnNb = 0;
+
                 foreach (string line in lines)
                 {
                     // Skip the header
@@ -196,37 +183,23 @@ namespace RemoteExecution.Jobs
                     if (line.StartsWith("SaveAlpha "))
                         continue;
 
-					if (line.StartsWith("GlobalMaskPosition "))
-					{
-						if (TotSlices == 1)
-							writer.WriteLine(line);
-						else
-							writer.WriteLine("GlobalMaskPosition 0 " + (int)(topLine) + " " + Width + " " + (int)(Math.Ceiling(sliceHeight)));
-                        continue;
-					}
-					if (line.StartsWith("MaskPosition "))
-					{
-						if (TotSlices == 1)
-						{
-							writer.WriteLine("CameraMask 0");
-							writer.WriteLine("MaskPosition 0 0 " + Width + " " + Height);
-						}
-						else
-						{
-							writer.WriteLine("CameraMask 1");
-							writer.WriteLine("MaskPosition 0 " + (int)(topLine) + " " + Width + " " + (int)(Math.Ceiling(sliceHeight)));
-							writer.WriteLine("MaskColor 0 0 0");
-							writer.WriteLine("UseGlobalMask 1");
-						}
-                        continue;
-					}
-					if (line.StartsWith("CameraMask ") && (TotSlices != 1))
-						continue;
-					if (line.StartsWith("UseGlobalMask ") && (TotSlices != 1))
-						continue;
+                    if (line.StartsWith("LimitedRegion "))
+                    {
+                        // If not split rendering, leave the current settings
+                        if (TotalSlices == 1)
+                            writer.WriteLine(line);
 
+                        continue;
+                    }
+                    if (line.StartsWith("RegionLimits "))
+                    {
+                        if (TotalSlices == 1)
+                            writer.WriteLine(line);
 
-					if (OverrideSettings)
+                        continue;
+                    }
+
+                    if (OverrideSettings)
 					{
 						if (line.StartsWith("RenderMode "))
 							writer.WriteLine("RenderMode " + RenderMode);
@@ -329,6 +302,24 @@ namespace RemoteExecution.Jobs
                     else
                         writer.WriteLine(line);
                 }
+
+                if (TotalSlices > 1)
+                {
+                    writer.WriteLine("LimitedRegion 1");
+                    double sliceSize = 1.0/(double) TotalSlices;
+                    double overlapPct = sliceSize * (Overlap/100.0);
+                    double sliceTop = sliceSize*SliceNumber - overlapPct;
+                    double sliceBottom = sliceSize*SliceNumber + sliceSize + overlapPct;
+
+                    if (sliceTop < 0.0)
+                        sliceTop = 0.0;
+                    if (sliceBottom > 1.0)
+                        sliceBottom = 1.0;
+
+                    writer.WriteLine("RegionLimits 0 1 " + sliceTop.ToString("F3") + " " +
+                                        sliceBottom.ToString("F3"));
+                }
+
                 writer.Close();
                 writer.Dispose();
 
