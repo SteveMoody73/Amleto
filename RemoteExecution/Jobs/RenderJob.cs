@@ -326,7 +326,7 @@ namespace RemoteExecution.Jobs
                 Process process = new Process();
                 process.StartInfo.FileName = ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Program\\lwsn.exe";
                 process.StartInfo.Arguments = "-3 \"-c" + ClientServices.ClientDir + "\\" + ClientServices.ConfigName + 
-                    "\\Config\" \"-l" + ClientServices.ClientDir + "\\output.log \"" +" \"-d" + ClientServices.ClientDir + "\\Content\" \"" + ClientServices.ClientDir +
+                    "\\Config\" \"-d" + ClientServices.ClientDir + "\\Content\" \"" + ClientServices.ClientDir +
                     "\\Content\\render_" + Instance + ".aml\" " + StartFrame + " " + EndFrame + " " + Step;
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.WorkingDirectory = ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Program\\";
