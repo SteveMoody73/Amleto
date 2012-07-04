@@ -80,7 +80,7 @@ namespace AmletoClient
 
                 if(messageList.SelectedRows.Count > 0)
                     messageList.SelectedRows[0].Selected = false;
-                while (messageList.Rows.Count > 300)
+                while (messageList.Rows.Count > 3000)
                     messageList.Rows.RemoveAt(0);
               
                 row.Height = 17;
