@@ -106,7 +106,7 @@ namespace RemoteExecution
             }
             else
             {
-                AddMessage(0,"Trying to connect to server " + ServerHost + " on port " + ServerPort);
+                AddMessage(0,"Attempting to connect to server " + ServerHost + " on port " + ServerPort);
                 ThreadPool.QueueUserWorkItem(ConnectToServer);
             }
         }
@@ -307,7 +307,7 @@ namespace RemoteExecution
             else
                 AddMessage(0,"Found Amleto server at " + ServerHost + " on port " + ServerPort);
 
-            AddMessage(0,"Trying to connect to the server.");
+            AddMessage(0,"Attempting to connect to the Server.");
             ThreadPool.QueueUserWorkItem(ConnectToServer);
         }
 
@@ -379,7 +379,7 @@ namespace RemoteExecution
 			if (_server == null)
             {
                 if (_setupToDo)
-                    AddMessage(1,"Cannot connect to the server. Will retry in 5 sec.");
+                    AddMessage(1,"Cannot connect to the server. Will retry in 5 seconds.");
                 
 				Thread.Sleep(5000);
                 ThreadPool.QueueUserWorkItem(ConnectToServer);
@@ -397,7 +397,7 @@ namespace RemoteExecution
                 {
                     _server = null;
                     if (_setupToDo)
-                        AddMessage(1, "Cannot connect to the server. Will retry in 5 sec.");
+                        AddMessage(1, "Cannot connect to the server. Will retry in 5 seconds.");
                     Thread.Sleep(5000);
                     ThreadPool.QueueUserWorkItem(ConnectToServer);
                 }
@@ -459,9 +459,8 @@ namespace RemoteExecution
                     {
                         AddMessage(0,"Client ready.");
                         _setupTime.Stop();
-                        AddMessage(0,"Starup and setup took " + _setupTime.Elapsed.TotalSeconds + " sec(s).");
+                        AddMessage(0,"Startup and setup took " + _setupTime.Elapsed.TotalSeconds + " sec(s).");
                         _readyToStart = true;
-                        //server.SetCurrentJob("");
                     }
                     else if (_jobs.Count > 0)
                         return;
@@ -483,7 +482,7 @@ namespace RemoteExecution
             }
             catch(Exception ex)
             {
-                Debug.WriteLine("Retrieve Jobs: " + ex);
+                Debug.WriteLine("Retrieving Jobs: " + ex);
                 try
                 {
                 	if (_server != null) _server.KeepAlive();
@@ -491,7 +490,7 @@ namespace RemoteExecution
                 catch
                 {
                     _server = null;
-                    AddMessage(1,"Server disapeared");
+                    AddMessage(1,"Lost contact with Server");
                     ThreadPool.QueueUserWorkItem(ConnectToServer);
                 }
             }
