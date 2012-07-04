@@ -139,8 +139,7 @@ namespace RemoteExecution.Jobs
                     lnNb++;
                     if (lnNb < 4)
                         continue;
-                    /*if (line == "LWSC" || line == "1" || line == "2" || line == "3" || line == "4")
-                        continue;*/
+
                     // Skip the render range / format definition
                     if (line.StartsWith("FirstFrame "))
                         continue;
@@ -197,6 +196,26 @@ namespace RemoteExecution.Jobs
                             writer.WriteLine(line);
 
                         continue;
+                    }
+
+                    if (line.StartsWith("Antialiasing "))
+                    {
+                        if (TotalSlices > 1)
+                        {
+                            writer.WriteLine("LimitedRegion 1");
+                            double sliceSize = 1.0/(double) TotalSlices;
+                            double overlapPct = sliceSize*(Overlap/100.0);
+                            double sliceTop = sliceSize*SliceNumber - overlapPct;
+                            double sliceBottom = sliceSize*SliceNumber + sliceSize + overlapPct;
+
+                            if (sliceTop < 0.0)
+                                sliceTop = 0.0;
+                            if (sliceBottom > 1.0)
+                                sliceBottom = 1.0;
+
+                            writer.WriteLine("RegionLimits 0 1 " + sliceTop.ToString("F3") + " " +
+                                             sliceBottom.ToString("F3"));
+                        }
                     }
 
                     if (OverrideSettings)
@@ -291,11 +310,9 @@ namespace RemoteExecution.Jobs
 							writer.WriteLine("Sampler " + SamplingPattern);
 						}
 						else if (line.StartsWith("AASamples "))
-							//writer.WriteLine("AASamples " + cameraAntialias);
 							continue;
 						else if (line.StartsWith("Sampler "))
 							continue;
-						//writer.WriteLine("Sampler " + samplingPattern);
 						else
 							writer.WriteLine(line);
 					}
@@ -303,29 +320,14 @@ namespace RemoteExecution.Jobs
                         writer.WriteLine(line);
                 }
 
-                if (TotalSlices > 1)
-                {
-                    writer.WriteLine("LimitedRegion 1");
-                    double sliceSize = 1.0/(double) TotalSlices;
-                    double overlapPct = sliceSize * (Overlap/100.0);
-                    double sliceTop = sliceSize*SliceNumber - overlapPct;
-                    double sliceBottom = sliceSize*SliceNumber + sliceSize + overlapPct;
-
-                    if (sliceTop < 0.0)
-                        sliceTop = 0.0;
-                    if (sliceBottom > 1.0)
-                        sliceBottom = 1.0;
-
-                    writer.WriteLine("RegionLimits 0 1 " + sliceTop.ToString("F3") + " " +
-                                        sliceBottom.ToString("F3"));
-                }
-
                 writer.Close();
                 writer.Dispose();
 
                 Process process = new Process();
                 process.StartInfo.FileName = ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Program\\lwsn.exe";
-                process.StartInfo.Arguments = "-3 \"-c" + ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\" \"-d" + ClientServices.ClientDir + "\\Content\" \"" + ClientServices.ClientDir + "\\Content\\render_" + Instance + ".aml\" " + StartFrame + " " + EndFrame + " " + Step;
+                process.StartInfo.Arguments = "-3 \"-c" + ClientServices.ClientDir + "\\" + ClientServices.ConfigName + 
+                    "\\Config\" \"-l" + ClientServices.ClientDir + "\\output.log \"" +" \"-d" + ClientServices.ClientDir + "\\Content\" \"" + ClientServices.ClientDir +
+                    "\\Content\\render_" + Instance + ".aml\" " + StartFrame + " " + EndFrame + " " + Step;
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.WorkingDirectory = ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Program\\";
                 process.StartInfo.RedirectStandardError = true;
