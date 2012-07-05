@@ -384,26 +384,19 @@ namespace RemoteExecution
 					fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + Prefix, StartFrame, ext);
 
                     double sliceSize = (1.0 / (double)Slices) * Height;
-                    double overlapPct = sliceSize * (Overlap / 100.0);
+                    double overlapAmount = sliceSize * (Overlap / 100.0);
                     double realTopLine = sliceSize * i;
-                    double sliceHeight = realTopLine + sliceSize;
-                    double topLine = realTopLine - overlapPct;
-
-                    //topLine = Height * topLine;
-                    if (Overlap > 0)
-                        sliceHeight += overlapPct;
-                    else
-                        sliceHeight += 1;
+				    double sliceHeight = sliceSize + (overlapAmount*2);
+                    double topLine = realTopLine - overlapAmount;
 
                     if (topLine < 0.0)
                     {
-                        sliceHeight -= topLine;
+                        sliceHeight -= Math.Abs(topLine);
                         topLine = 0;
                     }
 
                     if (topLine + sliceHeight >= Height)
                         sliceHeight = (int)(Height - topLine);
-
 
                     try
 					{
@@ -420,14 +413,14 @@ namespace RemoteExecution
 									continue;
                                 if (j < realTopLine)
 								{
-                                    double mult = 1.0 - Math.Abs(realTopLine - j) / ((double)Height * Overlap / 200.0);
-									double other = (1.0 - mult);
+                                    double srcWeight = 1.0 - Math.Abs(realTopLine - j) / Math.Ceiling(overlapAmount);
+								    double destWeight = (1.0 - srcWeight);
 									for (int k = 0; k < Width; k++)
 									{
 										uint[] s = new uint[4];
 										uint[] d = new uint[4];
 
-										s[0] = (ptrSrc[j*Width + k] & 0xFF000000) >> 24;
+									    s[0] = (ptrSrc[j*Width + k] & 0xFF000000) >> 24;
 										s[1] = (ptrSrc[j*Width + k] & 0x00FF0000) >> 16;
 										s[2] = (ptrSrc[j*Width + k] & 0x0000FF00) >> 8;
 										s[3] = ptrSrc[j*Width + k] & 0x000000FF;
@@ -437,14 +430,12 @@ namespace RemoteExecution
 										d[2] = (ptrDst[j*Width + k] & 0x0000FF00) >> 8;
 										d[3] = ptrDst[j*Width + k] & 0x000000FF;
 
-										d[0] = (uint) ((double) s[0]*mult + (double) d[0]*other);
-										d[1] = (uint) ((double) s[1]*mult + (double) d[1]*other);
-										d[2] = (uint) ((double) s[2]*mult + (double) d[2]*other);
-										d[3] = (uint) ((double) s[3]*mult + (double) d[3]*other);
+										d[0] = (uint) (s[0]*srcWeight + d[0]*destWeight);
+										d[1] = (uint) (s[1]*srcWeight + d[1]*destWeight);
+										d[2] = (uint) (s[2]*srcWeight + d[2]*destWeight);
+										d[3] = (uint) (s[3]*srcWeight + d[3]*destWeight);
 
-										ptrDst[j*Width + k] = (d[0] << 24) | (d[1] << 16) | (d[2] << 8) | d[3];
-
-										//ptrDst[j * width + k] = (uint)((double)ptrSrc[j * width + k] * mult + (double)ptrDst[j * width + k] * other);
+									    ptrDst[j*Width + k] = (d[0] << 24) | (d[1] << 16) | (d[2] << 8) | d[3];
 									}
 								}
 								else

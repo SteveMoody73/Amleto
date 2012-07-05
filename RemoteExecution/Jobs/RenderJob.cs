@@ -204,9 +204,9 @@ namespace RemoteExecution.Jobs
                         {
                             writer.WriteLine("LimitedRegion 1");
                             double sliceSize = 1.0/(double) TotalSlices;
-                            double overlapPct = sliceSize*(Overlap/100.0);
-                            double sliceTop = sliceSize*SliceNumber - overlapPct;
-                            double sliceBottom = sliceSize*SliceNumber + sliceSize + overlapPct;
+                            double overlapAmount = sliceSize*(Overlap/100.0);
+                            double sliceTop = sliceSize*SliceNumber - overlapAmount;
+                            double sliceBottom = sliceSize*SliceNumber + sliceSize + overlapAmount;
 
                             if (sliceTop < 0.0)
                                 sliceTop = 0.0;
