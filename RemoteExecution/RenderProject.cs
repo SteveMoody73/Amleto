@@ -96,10 +96,14 @@ namespace RemoteExecution
         [XmlArray("MasterStripped")]
         [XmlArrayItem("Stripped")]
         public List<string> StrippedMaster = new List<string>();
-        [XmlElement("Slices")]
-        public int Slices = 1;
+        [XmlElement("SlicesAcross")]
+        public int SlicesAcross = 1;
+        [XmlElement("SlicesDown")]
+        public int SlicesDown = 1;
         [XmlElement("Overlap")]
         public double Overlap = 5;
+        [XmlElement("DeleteSplitFrames")]
+        public bool DeleteSplitFrames;
         [XmlElement("Camera")]
         public int Camera;
         [XmlElement("SamplingPattern")]
@@ -188,7 +192,8 @@ namespace RemoteExecution
             job.EnhanceAA = EnhanceAA;
             job.AntialiasLevel = AntialiasLevel;
             job.SliceNumber = 0;
-            job.TotalSlices = Slices;
+            job.SlicesDown = SlicesDown;
+            job.SlicesAcross = SlicesAcross;
             job.Overlap = Overlap;
             job.Camera = Camera;
             job.SamplingPattern = SamplingPattern;
@@ -239,45 +244,53 @@ namespace RemoteExecution
 
             _jobs.Clear();
 			
-			if (Slices > 1) for (int i = 0; i < Slices; i++)
+			if (SlicesAcross > 1 || SlicesDown > 1)
+			{
+			    for (int i = 0; i < SlicesAcross * SlicesDown; i++)
+			    {
+			        RenderJob job = new RenderJob(SceneFile.Substring(ContentDir.Length), StartFrame, StartFrame, 1, 0,
+			                                      ServerServices.Configs[Config].ImageFormats[ImageFormat], SaveAlpha,
+			                                      ServerServices.Configs[Config].ImageFormats[AlphaImageFormat]);
+			        //job.timeSpent = new Stopwatch();
+			        CopyJobParams(job);
+			        job.SliceNumber = i;
+
+			        _jobs.Add(job);
+			    }
+			}
+			else
             {
-                RenderJob job = new RenderJob(SceneFile.Substring(ContentDir.Length), StartFrame, StartFrame, 1, 0, ServerServices.Configs[Config].ImageFormats[ImageFormat], SaveAlpha, ServerServices.Configs[Config].ImageFormats[AlphaImageFormat]);
-                //job.timeSpent = new Stopwatch();
-                CopyJobParams(job);
-                job.SliceNumber = i;
+			    for (int i = StartFrame; i <= EndFrame; i += FrameSteps)
+			    {
+			        // If the overwrite flag isn't set
+			        // Check if the frame (and alpha) to render already exists in the output folder
+			        string imgfmt = ServerServices.Configs[Config].ImageFormats[ImageFormat];
+			        string ext = imgfmt.Substring(imgfmt.IndexOf('(') + 1, (imgfmt.IndexOf(')') - imgfmt.IndexOf('(')) - 1);
+			        string fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, Prefix, i, ext);
+			        bool filesExist;
+			        if (SaveAlpha)
+			        {
+			            string aimgfmt = ServerServices.Configs[Config].ImageFormats[AlphaImageFormat];
+			            string aext = aimgfmt.Substring(aimgfmt.IndexOf('(') + 1,
+			                                            (aimgfmt.IndexOf(')') - aimgfmt.IndexOf('(')) - 1);
+			            string aname = string.Format(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, i, aext);
+			            filesExist = File.Exists(fname) && File.Exists(aname);
+			        }
+			        else
+			            filesExist = File.Exists(fname);
 
-                _jobs.Add(job);
-            }
-            else 
-				for (int i = StartFrame; i <= EndFrame; i += FrameSteps)
-				{
-                    // If the overwrite flag isn't set
-                    // Check if the frame (and alpha) to render already exists in the output folder
-                    string imgfmt = ServerServices.Configs[Config].ImageFormats[ImageFormat];
-                    string ext = imgfmt.Substring(imgfmt.IndexOf('(') + 1, (imgfmt.IndexOf(')') - imgfmt.IndexOf('(')) - 1);
-                    string fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, Prefix, i, ext);
-                    bool filesExist;
-                    if (SaveAlpha)
-                    {
-                        string aimgfmt = ServerServices.Configs[Config].ImageFormats[AlphaImageFormat];
-                        string aext = aimgfmt.Substring(aimgfmt.IndexOf('(') + 1, (aimgfmt.IndexOf(')') - aimgfmt.IndexOf('(')) - 1);
-                        string aname = string.Format(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, i, aext);
-                        filesExist = File.Exists(fname) && File.Exists(aname);
-                    }
-                    else
-                        filesExist = File.Exists(fname);
-
-                    // If overwrite flag is set or if one or both the needed files are not in the output folder
-                    if (OverwriteFrames || !filesExist)
-					{
-						RenderJob job = new RenderJob(SceneFile.Substring(ContentDir.Length), i, i, 1, 0,
-							ServerServices.Configs[Config].ImageFormats[ImageFormat],
-							SaveAlpha, ServerServices.Configs[Config].ImageFormats[AlphaImageFormat]);
-						CopyJobParams(job);
-						job.SliceNumber = 0;
-						_jobs.Add(job);
-					}
-				}
+			        // If overwrite flag is set or if one or both the needed files are not in the output folder
+			        if (OverwriteFrames || !filesExist)
+			        {
+			            RenderJob job = new RenderJob(SceneFile.Substring(ContentDir.Length), i, i, 1, 0,
+			                                          ServerServices.Configs[Config].ImageFormats[ImageFormat],
+			                                          SaveAlpha, ServerServices.Configs[Config].ImageFormats[AlphaImageFormat]);
+			            CopyJobParams(job);
+			            job.SliceNumber = 0;
+			            _jobs.Add(job);
+			        }
+			    }
+			}
             StartJobs = _jobs.Count;
         }
 
@@ -321,11 +334,10 @@ namespace RemoteExecution
                         _jobs[i].TimeSpent = new Stopwatch();
                     _jobs[i].TimeSpent.Reset();
                     _jobs[i].TimeSpent.Start();
-                    if (Slices < 2 && FrameSteps < 2)
+                    if (SlicesDown < 2 && SlicesAcross < 2 && FrameSteps < 2)
                     {
                         for (int j = 1; j < Block && (j + i) < _jobs.Count; j++)
                         {
-
                             // Check if the next frame is not in sequence. This can occur when re-rendering 
                             // a projects with existing frames in the output directory
                             if (_jobs[i + j].StartFrame != _jobs[i + j - 1].StartFrame + FrameSteps)
@@ -354,7 +366,9 @@ namespace RemoteExecution
         }
 
     	public string FinishFrame(int frame, int sliceNumber, string node)
-        {
+    	{
+    	    bool mergeFailed = false;
+
             for (int i = 0; i < _jobs.Count; i++)
             {
                 if (_jobs[i].StartFrame == frame && _jobs[i].SliceNumber == sliceNumber)
@@ -362,7 +376,7 @@ namespace RemoteExecution
                     if (_jobs[i].TimeSpent != null && _jobs[i].TimeSpent.IsRunning)
                     {
                         _jobs[i].TimeSpent.Stop();
-                        if(Slices > 1)
+                        if (SlicesAcross > 1 || SlicesDown > 1)
                             Log += DateTime.Now.ToLongTimeString() + " Rendered job frame " + frame + " slice " + sliceNumber + "  took " + _jobs[i].TimeSpent.Elapsed.ToString() + "\n";
                         else
                             Log += DateTime.Now.ToLongTimeString() + " Rendered job frame(s) starting at frame " + frame + " to " + _jobs[i].EndFrame + " by node " + node + " took " + _jobs[i].TimeSpent.Elapsed.ToString() + "\n";
@@ -372,91 +386,168 @@ namespace RemoteExecution
                 }
             }
 
-            if (Slices > 1 && _jobs.Count == 0) // We finished all the slices!
+            if ((SlicesAcross > 1 || SlicesDown > 1) && _jobs.Count == 0) // We finished all the slices!
             {
-                string sImageFormat = ServerServices.Configs[Config].ImageFormats[ImageFormat];
-                string ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1, (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
-                string fname;
-                Bitmap fullFrame = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
-                BitmapData dst = fullFrame.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-				for (int i = 0; i < Slices; i++)
-				{
-					fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + Prefix, StartFrame, ext);
+                string sImageFormat = "";
+                string ext = "";
+                string fname = "";
 
-                    double sliceSize = (1.0 / (double)Slices) * Height;
-                    double overlapAmount = sliceSize * (Overlap / 100.0);
-                    double realTopLine = sliceSize * i;
-				    double sliceHeight = sliceSize + (overlapAmount*2);
-                    double topLine = realTopLine - overlapAmount;
+                int imageCount = 1;
+                if (SaveAlpha)
+                    imageCount = 2;
 
-                    if (topLine < 0.0)
+                for (int img = 0; img < imageCount; img++)
+                {
+                    if (img == 0)
+                        sImageFormat = ServerServices.Configs[Config].ImageFormats[ImageFormat];
+                    else
+                        sImageFormat = ServerServices.Configs[Config].ImageFormats[AlphaImageFormat];
+
+                    ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1,
+                                                 (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
+
+                    // Allocate a bitmap to store the final image
+                    Bitmap fullFrame = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
+                    BitmapData dst = fullFrame.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadWrite,
+                                                        PixelFormat.Format32bppArgb);
+
+                    for (int i = 0; i < SlicesAcross * SlicesDown; i++)
                     {
-                        sliceHeight -= Math.Abs(topLine);
-                        topLine = 0;
+                        if (img == 0)
+                            fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + Prefix, StartFrame, ext);
+                        else
+                            fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + AlphaPrefix, StartFrame, ext);
+
+                        int posX;
+                        int posY;
+
+                        if (SlicesDown > 1 && SlicesAcross > 1)
+                        {
+                            posX = i % SlicesAcross;
+                            posY = i / SlicesAcross;
+                        }
+                        else if (SlicesDown == 1)
+                        {
+                            posX = i;
+                            posY = 0;
+                        }
+                        else
+                        {
+                            posX = 0;
+                            posY = i;
+                        }
+
+                        // Calculate the image slice sizes and the row/column position
+                        double sizeV = (1.0 / SlicesDown) * Height;
+                        double sizeH = (1.0 / SlicesAcross) * Width;
+                        double overlapV = sizeV * (Overlap / 100.0);
+                        double overlapH = sizeH * (Overlap / 100.0);
+
+                        double realLeft = sizeH * posX;
+                        double left = realLeft - overlapH;
+
+                        double realTop = sizeV * posY;
+                        double top = realTop - overlapV;
+
+                        // Check the sizes are within limits and adjust
+                        left = Math.Max(0.0, left);
+                        top = Math.Max(0.0, top);
+
+                        try
+                        {
+                            Bitmap part = new Bitmap(fname);
+                            BitmapData src = part.LockBits(new Rectangle(0, 0, part.Width, part.Height),
+                                                           ImageLockMode.ReadOnly,
+                                                           PixelFormat.Format32bppArgb);
+                            unsafe
+                            {
+                                uint* ptrSrc = (uint*)(src.Scan0);
+                                uint* ptrDst = (uint*)(dst.Scan0);
+                                for (int y = 0; y <= part.Height; y++)
+                                {
+                                    for (int x = 0; x < part.Width; x++)
+                                    {
+                                        // Get the destination pixel coordinates
+                                        int destY = y + (int)top;
+                                        int destX = x + (int)left;
+
+                                        // Make sure it's not out of bounds
+                                        if (destY >= Height || destY >= Width)
+                                            continue;
+
+                                        // Is the pixel in an overlapping Area
+                                        if (destY < realTop || destX < realLeft)
+                                        {
+                                            double srcWeight;
+                                            double destWeight;
+
+                                            // Check if it's overlapping on the X or Y axis and generate weighting accordingly
+                                            if (destY < realTop)
+                                            {
+                                                srcWeight = 1.0 - Math.Abs(realTop - (y + top)) / Math.Ceiling(overlapV);
+                                                destWeight = 1.0 - srcWeight;
+                                            }
+                                            else
+                                            {
+                                                srcWeight = 1.0 - Math.Abs(realLeft - (x + left)) / Math.Ceiling(overlapH);
+                                                destWeight = 1.0 - srcWeight;
+                                            }
+
+                                            uint[] s = new uint[4];
+                                            uint[] d = new uint[4];
+                                            s[0] = (ptrSrc[y * part.Width + x] & 0xFF000000) >> 24;
+                                            s[1] = (ptrSrc[y * part.Width + x] & 0x00FF0000) >> 16;
+                                            s[2] = (ptrSrc[y * part.Width + x] & 0x0000FF00) >> 8;
+                                            s[3] = ptrSrc[y * part.Width + x] & 0x000000FF;
+
+                                            d[0] = (ptrDst[destY * Width + destX] & 0xFF000000) >> 24;
+                                            d[1] = (ptrDst[destY * Width + destX] & 0x00FF0000) >> 16;
+                                            d[2] = (ptrDst[destY * Width + destX] & 0x0000FF00) >> 8;
+                                            d[3] = ptrDst[destY * Width + destX] & 0x000000FF;
+
+                                            d[0] = (uint)(s[0] * srcWeight + d[0] * destWeight);
+                                            d[1] = (uint)(s[1] * srcWeight + d[1] * destWeight);
+                                            d[2] = (uint)(s[2] * srcWeight + d[2] * destWeight);
+                                            d[3] = (uint)(s[3] * srcWeight + d[3] * destWeight);
+
+                                            ptrDst[destY * Width + destX] = (d[0] << 24) | (d[1] << 16) | (d[2] << 8) |
+                                                                          d[3];
+                                        }
+                                        else
+                                            ptrDst[destY * Width + destX] = ptrSrc[y * part.Width + x];
+                                    }
+                                }
+                            }
+                            part.UnlockBits(src);
+                            part.Dispose();
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("Error joining the split images: " + ex);
+                            mergeFailed = true;
+                        }
                     }
+                    if (img == 0)
+                        fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, Prefix, StartFrame, ext, sliceNumber);
+                    else
+                        fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, StartFrame, ext, sliceNumber);
 
-                    if (topLine + sliceHeight >= Height)
-                        sliceHeight = (int)(Height - topLine);
+                    fullFrame.UnlockBits(dst);
+                    fullFrame.Save(fname);
+                    fullFrame.Dispose();
+                }
 
-                    try
-					{
-						Bitmap part = new Bitmap(fname);
-						BitmapData src = part.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadOnly,
-						                               PixelFormat.Format32bppArgb);
-						unsafe
-						{
-							uint* ptrSrc = (uint*) (src.Scan0);
-							uint* ptrDst = (uint*) (dst.Scan0);
-							for (int j = (int) topLine; j <= (int) (topLine + Math.Ceiling(sliceHeight)); j++)
-							{
-								if (j < 0 || j >= Height)
-									continue;
-                                if (j < realTopLine)
-								{
-                                    double srcWeight = 1.0 - Math.Abs(realTopLine - j) / Math.Ceiling(overlapAmount);
-								    double destWeight = (1.0 - srcWeight);
-									for (int k = 0; k < Width; k++)
-									{
-										uint[] s = new uint[4];
-										uint[] d = new uint[4];
-
-									    s[0] = (ptrSrc[j*Width + k] & 0xFF000000) >> 24;
-										s[1] = (ptrSrc[j*Width + k] & 0x00FF0000) >> 16;
-										s[2] = (ptrSrc[j*Width + k] & 0x0000FF00) >> 8;
-										s[3] = ptrSrc[j*Width + k] & 0x000000FF;
-
-										d[0] = (ptrDst[j*Width + k] & 0xFF000000) >> 24;
-										d[1] = (ptrDst[j*Width + k] & 0x00FF0000) >> 16;
-										d[2] = (ptrDst[j*Width + k] & 0x0000FF00) >> 8;
-										d[3] = ptrDst[j*Width + k] & 0x000000FF;
-
-										d[0] = (uint) (s[0]*srcWeight + d[0]*destWeight);
-										d[1] = (uint) (s[1]*srcWeight + d[1]*destWeight);
-										d[2] = (uint) (s[2]*srcWeight + d[2]*destWeight);
-										d[3] = (uint) (s[3]*srcWeight + d[3]*destWeight);
-
-									    ptrDst[j*Width + k] = (d[0] << 24) | (d[1] << 16) | (d[2] << 8) | d[3];
-									}
-								}
-								else
-									for (int k = 0; k < Width; k++)
-										ptrDst[j*Width + k] = ptrSrc[j*Width + k];
-							}
-						}
-						part.UnlockBits(src);
-						part.Dispose();
-					}
-					catch (Exception ex)
-					{
-						Debug.WriteLine("Error joining the split images: " + ex);
-					}
-				}
-            	fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, Prefix, StartFrame, ext, sliceNumber);
-                fullFrame.UnlockBits(dst);
-                fullFrame.Save(fname);
-                fullFrame.Dispose();
+                // Delete intermediate files if needed
+                if (DeleteSplitFrames && mergeFailed == false)
+                {
+                    for (int i = 0; i < SlicesAcross * SlicesDown; i++)
+                    {
+                        File.Delete(string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + Prefix, StartFrame, ext));
+                        File.Delete(string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + AlphaPrefix, StartFrame, ext));
+                    }
+                }
                 Log += DateTime.Now.ToLongTimeString() + " Full frame " + StartFrame + " reconstructed.\n";
-                RenderedFrames.Add(new FinishedFrame(SceneId,fname));
+                RenderedFrames.Add(new FinishedFrame(SceneId, fname));
 
                 return fname;
             }
@@ -508,8 +599,10 @@ namespace RemoteExecution
             string sImageFormat = ServerServices.Configs[Config].ImageFormats[ImageFormat];
             string ext = sImageFormat.Substring(sImageFormat.IndexOf('(')+1, (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('('))-1);
             string myPrefix = Prefix;
-            if (Slices > 1)
+            
+            if (SlicesDown * SlicesAcross > 1)            
                 myPrefix = "slice_" + sliceNumber + "_" + Prefix;
+            
             string fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, myPrefix, frame, ext);
 
             File.WriteAllBytes(fname, img);
@@ -523,8 +616,10 @@ namespace RemoteExecution
             string sImageFormat = ServerServices.Configs[Config].ImageFormats[AlphaImageFormat];
             string ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1, (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
             string myPrefix = AlphaPrefix;
-            if (Slices > 1)
+
+            if (SlicesDown * SlicesAcross > 1)            
                 myPrefix = "slice_" + sliceNumber + "_" + AlphaPrefix;
+            
             string fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, myPrefix, frame, ext);
 
             File.WriteAllBytes(fname, img);

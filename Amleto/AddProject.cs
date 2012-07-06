@@ -135,15 +135,17 @@ namespace Amleto
             AlphaImageFormat.SelectedIndex = project.AlphaImageFormat;
             listOuputFormat.SelectedIndex = project.FileNameFormat;
 
-            textStartFrame.Text = "" + project.StartFrame;
-            textEndFrame.Text = "" + project.EndFrame;
-            textFrameStep.Text = "" + project.FrameSteps;
-            imageWidth.Text = "" + project.Width;
-            imageHeight.Text = "" + project.Height;
-            renderBlock.Text = "" + project.Block;
-            imageAspect.Text = "" + project.Aspect;
-            nbSlices.Text = "" + project.Slices;
-            slicesOverlap.Text = "" + project.Overlap;
+            textStartFrame.Text = project.StartFrame.ToString();
+            textEndFrame.Text = project.EndFrame.ToString();
+            textFrameStep.Text = project.FrameSteps.ToString();
+            imageWidth.Text = project.Width.ToString();
+            imageHeight.Text = project.Height.ToString();
+            renderBlock.Text = project.Block.ToString();
+            imageAspect.Text = project.Aspect.ToString();
+            slicesDown.Text = project.SlicesDown.ToString();
+            slicesAcross.Text = project.SlicesAcross.ToString();
+            slicesOverlap.Text = project.Overlap.ToString();
+            deleteSplitFrames.Checked = project.DeleteSplitFrames;
 
             renderMode.SelectedIndex = project.RenderMode;
             traceShadow.Checked = (project.RenderEffect & 1) != 0;
@@ -161,17 +163,21 @@ namespace Amleto
 
             if (project.StartFrame == project.EndFrame)
             {
-                nbSlices.Enabled = true;
+                slicesDown.Enabled = true;
+                slicesAcross.Enabled = true;
                 slicesOverlap.Enabled = true;
                 lblNbSlices.Enabled = true;
                 lblSlicesOverlap.Enabled = true;
+                deleteSplitFrames.Enabled = true;
             }
             else
             {
-                nbSlices.Enabled = false;
+                slicesDown.Enabled = false;
+                slicesAcross.Enabled = false;
                 slicesOverlap.Enabled = false;
                 lblNbSlices.Enabled = false;
                 lblSlicesOverlap.Enabled = false;
+                deleteSplitFrames.Enabled = false;
             }
 
             masterList.Items.Clear();
@@ -312,8 +318,10 @@ namespace Amleto
             project.Width = Convert.ToInt32(imageWidth.Text);
             project.Height = Convert.ToInt32(imageHeight.Text);
             project.Block = Convert.ToInt32(renderBlock.Text);
-            project.Slices = Convert.ToInt32(nbSlices.Text);
+            project.SlicesDown = Convert.ToInt32(slicesDown.Text);
+            project.SlicesAcross = Convert.ToInt32(slicesAcross.Text);
             project.Overlap = Convert.ToInt32(slicesOverlap.Text);
+            project.DeleteSplitFrames = deleteSplitFrames.Checked;
             project.ReconFilter = reconFilter.SelectedIndex;
             project.AdaptiveSampling = (adaptiveSampling.Checked ? 1 : 0);
             project.FilterType = (softFilter.Checked ? 1 : 0);
@@ -444,8 +452,10 @@ namespace Amleto
             softFilter.Checked = false;
             renderLine.Checked = false;
             SaveAlpha.Checked = false;
-            nbSlices.Text = "1";
+            slicesDown.Text = "1";
+            slicesAcross.Text = "1";
             slicesOverlap.Text = "5";
+            deleteSplitFrames.Checked = false;
 
             imageAspect.Text = "1.0";
 
@@ -705,18 +715,23 @@ namespace Amleto
 
             if (textStartFrame.Text == textEndFrame.Text)
             {
-                nbSlices.Enabled = true;
+                slicesDown.Enabled = true;
+                slicesAcross.Enabled = true;
                 slicesOverlap.Enabled = true;
                 lblNbSlices.Enabled = true;
                 lblSlicesOverlap.Enabled = true;
+                deleteSplitFrames.Enabled = true;
             }
             else
             {
-                nbSlices.Text = "1";
-                nbSlices.Enabled = false;
+                slicesDown.Text = "1";
+                slicesAcross.Text = "1";
+                slicesDown.Enabled = false;
+                slicesAcross.Enabled = false;
                 slicesOverlap.Enabled = false;
                 lblNbSlices.Enabled = false;
                 lblSlicesOverlap.Enabled = false;
+                deleteSplitFrames.Enabled = false;
             }
 
             try
@@ -811,18 +826,24 @@ namespace Amleto
 
             if (a == b)
             {
-                nbSlices.Enabled = true;
+                slicesDown.Enabled = true;
+                slicesAcross.Enabled = true;
                 slicesOverlap.Enabled = true;
                 lblNbSlices.Enabled = true;
                 lblSlicesOverlap.Enabled = true;
+                deleteSplitFrames.Enabled = true;
             }
             else
             {
-                nbSlices.Enabled = false;
-                nbSlices.Text = "1";
+                slicesDown.Enabled = false;
+                slicesAcross.Enabled = false;
+                slicesDown.Text = "1";
+                slicesAcross.Text = "1";
+
                 slicesOverlap.Enabled = false;
                 lblNbSlices.Enabled = false;
                 lblSlicesOverlap.Enabled = false;
+                deleteSplitFrames.Enabled = false;
             }
         }
 
@@ -862,18 +883,23 @@ namespace Amleto
 
             if (a == b)
             {
-                nbSlices.Enabled = true;
+                slicesDown.Enabled = true;
+                slicesAcross.Enabled = true;
                 slicesOverlap.Enabled = true;
                 lblNbSlices.Enabled = true;
                 lblSlicesOverlap.Enabled = true;
+                deleteSplitFrames.Enabled = true;
             }
             else
             {
-                nbSlices.Enabled = false;
-                nbSlices.Text = "1";
+                slicesDown.Enabled = false;
+                slicesAcross.Enabled = false;
+                slicesDown.Text = "1";
+                slicesAcross.Text = "1";
                 slicesOverlap.Enabled = false;
                 lblNbSlices.Enabled = false;
                 lblSlicesOverlap.Enabled = false;
+                deleteSplitFrames.Enabled = false;
             }
         }
 
@@ -1192,9 +1218,12 @@ namespace Amleto
 
         private void AddProject_Load(object sender, EventArgs e)
         {
-            nbSlices.Text = "1";
-            nbSlices.Enabled = false;
+            slicesDown.Text = "1";
+            slicesAcross.Text = "1";
+            slicesDown.Enabled = false;
+            slicesAcross.Enabled = false;
             slicesOverlap.Enabled = false;
+            deleteSplitFrames.Enabled = false;
             lblNbSlices.Enabled = false;
             lblSlicesOverlap.Enabled = false;
         }

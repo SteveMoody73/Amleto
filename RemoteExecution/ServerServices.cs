@@ -402,11 +402,13 @@ namespace RemoteExecution
             {
                 lock (Projects)
                 {
-                    if (_currConnection.CurrentRender.Slices > 1)
+                    if (_currConnection.CurrentRender.SlicesDown > 1 || _currConnection.CurrentRender.SlicesAcross > 1)
                         hasSlices = true;
+
                     fname = _currConnection.CurrentRender.FinishFrame(frame, sliceNumber, _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance);
                     if (fname != null)
                         sceneId = _currConnection.CurrentRender.SceneId;
+                    
                     if (_currConnection.CurrentRender.NbRemainingJobs() == 0)
                     {
                         _currConnection.CurrentRender.CloseLogs();
@@ -418,6 +420,7 @@ namespace RemoteExecution
                 AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " uploaded slice " + sliceNumber + " of frame " + frame + ".");
             else
                 AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " uploaded frame " + frame + ".");
+            
             if (fname != null)
             {
                 AddMessage(4, "Frame " + frame + " rebuilt.");

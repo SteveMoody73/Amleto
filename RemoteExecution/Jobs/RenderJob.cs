@@ -39,7 +39,8 @@ namespace RemoteExecution.Jobs
         public int ClientId = -1;
         public List<string> StrippedMaster = new List<string>();
         public int SliceNumber = 1;
-        public int TotalSlices = 1;
+        public int SlicesDown = 1;
+        public int SlicesAcross = 1;
         public double Overlap = 5;
         public int Camera;
         public int SamplingPattern;
@@ -185,14 +186,14 @@ namespace RemoteExecution.Jobs
                     if (line.StartsWith("LimitedRegion "))
                     {
                         // If not split rendering, leave the current settings
-                        if (TotalSlices == 1)
+                        if (SlicesDown == 1 && SlicesAcross == 1)
                             writer.WriteLine(line);
 
                         continue;
                     }
                     if (line.StartsWith("RegionLimits "))
                     {
-                        if (TotalSlices == 1)
+                        if (SlicesDown == 1 && SlicesAcross == 1)
                             writer.WriteLine(line);
 
                         continue;
@@ -200,21 +201,54 @@ namespace RemoteExecution.Jobs
 
                     if (line.StartsWith("Antialiasing "))
                     {
-                        if (TotalSlices > 1)
+                        if (SlicesDown > 1 || SlicesAcross > 1)
                         {
-                            writer.WriteLine("LimitedRegion 1");
-                            double sliceSize = 1.0/(double) TotalSlices;
-                            double overlapAmount = sliceSize*(Overlap/100.0);
-                            double sliceTop = sliceSize*SliceNumber - overlapAmount;
-                            double sliceBottom = sliceSize*SliceNumber + sliceSize + overlapAmount;
+                            writer.WriteLine("LimitedRegion 2");
 
-                            if (sliceTop < 0.0)
-                                sliceTop = 0.0;
-                            if (sliceBottom > 1.0)
-                                sliceBottom = 1.0;
+                            int posX;
+                            int posY;
 
-                            writer.WriteLine("RegionLimits 0 1 " + sliceTop.ToString("F3") + " " +
-                                             sliceBottom.ToString("F3"));
+                            if (SlicesDown > 1 && SlicesAcross > 1)
+                            {
+                                posX = SliceNumber % SlicesAcross;
+                                posY = SliceNumber / SlicesAcross;
+                            }
+                            else if (SlicesDown == 1)
+                            {
+                                posX = SliceNumber;
+                                posY = 0;
+                            }
+                            else
+                            {
+                                posX = 0;
+                                posY = SliceNumber;
+                            }
+
+                            double sizeV = 1.0/SlicesDown;
+                            double sizeH = 1.0/SlicesAcross;
+                            double overlapV = sizeV*(Overlap/100.0);
+                            double overlapH = sizeH*(Overlap/100.0);
+
+                            double sliceLeft = sizeH*posX - overlapH;
+                            double sliceRight = sizeH*posX + sizeH + overlapH;
+                            double sliceTop = sizeV*posY - overlapV;
+                            double sliceBottom = sizeV*posY + sizeV + overlapV;
+
+                            sliceTop = Math.Max(0.0, sliceTop);
+                            sliceBottom = Math.Min(1.0, sliceBottom);
+                            sliceLeft = Math.Max(0.0, sliceLeft);
+                            sliceRight = Math.Min(1.0, sliceRight);
+
+                            writer.WriteLine("RegionLimits " +
+                                sliceLeft.ToString("F3") + " " +
+                                sliceRight.ToString("F3") + " " +
+                                sliceTop.ToString("F3") + " " +
+                                sliceBottom.ToString("F3"));
+                            Debug.WriteLine("RegionLimits " + SliceNumber + " " + posX + "," + posY + " " +
+                                sliceLeft.ToString("F3") + " " +
+                                sliceRight.ToString("F3") + " " +
+                                sliceTop.ToString("F3") + " " +
+                                sliceBottom.ToString("F3"));
                         }
                     }
 

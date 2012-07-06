@@ -61,6 +61,8 @@ namespace Amleto
             this.btnSelectContentDir = new System.Windows.Forms.Button();
             this.btnSelectScene = new System.Windows.Forms.Button();
             this.framesTab = new System.Windows.Forms.TabPage();
+            this.label26 = new System.Windows.Forms.Label();
+            this.slicesAcross = new System.Windows.Forms.TextBox();
             this.textStartFrame = new System.Windows.Forms.TextBox();
             this.textEndFrame = new System.Windows.Forms.TextBox();
             this.textFrameStep = new System.Windows.Forms.TextBox();
@@ -71,7 +73,7 @@ namespace Amleto
             this.label22 = new System.Windows.Forms.Label();
             this.lblNbSlices = new System.Windows.Forms.Label();
             this.lblSplitExplain = new System.Windows.Forms.Label();
-            this.nbSlices = new System.Windows.Forms.TextBox();
+            this.slicesDown = new System.Windows.Forms.TextBox();
             this.slicesOverlap = new System.Windows.Forms.TextBox();
             this.lblSlicesOverlap = new System.Windows.Forms.Label();
             this.masterPluginTab = new System.Windows.Forms.TabPage();
@@ -147,6 +149,8 @@ namespace Amleto
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.btnSaveProject = new System.Windows.Forms.Button();
             this.btnLoadProject = new System.Windows.Forms.Button();
+            this.label27 = new System.Windows.Forms.Label();
+            this.deleteSplitFrames = new System.Windows.Forms.CheckBox();
             this.renderSetupTabs.SuspendLayout();
             this.sceneTab.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -171,7 +175,7 @@ namespace Amleto
             this.btnAdd.Location = new System.Drawing.Point(305, 368);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
-            this.btnAdd.TabIndex = 1;
+            this.btnAdd.TabIndex = 0;
             this.btnAdd.Text = "Add";
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
@@ -182,7 +186,7 @@ namespace Amleto
             this.btnCancel.Location = new System.Drawing.Point(386, 368);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 2;
+            this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -482,6 +486,10 @@ namespace Amleto
             // 
             // framesTab
             // 
+            this.framesTab.Controls.Add(this.deleteSplitFrames);
+            this.framesTab.Controls.Add(this.label27);
+            this.framesTab.Controls.Add(this.label26);
+            this.framesTab.Controls.Add(this.slicesAcross);
             this.framesTab.Controls.Add(this.textStartFrame);
             this.framesTab.Controls.Add(this.textEndFrame);
             this.framesTab.Controls.Add(this.textFrameStep);
@@ -492,7 +500,7 @@ namespace Amleto
             this.framesTab.Controls.Add(this.label22);
             this.framesTab.Controls.Add(this.lblNbSlices);
             this.framesTab.Controls.Add(this.lblSplitExplain);
-            this.framesTab.Controls.Add(this.nbSlices);
+            this.framesTab.Controls.Add(this.slicesDown);
             this.framesTab.Controls.Add(this.slicesOverlap);
             this.framesTab.Controls.Add(this.lblSlicesOverlap);
             this.framesTab.Location = new System.Drawing.Point(4, 22);
@@ -503,12 +511,32 @@ namespace Amleto
             this.framesTab.Text = "Frames";
             this.framesTab.UseVisualStyleBackColor = true;
             // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(60, 193);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(70, 13);
+            this.label26.TabIndex = 28;
+            this.label26.Text = "Slices Across";
+            // 
+            // slicesAcross
+            // 
+            this.slicesAcross.Location = new System.Drawing.Point(136, 190);
+            this.slicesAcross.Name = "slicesAcross";
+            this.slicesAcross.Size = new System.Drawing.Size(50, 20);
+            this.slicesAcross.TabIndex = 4;
+            this.slicesAcross.Text = "1";
+            this.slicesAcross.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.toolTips.SetToolTip(this.slicesAcross, "Number of slices used to\r\nrender this image.\r\nThis is used to render a\r\nsingle im" +
+                    "age on multiple\r\nnodes.");
+            // 
             // textStartFrame
             // 
-            this.textStartFrame.Location = new System.Drawing.Point(74, 30);
+            this.textStartFrame.Location = new System.Drawing.Point(136, 30);
             this.textStartFrame.Name = "textStartFrame";
-            this.textStartFrame.Size = new System.Drawing.Size(79, 20);
-            this.textStartFrame.TabIndex = 21;
+            this.textStartFrame.Size = new System.Drawing.Size(50, 20);
+            this.textStartFrame.TabIndex = 0;
             this.textStartFrame.Text = "0";
             this.textStartFrame.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.textStartFrame, "Define the start frame of the animation.");
@@ -518,8 +546,8 @@ namespace Amleto
             // 
             this.textEndFrame.Location = new System.Drawing.Point(302, 30);
             this.textEndFrame.Name = "textEndFrame";
-            this.textEndFrame.Size = new System.Drawing.Size(79, 20);
-            this.textEndFrame.TabIndex = 23;
+            this.textEndFrame.Size = new System.Drawing.Size(50, 20);
+            this.textEndFrame.TabIndex = 1;
             this.textEndFrame.Text = "60";
             this.textEndFrame.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.textEndFrame, "Defines the end frame of the animation.");
@@ -527,10 +555,10 @@ namespace Amleto
             // 
             // textFrameStep
             // 
-            this.textFrameStep.Location = new System.Drawing.Point(74, 60);
+            this.textFrameStep.Location = new System.Drawing.Point(136, 60);
             this.textFrameStep.Name = "textFrameStep";
-            this.textFrameStep.Size = new System.Drawing.Size(79, 20);
-            this.textFrameStep.TabIndex = 25;
+            this.textFrameStep.Size = new System.Drawing.Size(50, 20);
+            this.textFrameStep.TabIndex = 2;
             this.textFrameStep.Text = "1";
             this.textFrameStep.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.textFrameStep, "Define how many frames need to be\r\nskiped bettween one frame an\r\nthe other (1 mea" +
@@ -540,18 +568,18 @@ namespace Amleto
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(25, 63);
+            this.label6.Location = new System.Drawing.Point(96, 63);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(37, 13);
+            this.label6.Size = new System.Drawing.Size(34, 13);
             this.label6.TabIndex = 24;
-            this.label6.Text = "Steps:";
+            this.label6.Text = "Steps";
             // 
             // renderBlock
             // 
             this.renderBlock.Location = new System.Drawing.Point(302, 60);
             this.renderBlock.Name = "renderBlock";
-            this.renderBlock.Size = new System.Drawing.Size(79, 20);
-            this.renderBlock.TabIndex = 27;
+            this.renderBlock.Size = new System.Drawing.Size(50, 20);
+            this.renderBlock.TabIndex = 3;
             this.renderBlock.Text = "5";
             this.renderBlock.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.renderBlock, "Defines how many frames\r\nwill be rendered before\r\nbeeing sent back to the\r\nserver" +
@@ -562,38 +590,38 @@ namespace Amleto
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(25, 33);
+            this.label4.Location = new System.Drawing.Point(101, 33);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(32, 13);
+            this.label4.Size = new System.Drawing.Size(29, 13);
             this.label4.TabIndex = 20;
-            this.label4.Text = "Start:";
+            this.label4.Text = "Start";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(222, 33);
+            this.label5.Location = new System.Drawing.Point(270, 33);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(29, 13);
+            this.label5.Size = new System.Drawing.Size(26, 13);
             this.label5.TabIndex = 22;
-            this.label5.Text = "End:";
+            this.label5.Text = "End";
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(222, 63);
+            this.label22.Location = new System.Drawing.Point(225, 63);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(74, 13);
+            this.label22.Size = new System.Drawing.Size(71, 13);
             this.label22.TabIndex = 26;
-            this.label22.Text = "Render block:";
+            this.label22.Text = "Render block";
             // 
             // lblNbSlices
             // 
             this.lblNbSlices.AutoSize = true;
-            this.lblNbSlices.Location = new System.Drawing.Point(25, 165);
+            this.lblNbSlices.Location = new System.Drawing.Point(64, 219);
             this.lblNbSlices.Name = "lblNbSlices";
-            this.lblNbSlices.Size = new System.Drawing.Size(38, 13);
+            this.lblNbSlices.Size = new System.Drawing.Size(66, 13);
             this.lblNbSlices.TabIndex = 15;
-            this.lblNbSlices.Text = "Slices:";
+            this.lblNbSlices.Text = "Slices Down";
             // 
             // lblSplitExplain
             // 
@@ -604,24 +632,24 @@ namespace Amleto
             this.lblSplitExplain.TabIndex = 14;
             this.lblSplitExplain.Text = "Split rendering (one frame over multiple nodes)";
             // 
-            // nbSlices
+            // slicesDown
             // 
-            this.nbSlices.Location = new System.Drawing.Point(74, 162);
-            this.nbSlices.Name = "nbSlices";
-            this.nbSlices.Size = new System.Drawing.Size(79, 20);
-            this.nbSlices.TabIndex = 16;
-            this.nbSlices.Text = "1";
-            this.nbSlices.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.toolTips.SetToolTip(this.nbSlices, "Number of slices used to\r\nrender this image.\r\nThis is used to render a\r\nsingle im" +
+            this.slicesDown.Location = new System.Drawing.Point(136, 216);
+            this.slicesDown.Name = "slicesDown";
+            this.slicesDown.Size = new System.Drawing.Size(50, 20);
+            this.slicesDown.TabIndex = 5;
+            this.slicesDown.Text = "1";
+            this.slicesDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.toolTips.SetToolTip(this.slicesDown, "Number of slices used to\r\nrender this image.\r\nThis is used to render a\r\nsingle im" +
                     "age on multiple\r\nnodes.");
-            this.nbSlices.Validating += new System.ComponentModel.CancelEventHandler(this.positiveNumber_Validating);
+            this.slicesDown.Validating += new System.ComponentModel.CancelEventHandler(this.positiveNumber_Validating);
             // 
             // slicesOverlap
             // 
-            this.slicesOverlap.Location = new System.Drawing.Point(302, 162);
+            this.slicesOverlap.Location = new System.Drawing.Point(302, 190);
             this.slicesOverlap.Name = "slicesOverlap";
-            this.slicesOverlap.Size = new System.Drawing.Size(79, 20);
-            this.slicesOverlap.TabIndex = 18;
+            this.slicesOverlap.Size = new System.Drawing.Size(50, 20);
+            this.slicesOverlap.TabIndex = 6;
             this.slicesOverlap.Text = "5";
             this.slicesOverlap.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.slicesOverlap, "Defines in percent how much\r\noverlap there is between\r\nthe different slices.");
@@ -630,11 +658,11 @@ namespace Amleto
             // lblSlicesOverlap
             // 
             this.lblSlicesOverlap.AutoSize = true;
-            this.lblSlicesOverlap.Location = new System.Drawing.Point(222, 165);
+            this.lblSlicesOverlap.Location = new System.Drawing.Point(235, 193);
             this.lblSlicesOverlap.Name = "lblSlicesOverlap";
-            this.lblSlicesOverlap.Size = new System.Drawing.Size(64, 13);
+            this.lblSlicesOverlap.Size = new System.Drawing.Size(61, 13);
             this.lblSlicesOverlap.TabIndex = 17;
-            this.lblSlicesOverlap.Text = "Overlap (%):";
+            this.lblSlicesOverlap.Text = "Overlap (%)";
             // 
             // masterPluginTab
             // 
@@ -1506,6 +1534,28 @@ namespace Amleto
             this.btnLoadProject.UseVisualStyleBackColor = true;
             this.btnLoadProject.Click += new System.EventHandler(this.btnLoadProject_Click);
             // 
+            // label27
+            // 
+            this.label27.Location = new System.Drawing.Point(27, 146);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(392, 32);
+            this.label27.TabIndex = 29;
+            this.label27.Text = "If using the split rendering option, make sure that your image format PNG, BMP or" +
+                " JPG otherwise combining image pieces at the end of rendering will fail.";
+            // 
+            // deleteSplitFrames
+            // 
+            this.deleteSplitFrames.AutoSize = true;
+            this.deleteSplitFrames.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.deleteSplitFrames.Location = new System.Drawing.Point(235, 219);
+            this.deleteSplitFrames.Name = "deleteSplitFrames";
+            this.deleteSplitFrames.Size = new System.Drawing.Size(117, 17);
+            this.deleteSplitFrames.TabIndex = 30;
+            this.deleteSplitFrames.Text = "Delete Split Images";
+            this.toolTips.SetToolTip(this.deleteSplitFrames, "This will remove the split image files once they have been joined into final imag" +
+                    "e");
+            this.deleteSplitFrames.UseVisualStyleBackColor = true;
+            // 
             // AddProject
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1522,7 +1572,7 @@ namespace Amleto
             this.Name = "AddProject";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Add project to the queue";
+            this.Text = "1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddProject_FormClosing);
             this.Load += new System.EventHandler(this.AddProject_Load);
             this.renderSetupTabs.ResumeLayout(false);
@@ -1670,9 +1720,13 @@ namespace Amleto
 		private System.Windows.Forms.Label label22;
 		private System.Windows.Forms.Label lblNbSlices;
 		private System.Windows.Forms.Label lblSplitExplain;
-		private System.Windows.Forms.TextBox nbSlices;
+		private System.Windows.Forms.TextBox slicesDown;
 		private System.Windows.Forms.TextBox slicesOverlap;
 		private System.Windows.Forms.Label lblSlicesOverlap;
         private System.Windows.Forms.CheckBox OverwriteFrames;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.TextBox slicesAcross;
+        private System.Windows.Forms.CheckBox deleteSplitFrames;
+        private System.Windows.Forms.Label label27;
     }
 }
