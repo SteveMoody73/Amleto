@@ -35,17 +35,24 @@ namespace RemoteExecution.Jobs
                     needToDownload = true;
             }
             
-            if(needToDownload)
+            if (needToDownload)
             {
-                messageBack(0,"Downloading " + _remoteFile);
-                byte[] res = Server.GetFile(FileType.Absolute, _remoteFile);
-                FileStream stream = File.Create(ClientServices.ClientDir + "\\Content\\" + _localFile, res.Length);
-                stream.Write(res, 0, res.Length);
-                stream.Close();
-                stream.Dispose();
-                FileInfo f = new FileInfo(ClientServices.ClientDir + "\\Content\\" + _localFile);
-                f.LastWriteTimeUtc=_modDate;
-                messageBack(0,"Saved at " + _localFile);
+                try
+                {
+                    messageBack(0, "Downloading " + _remoteFile);
+                    byte[] res = Server.GetFile(FileType.Absolute, _remoteFile);
+                    FileStream stream = File.Create(ClientServices.ClientDir + "\\Content\\" + _localFile, res.Length);
+                    stream.Write(res, 0, res.Length);
+                    stream.Close();
+                    stream.Dispose();
+                    FileInfo f = new FileInfo(ClientServices.ClientDir + "\\Content\\" + _localFile);
+                    f.LastWriteTimeUtc = _modDate;
+                    messageBack(0, "Saved at " + _localFile);
+                }
+                catch (Exception e)
+                {
+                    messageBack(0, "Error Transferring file: " + e.ToString());
+                }
             }
         }
     }
