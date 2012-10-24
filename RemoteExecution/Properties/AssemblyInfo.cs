@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("RemoteExecution")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("virtualcoder.co.uk")]
 [assembly: AssemblyProduct("RemoteExecution")]
-[assembly: AssemblyCopyright("Copyright ©  2007-2011")]
+[assembly: AssemblyCopyright("Copyright © 2003-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
