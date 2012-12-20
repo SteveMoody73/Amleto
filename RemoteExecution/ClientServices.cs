@@ -19,7 +19,6 @@ namespace RemoteExecution
 		public static event StatusStringChange MessageConsumer;
 
 		private static bool _isWorking;
-        private static bool _isService;
 
     	public static Process CurrentRenderProcess { get; set; }
 		public static ClientServices CurrentInstance { get; set; }
@@ -74,8 +73,6 @@ namespace RemoteExecution
             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator = "'";
 
-    	    _isService = true;
-
             RestoreSettings();
 
             IsRunning = true;
@@ -118,10 +115,8 @@ namespace RemoteExecution
         {
             try
             {
-                if (_isService)
-                    ClientDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Amleto\\Cache";
-                else
-                    ClientDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Amleto\\Cache";
+                ClientDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+                ClientDir = Path.Combine(ClientDir, "Cache");
 
             	var openSubKey = Registry.CurrentUser.OpenSubKey("Software");
             	if (openSubKey != null)
