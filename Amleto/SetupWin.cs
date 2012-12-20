@@ -542,7 +542,7 @@ namespace Amleto
 
         private void SelectLogFile_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
+            SaveFileDialog dialog = new SaveFileDialog();
             
 			dialog.Filter = "Log Files|*.log|All Files|*.*";
             dialog.InitialDirectory =  Path.GetDirectoryName(textLogFile.Text);
