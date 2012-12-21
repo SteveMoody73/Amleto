@@ -118,7 +118,7 @@ namespace RemoteExecution
                 ClientDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
                 ClientDir = Path.Combine(ClientDir, "Cache");
 
-            	var openSubKey = Registry.CurrentUser.OpenSubKey("Software");
+            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE");
             	if (openSubKey != null)
             	{
             		RegistryKey key = openSubKey.OpenSubKey("Amleto3");
@@ -173,7 +173,7 @@ namespace RemoteExecution
         {
             try
             {
-            	var openSubKey = Registry.CurrentUser.OpenSubKey("Software", true);
+            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
             	if (openSubKey != null)
             	{
             		RegistryKey key = openSubKey.CreateSubKey("Amleto3");
@@ -270,7 +270,7 @@ namespace RemoteExecution
             // Now set as default
             try
             {
-            	var openSubKey = Registry.CurrentUser.OpenSubKey("Software", true);
+            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
             	if (openSubKey != null)
             	{
             		RegistryKey key = openSubKey.CreateSubKey("Amleto3");

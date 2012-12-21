@@ -347,7 +347,7 @@ namespace RemoteExecution
             RegistryKey key = null;
             try
             {
-            	var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
+            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
             	if (openSubKey != null)
             		key = openSubKey.CreateSubKey("Amleto3");
             }
@@ -455,7 +455,7 @@ namespace RemoteExecution
 
         public void SaveSettings()
         {
-        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("Software", true);
+        	RegistryKey openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
         	if (openSubKey != null)
         	{
         		RegistryKey key = openSubKey.CreateSubKey("Amleto3");
@@ -516,7 +516,7 @@ namespace RemoteExecution
             if (_strippedMaster.Contains(s))
                 return;
             _strippedMaster.Add(s);
-        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
+        	RegistryKey openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
         	if (openSubKey != null)
         	{
         		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto3");
@@ -537,7 +537,7 @@ namespace RemoteExecution
             if (!_strippedMaster.Contains(s))
                 return;
             _strippedMaster.Remove(s);
-        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
+        	RegistryKey openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
         	if (openSubKey != null)
         	{
         		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto3");
