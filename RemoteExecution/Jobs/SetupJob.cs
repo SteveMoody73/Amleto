@@ -11,32 +11,35 @@ namespace RemoteExecution.Jobs
         {
             messageBack(0,"Check files to setup...");
             Server.SetCurrentJob("Setting up client.");
+            
             List<string> progs = Server.GetSetupFileList();
+            List<string> support = Server.GetSupportFileList();
             List<string> plugins = Server.GetPluginFileList();
             List<string> config = Server.GetConfigFileList();
+
             lock (jobs)
             {
+                string localPath = Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName);
                 foreach (string s in progs)
                 {
-                    if (!File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Program\\" + s))
+                    if (!File.Exists(Path.Combine(Path.Combine(localPath, "Program"), s)))
                         jobs.Enqueue(new DownloadProgJob(s,false));
+                }
+                foreach (string s in support)
+                {
+                    if (!File.Exists(Path.Combine(Path.Combine(localPath, "Support"), s)))
+                        jobs.Enqueue(new DownloadSupportJob(s, false));
                 }
                 foreach (string s in plugins)
                 {
-                    if (!File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Plugin\\" + s))
+                    if (!File.Exists(Path.Combine(Path.Combine(localPath, "Plugins"), s)))
                         jobs.Enqueue(new DownloadPluginJob(s, false));
                 }
                 foreach (string s in config)
                 {
-					if (s.ToUpper().EndsWith("LW11-64.CFG") ||
-						s.ToUpper().EndsWith("LW11.CFG") || 
-						s.ToUpper().EndsWith("LW10-64.CFG") ||
-						s.ToUpper().EndsWith("LW10.CFG") || 						
-						s.ToUpper().EndsWith("LW9.CFG") || 
-						s.ToUpper().EndsWith("LW9-64.CFG") || 
-						s.ToUpper().EndsWith("LW8.CFG") || 
-						s.ToUpper().EndsWith("LW3.CFG") || 
-						!File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + s))
+                    string path = Path.Combine(localPath, "Config");
+                    string file = Path.Combine(path, s);
+                    if (!File.Exists(Path.Combine(Path.Combine(localPath, "Config"), s)))
                         jobs.Enqueue(new DownloadConfigJob(s));
                 }
                 jobs.Enqueue(new ClientReadyJob());

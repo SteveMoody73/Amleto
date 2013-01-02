@@ -15,58 +15,47 @@ namespace RemoteExecution
 {
     public class ClientServices
     {
-		public delegate void StatusStringChange(string msg);
-		public static event StatusStringChange MessageConsumer;
+        public delegate void StatusStringChange(string msg);
 
-		private static bool _isWorking;
+        public static event StatusStringChange MessageConsumer;
 
-    	public static Process CurrentRenderProcess { get; set; }
-		public static ClientServices CurrentInstance { get; set; }
-		public static List<string> OldMessages { get; set; }
+        private static bool _isWorking;
 
-		public static ProcessPriorityClass RenderPriority { get; set; }
-		public static string ClientDir { get; set; }
-		public static string ServerHost { get; set; }
-		public static string LogFile { get; set; }
-		public static string ConfigName { get; set; }
-		public static bool AutoServerFinder { get; set; }
-		public static bool IsRunning { get; set; }
-		public static int ServerPort { get; set; }
-		public static int NumThreads { get; set; }
-		public static int MemorySegment { get; set; }
+        public static Process CurrentRenderProcess { get; set; }
+        public static ClientServices CurrentInstance { get; set; }
+        public static List<string> OldMessages { get; set; }
 
-        ServerServices _server;
-        Queue<Job> _jobs = new Queue<Job>();
-        Thread _jobConsumer;
-        Thread _jobPumper;
-        bool _setupToDo = true;
-        bool _readyToStart;
-        Stopwatch _setupTime = new Stopwatch();
-        TcpChannel _channel;
-        object _lockCheckWorking = new object();
+        public static string ConfigName { get; set; }
+        public static bool IsRunning { get; set; }
+        public static ClientSettings Settings;
+
+        private ServerServices _server;
+        private Queue<Job> _jobs = new Queue<Job>();
+        private Thread _jobConsumer;
+        private Thread _jobPumper;
+        private bool _setupToDo = true;
+        private bool _readyToStart;
+        private Stopwatch _setupTime = new Stopwatch();
+        private TcpChannel _channel;
+        private object _lockCheckWorking = new object();
+
 
         public ClientServices()
         {
             CurrentInstance = this;
         }
 
-    	static ClientServices()
-    	{
-    		OldMessages = new List<string>();
-    		RenderPriority = ProcessPriorityClass.Normal;
-    		ServerHost = "localhost";
-    		LogFile = "";
-    		ConfigName = "";
-    		AutoServerFinder = true;
-    		IsRunning = true;
-    		ServerPort = 2080;
-            NumThreads = Environment.ProcessorCount;
-    		MemorySegment = 128;
-    		CurrentInstance = null;
-    		CurrentRenderProcess = null;
-    	}
+        static ClientServices()
+        {
+            OldMessages = new List<string>();
+            ConfigName = "";
+            IsRunning = true;
+            CurrentInstance = null;
+            CurrentRenderProcess = null;
+            Settings = new ClientSettings();
+        }
 
-    	public void StartService()
+        public void StartService()
         {
             Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en");
@@ -86,7 +75,7 @@ namespace RemoteExecution
 
             if (_jobConsumer != null)
                 _jobConsumer.Abort();
-			_jobConsumer = new Thread(JobsExecuter);
+            _jobConsumer = new Thread(JobsExecuter);
             _jobConsumer.IsBackground = true;
             _jobConsumer.Start();
 
@@ -96,74 +85,25 @@ namespace RemoteExecution
             _jobPumper.IsBackground = true;
             _jobPumper.Start();
 
-            if (AutoServerFinder)
+            if (Settings.AutoServerFinder)
             {
-                AddMessage(0,"Searching for Amleto server...");
+                AddMessage(0, "Searching for Amleto server...");
                 ThreadPool.QueueUserWorkItem(SearchServer);
             }
             else
             {
-                AddMessage(0,"Attempting to connect to server " + ServerHost + " on port " + ServerPort);
+                AddMessage(0,
+                           "Attempting to connect to server " + Settings.ServerHost + " on port " + Settings.ServerPort);
                 ThreadPool.QueueUserWorkItem(ConnectToServer);
             }
         }
 
-		/// <summary>
-		/// Gets the configuration settings from the registry
-		/// </summary>
+        /// <summary>
+        /// Gets the configuration settings from the registry
+        /// </summary>
         public static void RestoreSettings()
         {
-            try
-            {
-                ClientDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-                ClientDir = Path.Combine(ClientDir, "Cache");
-
-            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE");
-            	if (openSubKey != null)
-            	{
-            		RegistryKey key = openSubKey.OpenSubKey("Amleto3");
-            
-            		if (key == null)
-            			return;
-                
-            		if (key.GetValue("ClientDir") != null)
-            			ClientDir = (string)key.GetValue("ClientDir");
-                
-            		AutoServerFinder = true;
-                
-            		if (key.GetValue("AutoServerFinder") != null && ((string)key.GetValue("AutoServerFinder")) == "False")
-            			AutoServerFinder = false;
-
-            		ServerHost = "localhost";
-            		ServerPort = 2080;
-                
-            		if (key.GetValue("ServerHost") != null)
-            			ServerHost = (string) key.GetValue("ServerHost");
-                
-            		if (key.GetValue("ServerPort") != null)
-            			ServerPort = (int)key.GetValue("ServerPort");
-                
-            		RenderPriority = ProcessPriorityClass.Normal;
-                
-            		if(key.GetValue("RenderPriority") != null)
-            			RenderPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)key.GetValue("RenderPriority"));
-                
-            		if (key.GetValue("ClientLogFile") != null)
-            			LogFile = (string)key.GetValue("ClientLogFile");
-                
-            		if (key.GetValue("NumberThreads") != null)
-            			NumThreads = (int)key.GetValue("NumberThreads");
-                
-            		if (key.GetValue("MemorySegment") != null)
-            			MemorySegment = (int)key.GetValue("MemorySegment");
-                
-            		key.Close();
-            	}
-            }
-            catch (Exception ex)
-            {
-				Debug.WriteLine("Error while restoring settings: " + ex);
-            }
+            Settings = ClientSettings.LoadSettings();
         }
 
         /// <summary>
@@ -171,138 +111,99 @@ namespace RemoteExecution
         /// </summary>
         public static void SaveSettings()
         {
-            try
-            {
-            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
-            	if (openSubKey != null)
-            	{
-            		RegistryKey key = openSubKey.CreateSubKey("Amleto3");
-            		if (key != null)
-            		{
-            			key.SetValue("ClientDir", ClientDir);
-            			key.SetValue("AutoServerFinder", AutoServerFinder);
-            			key.SetValue("ServerHost", ServerHost);
-            			key.SetValue("ServerPort", ServerPort);
-            			key.SetValue("RenderPriority", RenderPriority.ToString());
-            			key.SetValue("ClientLogFile", LogFile);
-            			key.SetValue("NumberThreads", NumThreads);
-            			key.SetValue("MemorySegment", MemorySegment);
-            			key.Close();
-            		}
-            	}
-            }
-            catch (Exception ex)
-			{
-				Debug.WriteLine("Error while saving settings: " + ex);
-			}
-		}
+            ClientSettings.SaveSettings(Settings);
+        }
 
 
-        public static void AddMessage(int icon,string msg)
+        public static void AddMessage(int icon, string msg)
         {
-            string fullMsg = icon + "|" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "|" + msg;
-            if (LogFile != "")
+            string fullMsg = icon + "|" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() +
+                             "|" + msg;
+            if (Settings.SaveToLog && Settings.LogFile != "")
             {
                 try
                 {
-                    File.AppendAllText(LogFile, fullMsg+"\r\n");
+                    File.AppendAllText(Settings.LogFile, fullMsg + "\r\n");
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine("Unable to write to log file: " + ex);
+                    Debug.WriteLine("Unable to write to log file: " + ex);
                 }
             }
 
-			while (OldMessages.Count > 300)
+            while (OldMessages.Count > 300)
                 OldMessages.RemoveAt(0);
-            
-			OldMessages.Add(fullMsg);
-            
-			if (MessageConsumer != null)
+
+            OldMessages.Add(fullMsg);
+
+            if (MessageConsumer != null)
             {
                 foreach (Delegate d in MessageConsumer.GetInvocationList())
                 {
                     try
                     {
-                        d.DynamicInvoke(new object[] { fullMsg });
+                        d.DynamicInvoke(new object[] {fullMsg});
                     }
-					catch (Exception ex)
-					{
-						Debug.WriteLine("Delegate error: " + ex);
-					}
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Delegate error: " + ex);
+                    }
                 }
             }
         }
 
-        static public void SetRenderProcess(Process p)
+        public static void SetRenderProcess(Process p)
         {
             CurrentRenderProcess = p;
         }
 
-        static public void KillRenderProcess()
+        public static void KillRenderProcess()
         {
             try
             {
                 if (CurrentRenderProcess != null)
                     CurrentRenderProcess.Kill();
             }
-			catch (Exception ex)
-			{
-				Debug.WriteLine("Error Killing render process: " + ex);
-			}
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error Killing render process: " + ex);
+            }
 
             try
             {
                 CurrentRenderProcess = null;
             }
-			catch (Exception ex)
-			{
-				Debug.WriteLine("Error setting null render process: "  + ex);
-			}
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error setting null render process: " + ex);
+            }
         }
 
-        static public void SetRenderProcessPriority(ProcessPriorityClass newPriority)
+        public static void SetRenderProcessPriority(ProcessPriorityClass newPriority)
         {
             if (CurrentRenderProcess != null)
                 CurrentRenderProcess.PriorityClass = newPriority;
-            RenderPriority = newPriority;
+            Settings.RenderPriority = newPriority;
 
             // Now set as default
-            try
-            {
-            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
-            	if (openSubKey != null)
-            	{
-            		RegistryKey key = openSubKey.CreateSubKey("Amleto3");
-            		if (key != null)
-            		{
-   						key.SetValue("RenderPriority", RenderPriority.ToString());
-            			key.Close();
-            		}
-            	}
-            }
-            catch (Exception ex)
-			{
-				Debug.WriteLine("Error setting render process priority: " + ex);
-			}
-
+            SaveSettings();
         }
 
         private void SearchServer(object obj)
         {
             BroadcastFinder finder = new BroadcastFinder();
-            ServerPort = finder.Port;
-            ServerHost = finder.Server;
-            if (ServerHost == "")
+            Settings.ServerPort = finder.Port;
+            Settings.ServerHost = finder.Server;
+            if (Settings.ServerHost == "")
             {
                 AddMessage(1, "Amleto server has not been found.");
                 AddMessage(1, "Check that your firewall allows access to port 61111 on the server");
                 AddMessage(1, "and the server is currently running");
             }
             else
-                AddMessage(0,"Found Amleto server at " + ServerHost + " on port " + ServerPort);
+                AddMessage(0, "Found Amleto server at " + Settings.ServerHost + " on port " + Settings.ServerPort);
 
-            AddMessage(0,"Attempting to connect to the Server.");
+            AddMessage(0, "Attempting to connect to the Server.");
             ThreadPool.QueueUserWorkItem(ConnectToServer);
         }
 
@@ -340,13 +241,13 @@ namespace RemoteExecution
             return localIP;
         }
 
-	   	private void ConnectToServer(object obj)
+        private void ConnectToServer(object obj)
         {
-            if (ServerHost == "" || AutoServerFinder)
+            if (Settings.ServerHost == "" || Settings.AutoServerFinder)
             {
                 BroadcastFinder finder = new BroadcastFinder();
-                ServerPort = finder.Port;
-                ServerHost = finder.Server;
+                Settings.ServerPort = finder.Port;
+                Settings.ServerHost = finder.Server;
             }
 
             if (_channel == null)
@@ -355,34 +256,41 @@ namespace RemoteExecution
                 ChannelServices.RegisterChannel(_channel, false);
             }
 
-			for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 try
                 {
-                    _server = (ServerServices)Activator.CreateInstance(typeof(ServerServices), null, new object[] { new UrlAttribute("tcp://" + ServerHost + ":" + ServerPort) });
+                    _server =
+                        (ServerServices)
+                        Activator.CreateInstance(typeof (ServerServices), null,
+                                                 new object[]
+                                                     {
+                                                         new UrlAttribute("tcp://" + Settings.ServerHost + ":" +
+                                                                          Settings.ServerPort)
+                                                     });
                     if (_server.IsWorking())
                         break;
                     Thread.Sleep(100);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _server = null;
-					Debug.WriteLine("Could not connect to server: " + ex);
+                    Debug.WriteLine("Could not connect to server: " + ex);
                 }
             }
 
-			if (_server == null)
+            if (_server == null)
             {
                 if (_setupToDo)
-                    AddMessage(1,"Cannot connect to the server. Will retry in 5 seconds.");
-                
-				Thread.Sleep(5000);
+                    AddMessage(1, "Cannot connect to the server. Will retry in 5 seconds.");
+
+                Thread.Sleep(5000);
                 ThreadPool.QueueUserWorkItem(ConnectToServer);
             }
             else
             {
-                _server.RegisterClient(Environment.MachineName, GetIP(), RenderPriority, IntPtr.Size);
-                AddMessage(0,"Connected to the server " + ServerHost + " on port " + ServerPort + ".");
+                _server.RegisterClient(Environment.MachineName, GetIP(), Settings.RenderPriority, IntPtr.Size*8);
+                AddMessage(0, "Connected to the server " + Settings.ServerHost + " on port " + Settings.ServerPort + ".");
                 try
                 {
                     if (_setupToDo)
@@ -427,7 +335,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-						Debug.WriteLine("Error Unregistering server: " + ex);
+                        Debug.WriteLine("Error Unregistering server: " + ex);
                     }
 
                     _server = null;
@@ -452,9 +360,9 @@ namespace RemoteExecution
                         DoSetup();
                     else if (!_readyToStart && !_setupToDo && _jobs.Count == 0)
                     {
-                        AddMessage(0,"Client ready.");
+                        AddMessage(0, "Client ready.");
                         _setupTime.Stop();
-                        AddMessage(0,"Startup and setup took " + _setupTime.Elapsed.TotalSeconds + " sec(s).");
+                        AddMessage(0, "Startup and setup took " + _setupTime.Elapsed.TotalSeconds + " sec(s).");
                         _readyToStart = true;
                     }
                     else if (_jobs.Count > 0)
@@ -475,17 +383,17 @@ namespace RemoteExecution
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine("Retrieving Jobs: " + ex);
                 try
                 {
-                	if (_server != null) _server.KeepAlive();
+                    if (_server != null) _server.KeepAlive();
                 }
                 catch
                 {
                     _server = null;
-                    AddMessage(1,"Lost contact with Server");
+                    AddMessage(1, "Lost contact with Server");
                     ThreadPool.QueueUserWorkItem(ConnectToServer);
                 }
             }
@@ -495,7 +403,7 @@ namespace RemoteExecution
         {
             bool needToSleep = true;
 
-        	Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en");
             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator = "'";
@@ -505,8 +413,8 @@ namespace RemoteExecution
                 if (needToSleep)
                     Thread.Sleep(100);
                 needToSleep = false;
-               
-				Job jobToDo = null;
+
+                Job jobToDo = null;
                 lock (_jobs)
                 {
                     if (_jobs.Count > 0)
@@ -520,14 +428,14 @@ namespace RemoteExecution
                     try
                     {
                         jobToDo.SetServer(_server);
-                        jobToDo.ExecuteJob(AddMessage,_jobs);
+                        jobToDo.ExecuteJob(AddMessage, _jobs);
 
                         lock (_jobs)
                         {
                             // Checks if we have new jobs to do
                             if (_jobs.Count == 0 && _server.HasJobs())
                             {
-                            // If yes, lock the jobs queue and add the new one
+                                // If yes, lock the jobs queue and add the new one
                                 List<Job> newJobs = _server.GetJobs();
                                 foreach (Job j in newJobs)
                                     _jobs.Enqueue(j);
@@ -575,14 +483,33 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error Unregistering server: " + ex);
-			}
+                Debug.WriteLine("Error Unregistering server: " + ex);
+            }
         }
 
         public static void ChangePriority()
         {
             if (CurrentInstance._server != null)
-                CurrentInstance._server.ChangeClientPriority(RenderPriority);
+                CurrentInstance._server.ChangeClientPriority(Settings.RenderPriority);
+        }
+
+        public static string GetClientDir()
+        {
+            return Settings.ClientDir;
+        }
+
+        public static bool IsMainConfig(string filename)
+        {
+            string[] lines = File.ReadAllLines(filename);
+
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("CommandDirectory "))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

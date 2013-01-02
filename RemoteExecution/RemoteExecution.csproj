@@ -52,6 +52,8 @@
     <Compile Include="BroadcastListener.cs" />
     <Compile Include="ClientConnection.cs" />
     <Compile Include="ClientServices.cs" />
+    <Compile Include="ClientSettings.cs" />
+    <Compile Include="Jobs\DownloadSupportJob.cs" />
     <Compile Include="NetworkDrives.cs" />
     <Compile Include="ConfigSet.cs" />
     <Compile Include="EventBridge.cs" />

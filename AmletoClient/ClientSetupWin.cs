@@ -12,18 +12,19 @@ namespace AmletoClient
         public ClientSetupWin()
         {
             InitializeComponent();
-            autoSearch.Checked = ClientServices.AutoServerFinder;
-            serverAddress.Text = ClientServices.ServerHost;
-            serverPort.Text = "" + ClientServices.ServerPort;
-            localScratch.Text = ClientServices.ClientDir;
-            logFile.Text = ClientServices.LogFile;
-            nbThreads.SelectedItem = "" + ClientServices.NumThreads;
-            memorySegment.Text = "" + ClientServices.MemorySegment;
+            autoSearch.Checked = ClientServices.Settings.AutoServerFinder;
+            serverAddress.Text = ClientServices.Settings.ServerHost;
+            serverPort.Text = ClientServices.Settings.ServerPort.ToString();
+            localScratch.Text = ClientServices.Settings.ClientDir;
+            logFile.Text = ClientServices.Settings.LogFile;
+            nbThreads.SelectedItem = ClientServices.Settings.NumThreads.ToString();
+            memorySegment.Text = ClientServices.Settings.MemorySegment.ToString();
+            SaveLog.Checked = ClientServices.Settings.SaveToLog;
 
             renderPriority.Items.AddRange(new[] { "High", "AboveNormal", "Normal", "BelowNormal", "Idle" });
             for (int i = 0; i < renderPriority.Items.Count; i++)
             {
-                if ((string)renderPriority.Items[i] == ClientServices.RenderPriority.ToString())
+                if ((string)renderPriority.Items[i] == ClientServices.Settings.RenderPriority.ToString())
                 {
                     renderPriority.SelectedIndex = i;
                     break;
@@ -33,11 +34,11 @@ namespace AmletoClient
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            ClientServices.AutoServerFinder = autoSearch.Checked;
-            ClientServices.ServerHost = serverAddress.Text;
-            ClientServices.ServerPort = Convert.ToInt32(serverPort.Text);
-            ClientServices.ClientDir = localScratch.Text;
-            ClientServices.RenderPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)renderPriority.SelectedItem);
+            ClientServices.Settings.AutoServerFinder = autoSearch.Checked;
+            ClientServices.Settings.ServerHost = serverAddress.Text;
+            ClientServices.Settings.ServerPort = Convert.ToInt32(serverPort.Text);
+            ClientServices.Settings.ClientDir = localScratch.Text;
+            ClientServices.Settings.RenderPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)renderPriority.SelectedItem);
             try
             {
                 if (logFile.Text != "" && !Directory.GetParent(logFile.Text).Exists)
@@ -49,9 +50,10 @@ namespace AmletoClient
 			}
 
 
-            ClientServices.LogFile = logFile.Text;
-            ClientServices.NumThreads = Convert.ToInt32((string)nbThreads.SelectedItem);
-            ClientServices.MemorySegment = Convert.ToInt32(memorySegment.Text);
+            ClientServices.Settings.LogFile = logFile.Text;
+            ClientServices.Settings.SaveToLog = SaveLog.Checked;
+            ClientServices.Settings.NumThreads = Convert.ToInt32((string)nbThreads.SelectedItem);
+            ClientServices.Settings.MemorySegment = Convert.ToInt32(memorySegment.Text);
             ClientServices.ChangePriority();
             ClientServices.SaveSettings();
             DialogResult = DialogResult.OK;

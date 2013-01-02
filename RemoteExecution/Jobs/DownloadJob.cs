@@ -22,15 +22,16 @@ namespace RemoteExecution.Jobs
 
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            string baseDir = "" + Directory.GetParent(ClientServices.ClientDir + "\\Content\\" + _localFile);
-            Directory.CreateDirectory(baseDir);
+            string localPath = Path.Combine(ClientServices.GetClientDir(), "Content");
+            string localFile = Path.Combine(localPath, _localFile);
+            Directory.CreateDirectory(localPath);
 
             bool needToDownload = false;
-            if (!File.Exists(ClientServices.ClientDir + "\\Content\\" + _localFile))
+            if (!File.Exists(localFile))
                 needToDownload = true;
             else
             {
-                FileInfo f = new FileInfo(ClientServices.ClientDir + "\\Content\\" + _localFile);
+                FileInfo f = new FileInfo(localFile);
                 if (f.LastWriteTimeUtc != _modDate || f.Length != _size)
                     needToDownload = true;
             }
@@ -41,11 +42,11 @@ namespace RemoteExecution.Jobs
                 {
                     messageBack(0, "Downloading " + _remoteFile);
                     byte[] res = Server.GetFile(FileType.Absolute, _remoteFile);
-                    FileStream stream = File.Create(ClientServices.ClientDir + "\\Content\\" + _localFile, res.Length);
+                    FileStream stream = File.Create(localFile, res.Length);
                     stream.Write(res, 0, res.Length);
                     stream.Close();
                     stream.Dispose();
-                    FileInfo f = new FileInfo(ClientServices.ClientDir + "\\Content\\" + _localFile);
+                    FileInfo f = new FileInfo(localFile);
                     f.LastWriteTimeUtc = _modDate;
                     messageBack(0, "Saved at " + _localFile);
                 }

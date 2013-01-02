@@ -47,13 +47,14 @@ namespace AmletoClient
             this.renderPriority = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.logFile = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.nbThreads = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.memorySegment = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.SaveLog = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,7 +73,7 @@ namespace AmletoClient
             this.label2.Size = new System.Drawing.Size(362, 30);
             this.label2.TabIndex = 1;
             this.label2.Text = "If the client still cannot connect after a manual setup, check your firewalls set" +
-                "tings.";
+    "tings.";
             // 
             // label3
             // 
@@ -216,16 +217,6 @@ namespace AmletoClient
             this.logFile.Size = new System.Drawing.Size(229, 20);
             this.logFile.TabIndex = 11;
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.ForeColor = System.Drawing.Color.Green;
-            this.label8.Location = new System.Drawing.Point(15, 181);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(194, 13);
-            this.label8.TabIndex = 9;
-            this.label8.Text = "(Leave empty to avoid to write a log file)";
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -281,6 +272,26 @@ namespace AmletoClient
             // 
             this.errorProvider.ContainerControl = this;
             // 
+            // SaveLog
+            // 
+            this.SaveLog.AutoSize = true;
+            this.SaveLog.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.SaveLog.Location = new System.Drawing.Point(145, 178);
+            this.SaveLog.Name = "SaveLog";
+            this.SaveLog.Size = new System.Drawing.Size(15, 14);
+            this.SaveLog.TabIndex = 23;
+            this.SaveLog.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Enabled = false;
+            this.label8.Location = new System.Drawing.Point(15, 178);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(75, 13);
+            this.label8.TabIndex = 24;
+            this.label8.Text = "Save Log File:";
+            // 
             // ClientSetupWin
             // 
             this.AcceptButton = this.btnOk;
@@ -288,6 +299,8 @@ namespace AmletoClient
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(386, 385);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.SaveLog);
             this.Controls.Add(this.nbThreads);
             this.Controls.Add(this.renderPriority);
             this.Controls.Add(this.btnOk);
@@ -306,7 +319,6 @@ namespace AmletoClient
             this.Controls.Add(this.serverAddress);
             this.Controls.Add(this.lblName);
             this.Controls.Add(this.autoSearch);
-            this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -346,12 +358,13 @@ namespace AmletoClient
         private System.Windows.Forms.ComboBox renderPriority;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox logFile;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox nbThreads;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox memorySegment;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ErrorProvider errorProvider;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.CheckBox SaveLog;
     }
 }

@@ -27,10 +27,10 @@ namespace RemoteExecution
 		public ProcessPriorityClass Priority { get; set; }
 		public bool Paused { get; set; }
 		public int Config { get; set; }
-		public int PtrSize { get; set; }
+		public int BitSize { get; set; }
 		public string ActiveHours { get; set; }
 
-		public ClientConnection(string hostName, string ipAddress, int instance, ProcessPriorityClass priority, int ptrSize)
+		public ClientConnection(string hostName, string ipAddress, int instance, ProcessPriorityClass priority, int bitSize)
         {
 			IsOnline = true;
 			Jobs = new List<Job>();
@@ -42,7 +42,7 @@ namespace RemoteExecution
 		    IPAddress = ipAddress;
             Instance = instance;
             Priority = priority;
-            PtrSize = ptrSize;
+            BitSize = bitSize;
             _lastCall.Reset();
             _lastCall.Start();
 

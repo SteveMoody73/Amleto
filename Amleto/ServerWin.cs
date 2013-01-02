@@ -261,6 +261,7 @@ namespace Amleto
             catch (Exception e)
             {
                 MessageBox.Show("Invalid message: " + msg);
+                Debug.WriteLine("Invalid message: " + e);
             }
         }
 
@@ -1283,10 +1284,7 @@ namespace Amleto
                 if (_masterServer.RestoreSettings() == false)
                 {
                     SetupWin dlg = new SetupWin(_masterServer, false);
-                    ConfigSet newConfig = new ConfigSet();
-                    newConfig.Name = "Main Config";
-                    dlg.Configs.Add(newConfig);
-                    dlg.AutoSearch();
+                    dlg.ScanAllConfigs();
                     if (dlg.ShowDialog() != DialogResult.OK)
                         Application.Exit();
                     _masterServer.Port = dlg.Port;

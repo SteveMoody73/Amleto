@@ -12,7 +12,8 @@ namespace RemoteExecution
         Absolute,
         Program,
         Plugin,
-        Config
+        Config,
+        Support
     }
 
     public class ServerServices : MarshalByRefObject
@@ -39,7 +40,7 @@ namespace RemoteExecution
         public static List<RenderProject> FinishedProjects = new List<RenderProject>();
 		public static List<ConfigSet> Configs = new List<ConfigSet>();
 
-        public void RegisterClient(string hostName, string ipAddress, ProcessPriorityClass priority, int ptrSize)
+        public void RegisterClient(string hostName, string ipAddress, ProcessPriorityClass priority, int bitSize)
         {
             lock (_clients)
             {
@@ -59,10 +60,10 @@ namespace RemoteExecution
                     }
                 }
 
-                _currConnection = new ClientConnection(hostName, ipAddress, nextInstance, priority, ptrSize);
+                _currConnection = new ClientConnection(hostName, ipAddress, nextInstance, priority, bitSize);
                 _clients.Add(_currConnection);
             }
-            AddMessage(0, "Node " + _currConnection.HostName + " (" + ipAddress + ")" + ":" + _currConnection.Instance + " connected (" + (ptrSize * 8) + "-bit).");
+            AddMessage(0, "Node " + _currConnection.HostName + " (" + ipAddress + ")" + ":" + _currConnection.Instance + " connected (" + bitSize + "-bit).");
             CallUpdateClientList();
         }
 
@@ -265,13 +266,16 @@ namespace RemoteExecution
                     path = "";
                     break;
                 case FileType.Config:
-                    path = Configs[_currConnection.Config].ServerConfigPath + "\\";
+                    path = Configs[_currConnection.Config].ConfigPath + "\\";
                     break;
                 case FileType.Program:
-                    path = Configs[_currConnection.Config].ServerProgramPath + "\\";
+                    path = Configs[_currConnection.Config].ProgramPath + "\\";
                     break;
                 case FileType.Plugin:
-                    path = Configs[_currConnection.Config].ServerPluginPath + "\\";
+                    path = Configs[_currConnection.Config].PluginPath + "\\";
+                    break;
+                case FileType.Support:
+                    path = Configs[_currConnection.Config].SupportPath + "\\";
                     break;
             }
 
@@ -321,7 +325,7 @@ namespace RemoteExecution
                 {
                     ClientConnection node = ReturnClient(id);
                     // Check if it's possible!
-                    if (Configs[newConfig].PtrSize > node.PtrSize)
+                    if (Configs[newConfig].BitSize > node.BitSize)
                         return;
                     node.Config = newConfig;
                     node.Jobs.Add(new ChangeConfigJob(Configs[newConfig].Name));
@@ -467,7 +471,7 @@ namespace RemoteExecution
             if (_currConnection == null)
                 return res;
 
-            DirectoryInfo dir = new DirectoryInfo(Configs[_currConnection.Config].ServerProgramPath);
+            DirectoryInfo dir = new DirectoryInfo(Configs[_currConnection.Config].ProgramPath);
             try
             {
                 foreach (FileInfo f in dir.GetFiles())
@@ -488,23 +492,34 @@ namespace RemoteExecution
 				Debug.WriteLine("Getting setup files: " + ex);
 			}
 
+            return res;
+        }
 
-            // LW 10? Then we must also copy the support directory
-            if (Directory.Exists(Configs[_currConnection.Config].ServerProgramPath + "\\..\\Support"))
+        public List<string> GetSupportFileList()
+        {
+            List<string> res = new List<string>();
+
+            if (_currConnection == null)
+                return res;
+
+            if (Configs[_currConnection.Config].SupportPath != "")
             {
-                int prefixLength=(Configs[_currConnection.Config].ServerProgramPath + "\\").Length;
+                DirectoryInfo dir = new DirectoryInfo(Configs[_currConnection.Config].SupportPath);
+                int prefixLength = (Configs[_currConnection.Config].SupportPath + "\\").Length;
+
                 Queue<string> dirs = new Queue<string>();
-                dirs.Enqueue(Configs[_currConnection.Config].ServerProgramPath + "\\..\\Support");
+                dirs.Enqueue(Configs[_currConnection.Config].SupportPath);
                 while (dirs.Count > 0)
                 {
-                    string currentDir=dirs.Dequeue();
+                    string currentDir = dirs.Dequeue();
                     dir = new DirectoryInfo(currentDir);
+
                     foreach (var i in dir.GetDirectories())
-                        dirs.Enqueue(currentDir + "\\" + i.Name);
+                        dirs.Enqueue(Path.Combine(currentDir, i.Name));
+
                     foreach (var i in dir.GetFiles())
                     {
-                        string file = currentDir + "\\" + i.Name;
-                        file = file.Substring(prefixLength);
+                        string file = Path.Combine(currentDir, i.Name).Substring(prefixLength);
                         res.Add(file);
                     }
                 }
@@ -512,16 +527,17 @@ namespace RemoteExecution
             return res;
         }
 
+
         public List<string> GetPluginFileList()
         {
-            return GetPluginFileList(Configs[_currConnection.Config].ServerPluginPath);
+            return GetPluginFileList(Configs[_currConnection.Config].PluginPath);
         }
 
         private List<string> GetPluginFileList(string path)
         {
             List<string> res = new List<string>();
 
-            if (_currConnection == null)
+            if (_currConnection == null || path == "")
                 return res;
 
             DirectoryInfo dir = new DirectoryInfo(path);
@@ -536,7 +552,7 @@ namespace RemoteExecution
                 }
                 // Retreive all files
                 foreach (FileInfo f in dir.GetFiles())
-                    res.Add(f.FullName.Substring(Configs[_currConnection.Config].ServerPluginPath.Length));
+                    res.Add(f.FullName.Substring(Configs[_currConnection.Config].PluginPath.Length));
             }
 			catch (Exception ex)
 			{
@@ -554,9 +570,9 @@ namespace RemoteExecution
             if (_currConnection == null)
                 return res;
 
-            DirectoryInfo dir = new DirectoryInfo(Configs[_currConnection.Config].ServerConfigPath);
+            DirectoryInfo dir = new DirectoryInfo(Configs[_currConnection.Config].ConfigPath);
             foreach (FileInfo f in dir.GetFiles("*.CFG"))
-                res.Add(f.FullName.Substring(Configs[_currConnection.Config].ServerConfigPath.Length));
+                res.Add(f.FullName.Substring((Configs[_currConnection.Config].ConfigPath + "\\").Length));
 
             return res;
         }
@@ -574,7 +590,7 @@ namespace RemoteExecution
         {
             if (_currConnection == null)
                 return "";
-            return Configs[_currConnection.Config].ServerPluginPath;
+            return Configs[_currConnection.Config].PluginPath;
         }
 
         public void SetCurrentJob(string currentJob)

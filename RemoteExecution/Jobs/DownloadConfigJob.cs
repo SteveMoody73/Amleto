@@ -17,57 +17,28 @@ namespace RemoteExecution.Jobs
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
             messageBack(0, "Downloading config " + _file);
-            string baseDir = Directory.GetParent(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file).FullName;
-            Directory.CreateDirectory(baseDir);
-			if (_file.ToUpper().EndsWith("LW11-64.CFG") || _file.ToUpper().EndsWith("LW11.CFG") || 
-				_file.ToUpper().EndsWith("LW10-64.CFG") || _file.ToUpper().EndsWith("LW10.CFG") || 
-				_file.ToUpper().EndsWith("LW9.CFG") || _file.ToUpper().EndsWith("LW9-64.CFG") || 
-				_file.ToUpper().EndsWith("LW8.CFG") || _file.ToUpper().EndsWith("LW3.CFG") || 
-				!File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file))
+            string localPath = Path.Combine(Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName), "Config");
+            string localFile = Path.Combine(localPath, _file);
+
+            Directory.CreateDirectory(localPath);
+			if (!File.Exists(localFile))
             {
                 byte[] res = Server.GetFile(FileType.Config, _file);
-                FileStream stream = File.Create(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file, res.Length);
+                FileStream stream = File.Create(localFile, res.Length);
                 stream.Write(res, 0, res.Length);
                 stream.Close();
                 stream.Dispose();
 
-				if (_file.ToUpper().EndsWith("LW11-64.CFG") || _file.ToUpper().EndsWith("LW11.CFG") || 
-					_file.ToUpper().EndsWith("LW10-64.CFG") || _file.ToUpper().EndsWith("LW10.CFG") || 
-					_file.ToUpper().EndsWith("LW9.CFG") || _file.ToUpper().EndsWith("LW9-64.CFG") || 
-					_file.ToUpper().EndsWith("LW8.CFG") || _file.ToUpper().EndsWith("LW3.CFG"))
+				if (ClientServices.IsMainConfig(localFile))
                 {
-                    string[] lines = File.ReadAllLines(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file);
-                    StreamWriter writer = new StreamWriter(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file);
+                    string[] lines = File.ReadAllLines(localFile);
+                    StreamWriter writer = new StreamWriter(localFile);
                     foreach (string line in lines)
                     {
                         if (line.StartsWith("DefaultSegmentMemory"))
-                            writer.WriteLine("DefaultSegmentMemory " + (ClientServices.MemorySegment * 1024 * 1024));
+                            writer.WriteLine("DefaultSegmentMemory " + (ClientServices.Settings.MemorySegment * 1024 * 1024));
                         else if (line.StartsWith("RenderThreads"))
-                            writer.WriteLine("RenderThreads "+ClientServices.NumThreads);
-                        else
-                            writer.WriteLine(line);
-                    }
-                    writer.Close();
-                    writer.Dispose();
-                }
-                else if (_file.ToUpper().EndsWith("LWEXT10-64.CFG") || _file.ToUpper().EndsWith("LWEXT10.CFG") || _file.ToUpper().EndsWith("LWEXT9.CFG") || _file.ToUpper().EndsWith("LWEXT9-64.CFG") || _file.ToUpper().EndsWith("LWEXT8.CFG") || _file.ToUpper().EndsWith("LWEXT3.CFG"))
-                {
-                    string serverPluginPath = Server.GetPluginPath();
-
-                    string[] lines = File.ReadAllLines(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file);
-                    StreamWriter writer = new StreamWriter(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Config\\" + _file);
-                    foreach (string line in lines)
-                    {
-                        if (line.ToUpper().Contains("MODULE \"") || line.StartsWith("  Module \""))
-                        {
-                            string nline = line.Replace(@"\\", @"\");
-
-                            if (!serverPluginPath.EndsWith("\\"))
-                                serverPluginPath += "\\";
-                            nline = nline.Replace(serverPluginPath, ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Plugin\\");
-                            nline = nline.Replace(@"\", @"\\");
-                            writer.WriteLine(nline);
-                        }
+                            writer.WriteLine("RenderThreads "+ClientServices.Settings.NumThreads);
                         else
                             writer.WriteLine(line);
                     }

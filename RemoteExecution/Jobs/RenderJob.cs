@@ -86,14 +86,14 @@ namespace RemoteExecution.Jobs
             {
                 for (int i = StartFrame; i <= EndFrame; i += Step)
                 {
-                    string fname = string.Format(ClientServices.ClientDir + "\\Output\\{0}_{1:0000}{2}", Instance, i, ext);
+                    string fname = string.Format(ClientServices.GetClientDir() + "\\Output\\{0}_{1:0000}{2}", Instance, i, ext);
                     if (File.Exists(fname))
                         File.Delete(fname);
 
                     if (SaveAlpha)
                     {
                         ext = AlphaImageFormat.Substring(AlphaImageFormat.IndexOf('(') + 1, (AlphaImageFormat.IndexOf(')') - AlphaImageFormat.IndexOf('(')) - 1);
-                        fname = string.Format(ClientServices.ClientDir + "\\Output\\{0}_a{1:0000}{2}", Instance, i, ext);
+                        fname = string.Format(ClientServices.GetClientDir() + "\\Output\\{0}_a{1:0000}{2}", Instance, i, ext);
                         if (File.Exists(fname))
                             File.Delete(fname);
                     }
@@ -107,10 +107,10 @@ namespace RemoteExecution.Jobs
             try
             {
                 messageBack(0,"Rendering file " + _file + " frame(s) " + StartFrame + " to " + EndFrame);
-                Directory.CreateDirectory(ClientServices.ClientDir+"\\Output");
+                Directory.CreateDirectory(ClientServices.GetClientDir() + "\\Output");
 
-                string[] lines = File.ReadAllLines(ClientServices.ClientDir+"\\Content\\" + _file);
-                StreamWriter writer = new StreamWriter(ClientServices.ClientDir+"\\Content\\render_" + Instance + ".aml");
+                string[] lines = File.ReadAllLines(ClientServices.GetClientDir() + "\\Content\\" + _file);
+                StreamWriter writer = new StreamWriter(ClientServices.GetClientDir() + "\\Content\\render_" + Instance + ".aml");
                 writer.WriteLine("LWSC");
                 writer.WriteLine(lines[1]);
                 writer.WriteLine("");
@@ -126,8 +126,8 @@ namespace RemoteExecution.Jobs
                                
                 writer.WriteLine("SaveRGB 1");
                 writer.WriteLine("OutputFilenameFormat 3");
-                writer.WriteLine("SaveRGBImagesPrefix "+ClientServices.ClientDir+"\\Output\\" + Instance + "_");
-                writer.WriteLine("SaveAlphaImagesPrefix " + ClientServices.ClientDir + "\\Output\\" + Instance + "_a");
+                writer.WriteLine("SaveRGBImagesPrefix " + ClientServices.GetClientDir() + "\\Output\\" + Instance + "_");
+                writer.WriteLine("SaveAlphaImagesPrefix " + ClientServices.GetClientDir() + "\\Output\\" + Instance + "_a");
                 writer.WriteLine("RGBImageSaver " + ImageFormat);
                 writer.WriteLine("AlphaImageSaver " + AlphaImageFormat);
 
@@ -358,19 +358,19 @@ namespace RemoteExecution.Jobs
                 writer.Dispose();
 
                 Process process = new Process();
-                process.StartInfo.FileName = ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Program\\lwsn.exe";
-                process.StartInfo.Arguments = "-3 \"-c" + ClientServices.ClientDir + "\\" + ClientServices.ConfigName + 
-                    "\\Config\" \"-d" + ClientServices.ClientDir + "\\Content\" \"" + ClientServices.ClientDir +
+                process.StartInfo.FileName = ClientServices.GetClientDir() + "\\" + ClientServices.ConfigName + "\\Program\\lwsn.exe";
+                process.StartInfo.Arguments = "-3 \"-c" + ClientServices.GetClientDir() + "\\" + ClientServices.ConfigName +
+                    "\\Config\" \"-d" + ClientServices.GetClientDir() + "\\Content\" \"" + ClientServices.GetClientDir() +
                     "\\Content\\render_" + Instance + ".aml\" " + StartFrame + " " + EndFrame + " " + Step;
                 process.StartInfo.UseShellExecute = false;
-                process.StartInfo.WorkingDirectory = ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Program\\";
+                process.StartInfo.WorkingDirectory = ClientServices.GetClientDir() + "\\" + ClientServices.ConfigName + "\\Program\\";
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.CreateNoWindow = true;
                 process.OutputDataReceived += ProcessOutputDataReceived;
                 ClientServices.SetRenderProcess(process);
                 process.Start();
-                process.PriorityClass = ClientServices.RenderPriority;
+                process.PriorityClass = ClientServices.Settings.RenderPriority;
                 process.BeginOutputReadLine();
                 process.WaitForExit();
                 ClientServices.SetRenderProcess(null);
@@ -386,8 +386,8 @@ namespace RemoteExecution.Jobs
 
             for (int i = StartFrame; i <= EndFrame; i += Step)
             {
-                string fname = string.Format(ClientServices.ClientDir+"\\Output\\{0}_{1:0000}{2}", Instance, i, ext);
-                string afname = string.Format(ClientServices.ClientDir + "\\Output\\{0}_a{1:0000}{2}", Instance, i, ext);
+                string fname = string.Format(ClientServices.GetClientDir() + "\\Output\\{0}_{1:0000}{2}", Instance, i, ext);
+                string afname = string.Format(ClientServices.GetClientDir() + "\\Output\\{0}_a{1:0000}{2}", Instance, i, ext);
                 if (File.Exists(fname))
                 {
                     try

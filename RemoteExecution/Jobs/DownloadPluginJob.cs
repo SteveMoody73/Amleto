@@ -19,12 +19,13 @@ namespace RemoteExecution.Jobs
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
             messageBack(0,"Downloading plugin " + _file);
-            string baseDir = Directory.GetParent(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Plugin\\" + _file).FullName;
-            Directory.CreateDirectory(baseDir);
-            if (_force || !File.Exists(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Plugin\\" + _file))
+            string localPath = Path.Combine(Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName), "Plugin");
+            string localFile = Path.Combine(localPath, _file);
+            Directory.CreateDirectory(localPath);
+            if (_force || !File.Exists(localFile))
             {
                 byte[] res = Server.GetFile(FileType.Plugin, _file);
-                FileStream stream = File.Create(ClientServices.ClientDir + "\\" + ClientServices.ConfigName + "\\Plugin\\" + _file, res.Length);
+                FileStream stream = File.Create(localFile, res.Length);
                 stream.Write(res, 0, res.Length);
                 stream.Close();
                 stream.Dispose();

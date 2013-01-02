@@ -86,42 +86,22 @@ namespace RemoteExecution
         {
             foreach (ConfigSet config in ServerServices.Configs)
             {
-                string[] lines;
-                try
+                if (config.LightwaveVersion < 10)
                 {
-                    if (File.Exists(config.ServerConfigPath + "\\LW10-64.CFG") || File.Exists(config.ServerConfigPath + "\\LW10.CFG") ||
-						File.Exists(config.ServerConfigPath + "\\LW11-64.CFG") || File.Exists(config.ServerConfigPath + "\\LW11.CFG"))
+                    List<string> formats = new List<string>();
+                    string[] lines = File.ReadAllLines(config.ConfigFile);
+                    foreach (string line in lines)
                     {
-                        config.ImageFormats = new List<string>(LW10.FileFormat);
-                        continue;
+                        if (line.Contains("Class \"ImageSaver\""))
+                        {
+                            string[] p = line.Trim().Replace("\"", "").Split(' ');
+                            formats.Add(p[1]);
+                        }
                     }
-                    if (config.PtrSize == 8)
-                        lines = File.ReadAllLines(config.ServerConfigPath + "\\LWEXT9-64.CFG");
-                    else if (File.Exists(config.ServerConfigPath + "\\LWEXT9.CFG"))
-                        lines = File.ReadAllLines(config.ServerConfigPath + "\\LWEXT9.CFG");
-                    else if (File.Exists(config.ServerConfigPath + "\\LWEXT8.CFG"))
-                        lines = File.ReadAllLines(config.ServerConfigPath + "\\LWEXT8.CFG");
-                    else if (File.Exists(config.ServerConfigPath + "\\LWEXT3.CFG"))
-                        lines = File.ReadAllLines(config.ServerConfigPath + "\\LWEXT3.CFG");
-                    else
-                        continue;
+                    config.ImageFormats = formats;
                 }
-                catch
-                {
-                    continue;
-                }
-                List<string> formats = new List<string>();
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    string line = lines[i];
-                    if (line.Contains("Class \"ImageSaver\""))
-                    {
-                        i++;
-                        string[] p = lines[i].Trim().Replace("\"", "").Split(' ');
-                        formats.Add(p[1]);
-                    }
-                }
-                config.ImageFormats = formats;
+                else
+                    config.ImageFormats = new List<string>(LW10.FileFormat);
             }
         }
 
@@ -307,7 +287,7 @@ namespace RemoteExecution
             {
                 List<string> res = new List<string>();
                 foreach (ConfigSet c in ServerServices.Configs)
-                    res.Add(c.Name + " (" + (c.PtrSize * 8) + "-bit)");
+                    res.Add(c.Name + " (" + c.BitSize + "-bit)");
                 return res;
             }
         }
@@ -347,9 +327,9 @@ namespace RemoteExecution
             RegistryKey key = null;
             try
             {
-            	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
+            	var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
             	if (openSubKey != null)
-            		key = openSubKey.CreateSubKey("Amleto3");
+            		key = openSubKey.CreateSubKey("Amleto");
             }
             catch
             {
@@ -382,18 +362,25 @@ namespace RemoteExecution
         			c.Name = s;
         			if (subkey != null)
         			{
-        				c.ServerProgramPath = (string)subkey.GetValue("ProgPath");
-        				c.ServerConfigPath = (string)subkey.GetValue("ConfigPath");
-        				c.ServerPluginPath = (string)subkey.GetValue("PluginPath");
-        				if (subkey.GetValue("PtrSize") != null)
-        					c.PtrSize = (int)subkey.GetValue("PtrSize");
-        				else
-        					c.PtrSize = 4;
+        			    c.ProgramPath = (string) subkey.GetValue("ProgPath");
+        			    c.ConfigPath = (string) subkey.GetValue("ConfigPath");
+        			    c.ConfigFile = (string) subkey.GetValue("ConfigFile");
+        			    c.PluginPath = (string) subkey.GetValue("PluginPath");
+        			    c.SupportPath = (string) subkey.GetValue("SupportPath");
+        			    if ((string) subkey.GetValue("DefaultConfig") == "False")
+        			        c.DefaultConfig = false;
+        			    else 
+                            c.DefaultConfig = true;
+        			    c.LightwaveVersion = (int) subkey.GetValue("LightwaveVersion");
+        			    if (subkey.GetValue("BitSize") != null)
+        			        c.BitSize = (int) subkey.GetValue("BitSize");
+                        else
+                            c.BitSize = 32;
         				subkey.Close();
         			}
 
         			// Insert the main config at the top
-        			if (s == "Main Config")
+        			if (c.DefaultConfig)
         				ServerServices.Configs.Insert(0, c);
         			else
         				ServerServices.Configs.Add(c);
@@ -413,17 +400,6 @@ namespace RemoteExecution
         		}
         		maskerKey.Close();
         	}
-
-        	if (ServerServices.Configs.Count == 0 && key.GetValue("ProgPath") != null)
-            {
-                ConfigSet c = new ConfigSet();
-                c.Name = "Main Config";
-                c.ServerProgramPath = (string)key.GetValue("ProgPath");
-                c.ServerConfigPath = (string)key.GetValue("ConfigPath");
-                c.ServerPluginPath = (string)key.GetValue("PluginPath");
-                c.PtrSize = 4;
-                ServerServices.Configs.Add(c);
-            }
 
             ServerServices.LogFile = "";
             if (key.GetValue("ServerLogFile") != null)
@@ -455,10 +431,11 @@ namespace RemoteExecution
 
         public void SaveSettings()
         {
-        	RegistryKey openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
-        	if (openSubKey != null)
+        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
+
+            if (openSubKey != null)
         	{
-        		RegistryKey key = openSubKey.CreateSubKey("Amleto3");
+        		RegistryKey key = openSubKey.CreateSubKey("Amleto");
 
         		if (key != null)
         		{
@@ -489,12 +466,16 @@ namespace RemoteExecution
         					RegistryKey subkey = configKey.CreateSubKey(c.Name);
         					if (subkey != null)
         					{
-        						subkey.SetValue("ProgPath", c.ServerProgramPath);
-        						subkey.SetValue("ConfigPath", c.ServerConfigPath);
-        						subkey.SetValue("PluginPath", c.ServerPluginPath);
-        						subkey.SetValue("PtrSize", c.PtrSize);
+        						subkey.SetValue("ProgPath", c.ProgramPath);
+        						subkey.SetValue("ConfigPath", c.ConfigPath);
+                                subkey.SetValue("ConfigFile", c.ConfigFile);
+        						subkey.SetValue("PluginPath", c.PluginPath);
+                                subkey.SetValue("SupportPath", c.SupportPath);
+                                subkey.SetValue("DefaultConfig", c.DefaultConfig);
+                                subkey.SetValue("LightwaveVersion", c.LightwaveVersion);
+        						subkey.SetValue("BitSize", c.BitSize);
         						subkey.Close();
-        					}
+                            }
         				}
         			}
         			if (configKey != null) configKey.Close();
@@ -516,10 +497,10 @@ namespace RemoteExecution
             if (_strippedMaster.Contains(s))
                 return;
             _strippedMaster.Add(s);
-        	RegistryKey openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
+        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
         	if (openSubKey != null)
         	{
-        		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto3");
+        		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto");
         		if (registryKey != null)
         		{
         			RegistryKey key = registryKey.CreateSubKey("StripMaster");
@@ -537,10 +518,10 @@ namespace RemoteExecution
             if (!_strippedMaster.Contains(s))
                 return;
             _strippedMaster.Remove(s);
-        	RegistryKey openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
+        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
         	if (openSubKey != null)
         	{
-        		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto3");
+        		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto");
         		if (registryKey != null)
         		{
         			RegistryKey key = registryKey.CreateSubKey("StripMaster");

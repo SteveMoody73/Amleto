@@ -120,54 +120,19 @@
   <data name="label1.Text" xml:space="preserve">
     <value>Amleto should by default find the location of your Lightwave installation, and offer you the best setup, review carefully the presented settings as those settings determine if Amleto will be able to work or not.</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="btnSelectProg.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAm1JREFUOE+lkz1M
-        E3EYxju4u7k7OVgWhbo4mhidHIxhAqNxAQaDhkQHkRiQqCFBwA8kGFJC+YoEDhtoZChCS0E+pBWvR1uu
-        pa20Alfueh+93t3jv63kcDEhJPfL/97knud53//ltQCwnARLcLJ8LTpbpca+3j5CtbrpvBymJ6xnCKf/
-        gSI1ZT11GGphKJtiGDqpDfIUKL3n5TTi3trctrdWOSS5/EhOLD6MBscv3DINxioyhiZDibdBjLRDZD9C
-        io7CyHPEKwtDEwgHpTq/D+hqjhmzBUyDYRuvqwdE3IlsqAP8jybsLdYgvVQHzt8Mbv0puLXH2F9tINST
-        zlJgPpULpsFIhZqXdsAFOrG/0oqU+wGklI+k8n/TC2fG7ICMx4zYZNNg4JJanF9XCBKgiUWhJtFQkl0I
-        BIZAeRbQO8PCMZeAazWGgOMq+bj09yxMny1naBI0fgF5bhrq7ihyOz2Qt1/Cv27H5HIKm79EbO0q8IV5
-        TK39xgTl0EyDbpuiqzzUPQq5VH8xVY41Q4o0YNiTxEZcwCIrwRMRMU/wJxUMzrJEf9hBZ4VsqBwR90FJ
-        tEOONhFxPUTmbrHtUFqBJ5zFXCiLGVrAckxBvztuGgTbLibVTCiTDTv07GYvBOYNBLoNws8WDJKZNxIi
-        3ExJXODbtoJuZ9A0oFus9+nWsgH6eVmanPJRPo8Nar4QjxUi8rIylkg69V3Ae/uEMfXkSnXxEv+3Bx1O
-        9my3i20cIXcxNJ/EB9eW/tbuNPxTPVjoquIH6s5XHnuRxhuv3/O9u8NFpl/D+eyaeGyDQsf2mnOVX17d
-        lFwvbpxslQtmfwAzBSV55Jwa6wAAAABJRU5ErkJggg==
-</value>
-  </data>
-  <data name="btnSelectPlugin.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAm1JREFUOE+lkz1M
-        E3EYxju4u7k7OVgWhbo4mhidHIxhAqNxAQaDhkQHkRiQqCFBwA8kGFJC+YoEDhtoZChCS0E+pBWvR1uu
-        pa20Alfueh+93t3jv63kcDEhJPfL/97knud53//ltQCwnARLcLJ8LTpbpca+3j5CtbrpvBymJ6xnCKf/
-        gSI1ZT11GGphKJtiGDqpDfIUKL3n5TTi3trctrdWOSS5/EhOLD6MBscv3DINxioyhiZDibdBjLRDZD9C
-        io7CyHPEKwtDEwgHpTq/D+hqjhmzBUyDYRuvqwdE3IlsqAP8jybsLdYgvVQHzt8Mbv0puLXH2F9tINST
-        zlJgPpULpsFIhZqXdsAFOrG/0oqU+wGklI+k8n/TC2fG7ICMx4zYZNNg4JJanF9XCBKgiUWhJtFQkl0I
-        BIZAeRbQO8PCMZeAazWGgOMq+bj09yxMny1naBI0fgF5bhrq7ihyOz2Qt1/Cv27H5HIKm79EbO0q8IV5
-        TK39xgTl0EyDbpuiqzzUPQq5VH8xVY41Q4o0YNiTxEZcwCIrwRMRMU/wJxUMzrJEf9hBZ4VsqBwR90FJ
-        tEOONhFxPUTmbrHtUFqBJ5zFXCiLGVrAckxBvztuGgTbLibVTCiTDTv07GYvBOYNBLoNws8WDJKZNxIi
-        3ExJXODbtoJuZ9A0oFus9+nWsgH6eVmanPJRPo8Nar4QjxUi8rIylkg69V3Ae/uEMfXkSnXxEv+3Bx1O
-        9my3i20cIXcxNJ/EB9eW/tbuNPxTPVjoquIH6s5XHnuRxhuv3/O9u8NFpl/D+eyaeGyDQsf2mnOVX17d
-        lFwvbpxslQtmfwAzBSV55Jwa6wAAAABJRU5ErkJggg==
-</value>
-  </data>
   <data name="label7.Text" xml:space="preserve">
     <value>Check this option if you want to leave Amleto automatically select the port. If this option is checked, be sure that your clients runs on the same network as your server, and that the UDP port 61111 is not blocked by your firewall.</value>
   </data>
-  <metadata name="driveLetter.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="ConfigDefault.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="driveShare.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="ConfigName.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="driveUsername.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="ConfigBits.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="drivePassword.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="ConfigDir.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="driveLetter.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">

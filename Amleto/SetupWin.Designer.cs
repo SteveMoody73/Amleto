@@ -37,33 +37,26 @@ namespace Amleto
             this.checkAutoPort = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textPort = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textProgPath = new System.Windows.Forms.TextBox();
-            this.btnSelectProg = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textConfigPath = new System.Windows.Forms.TextBox();
-            this.btnSelectConfig = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textPluginPath = new System.Windows.Forms.TextBox();
-            this.btnSelectPlugin = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.textLogFile = new System.Windows.Forms.TextBox();
             this.tabs = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.bits64 = new System.Windows.Forms.RadioButton();
-            this.bits32 = new System.Windows.Forms.RadioButton();
-            this.btnDeleteConfig = new System.Windows.Forms.Button();
-            this.selectConfig = new System.Windows.Forms.ComboBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tabConfigs = new System.Windows.Forms.TabPage();
+            this.SetDefault = new System.Windows.Forms.Button();
+            this.AddConfig = new System.Windows.Forms.Button();
+            this.DeleteConfig = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.ConfigList = new System.Windows.Forms.DataGridView();
+            this.ConfigDefault = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ConfigName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ConfigBits = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ConfigDir = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabLogging = new System.Windows.Forms.TabPage();
+            this.cbEnableLogging = new System.Windows.Forms.CheckBox();
+            this.SelectLogFile = new System.Windows.Forms.Button();
+            this.tabNetwork = new System.Windows.Forms.TabPage();
+            this.tabEmail = new System.Windows.Forms.TabPage();
             this.label21 = new System.Windows.Forms.Label();
             this.textSMTPPassword = new System.Windows.Forms.TextBox();
             this.textSTMPUser = new System.Windows.Forms.TextBox();
@@ -81,7 +74,7 @@ namespace Amleto
             this.label24 = new System.Windows.Forms.Label();
             this.lblWebPort = new System.Windows.Forms.Label();
             this.offerWebInterface = new System.Windows.Forms.CheckBox();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.tabDrives = new System.Windows.Forms.TabPage();
             this.listMapDrives = new System.Windows.Forms.DataGridView();
             this.driveLetter = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.driveShare = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -91,15 +84,14 @@ namespace Amleto
             this.btnDelDrive = new System.Windows.Forms.Button();
             this.lblMappedDrives = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-            this.SelectLogFile = new System.Windows.Forms.Button();
-            this.cbEnableLogging = new System.Windows.Forms.CheckBox();
             this.tabs.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.tabPage4.SuspendLayout();
+            this.tabConfigs.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ConfigList)).BeginInit();
+            this.tabLogging.SuspendLayout();
+            this.tabNetwork.SuspendLayout();
+            this.tabEmail.SuspendLayout();
             this.tabWeb.SuspendLayout();
-            this.tabPage5.SuspendLayout();
+            this.tabDrives.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listMapDrives)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
@@ -172,87 +164,6 @@ namespace Amleto
             this.textPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.textPort.Validating += new System.ComponentModel.CancelEventHandler(this.textPort_Validating);
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 93);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(67, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "LWSN Path:";
-            // 
-            // textProgPath
-            // 
-            this.textProgPath.Location = new System.Drawing.Point(106, 90);
-            this.textProgPath.Name = "textProgPath";
-            this.textProgPath.Size = new System.Drawing.Size(296, 20);
-            this.textProgPath.TabIndex = 9;
-            this.textProgPath.TextChanged += new System.EventHandler(this.textProgPath_TextChanged);
-            // 
-            // btnSelectProg
-            // 
-            this.btnSelectProg.Image = ((System.Drawing.Image)(resources.GetObject("btnSelectProg.Image")));
-            this.btnSelectProg.Location = new System.Drawing.Point(408, 88);
-            this.btnSelectProg.Name = "btnSelectProg";
-            this.btnSelectProg.Size = new System.Drawing.Size(31, 23);
-            this.btnSelectProg.TabIndex = 10;
-            this.btnSelectProg.UseVisualStyleBackColor = true;
-            this.btnSelectProg.Click += new System.EventHandler(this.btnSelectProg_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 52);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(68, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Config. Path:";
-            // 
-            // textConfigPath
-            // 
-            this.textConfigPath.Location = new System.Drawing.Point(106, 49);
-            this.textConfigPath.Name = "textConfigPath";
-            this.textConfigPath.Size = new System.Drawing.Size(296, 20);
-            this.textConfigPath.TabIndex = 5;
-            this.textConfigPath.TextChanged += new System.EventHandler(this.textConfigPath_TextChanged);
-            // 
-            // btnSelectConfig
-            // 
-            this.btnSelectConfig.Image = global::Amleto.Properties.Resources.folder_explore;
-            this.btnSelectConfig.Location = new System.Drawing.Point(408, 47);
-            this.btnSelectConfig.Name = "btnSelectConfig";
-            this.btnSelectConfig.Size = new System.Drawing.Size(31, 23);
-            this.btnSelectConfig.TabIndex = 6;
-            this.btnSelectConfig.UseVisualStyleBackColor = true;
-            this.btnSelectConfig.Click += new System.EventHandler(this.btnSelectConfig_Click);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 135);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(64, 13);
-            this.label6.TabIndex = 12;
-            this.label6.Text = "Plugin Path:";
-            // 
-            // textPluginPath
-            // 
-            this.textPluginPath.Location = new System.Drawing.Point(106, 132);
-            this.textPluginPath.Name = "textPluginPath";
-            this.textPluginPath.Size = new System.Drawing.Size(296, 20);
-            this.textPluginPath.TabIndex = 13;
-            this.textPluginPath.TextChanged += new System.EventHandler(this.textPluginPath_TextChanged);
-            // 
-            // btnSelectPlugin
-            // 
-            this.btnSelectPlugin.Image = ((System.Drawing.Image)(resources.GetObject("btnSelectPlugin.Image")));
-            this.btnSelectPlugin.Location = new System.Drawing.Point(408, 130);
-            this.btnSelectPlugin.Name = "btnSelectPlugin";
-            this.btnSelectPlugin.Size = new System.Drawing.Size(31, 23);
-            this.btnSelectPlugin.TabIndex = 14;
-            this.btnSelectPlugin.UseVisualStyleBackColor = true;
-            this.btnSelectPlugin.Click += new System.EventHandler(this.btnSelectPlugin_Click);
-            // 
             // label7
             // 
             this.label7.ForeColor = System.Drawing.Color.Green;
@@ -270,33 +181,6 @@ namespace Amleto
             this.label8.Size = new System.Drawing.Size(427, 16);
             this.label8.TabIndex = 3;
             this.label8.Text = "Used in case the \"Find free port\" option is disabled.";
-            // 
-            // label9
-            // 
-            this.label9.ForeColor = System.Drawing.Color.Green;
-            this.label9.Location = new System.Drawing.Point(8, 72);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(427, 16);
-            this.label9.TabIndex = 7;
-            this.label9.Text = "Path where LWSN, modeler, and Lightwave.exe are stored.";
-            // 
-            // label10
-            // 
-            this.label10.ForeColor = System.Drawing.Color.Green;
-            this.label10.Location = new System.Drawing.Point(8, 31);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(427, 16);
-            this.label10.TabIndex = 3;
-            this.label10.Text = "Path where the different CFG files are stored.";
-            // 
-            // label11
-            // 
-            this.label11.ForeColor = System.Drawing.Color.Green;
-            this.label11.Location = new System.Drawing.Point(9, 114);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(427, 16);
-            this.label11.TabIndex = 11;
-            this.label11.Text = "Parent directory of all the plugins directory.";
             // 
             // label14
             // 
@@ -316,157 +200,186 @@ namespace Amleto
             // 
             // tabs
             // 
-            this.tabs.Controls.Add(this.tabPage1);
-            this.tabs.Controls.Add(this.tabPage2);
-            this.tabs.Controls.Add(this.tabPage3);
-            this.tabs.Controls.Add(this.tabPage4);
+            this.tabs.Controls.Add(this.tabConfigs);
+            this.tabs.Controls.Add(this.tabLogging);
+            this.tabs.Controls.Add(this.tabNetwork);
+            this.tabs.Controls.Add(this.tabEmail);
             this.tabs.Controls.Add(this.tabWeb);
-            this.tabs.Controls.Add(this.tabPage5);
+            this.tabs.Controls.Add(this.tabDrives);
             this.tabs.Location = new System.Drawing.Point(8, 60);
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
             this.tabs.Size = new System.Drawing.Size(450, 245);
             this.tabs.TabIndex = 1;
             // 
-            // tabPage1
+            // tabConfigs
             // 
-            this.tabPage1.Controls.Add(this.cbEnableLogging);
-            this.tabPage1.Controls.Add(this.SelectLogFile);
-            this.tabPage1.Controls.Add(this.textLogFile);
-            this.tabPage1.Controls.Add(this.label14);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(442, 219);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Logging";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabConfigs.Controls.Add(this.SetDefault);
+            this.tabConfigs.Controls.Add(this.AddConfig);
+            this.tabConfigs.Controls.Add(this.DeleteConfig);
+            this.tabConfigs.Controls.Add(this.label4);
+            this.tabConfigs.Controls.Add(this.ConfigList);
+            this.tabConfigs.Location = new System.Drawing.Point(4, 22);
+            this.tabConfigs.Name = "tabConfigs";
+            this.tabConfigs.Padding = new System.Windows.Forms.Padding(3);
+            this.tabConfigs.Size = new System.Drawing.Size(442, 219);
+            this.tabConfigs.TabIndex = 2;
+            this.tabConfigs.Text = "LW Configs";
+            this.tabConfigs.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // SetDefault
             // 
-            this.tabPage2.Controls.Add(this.textPort);
-            this.tabPage2.Controls.Add(this.label2);
-            this.tabPage2.Controls.Add(this.checkAutoPort);
-            this.tabPage2.Controls.Add(this.label3);
-            this.tabPage2.Controls.Add(this.label7);
-            this.tabPage2.Controls.Add(this.label8);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(442, 219);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Network";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.SetDefault.Location = new System.Drawing.Point(199, 190);
+            this.SetDefault.Name = "SetDefault";
+            this.SetDefault.Size = new System.Drawing.Size(75, 23);
+            this.SetDefault.TabIndex = 5;
+            this.SetDefault.Text = "Default";
+            this.SetDefault.UseVisualStyleBackColor = true;
+            this.SetDefault.Click += new System.EventHandler(this.SetDefaultClick);
             // 
-            // tabPage3
+            // AddConfig
             // 
-            this.tabPage3.Controls.Add(this.bits64);
-            this.tabPage3.Controls.Add(this.bits32);
-            this.tabPage3.Controls.Add(this.btnDeleteConfig);
-            this.tabPage3.Controls.Add(this.selectConfig);
-            this.tabPage3.Controls.Add(this.textPluginPath);
-            this.tabPage3.Controls.Add(this.label4);
-            this.tabPage3.Controls.Add(this.label11);
-            this.tabPage3.Controls.Add(this.textProgPath);
-            this.tabPage3.Controls.Add(this.label10);
-            this.tabPage3.Controls.Add(this.label15);
-            this.tabPage3.Controls.Add(this.label5);
-            this.tabPage3.Controls.Add(this.label9);
-            this.tabPage3.Controls.Add(this.textConfigPath);
-            this.tabPage3.Controls.Add(this.btnSelectPlugin);
-            this.tabPage3.Controls.Add(this.label22);
-            this.tabPage3.Controls.Add(this.label6);
-            this.tabPage3.Controls.Add(this.btnSelectConfig);
-            this.tabPage3.Controls.Add(this.btnSelectProg);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(442, 219);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "LW Configs";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.AddConfig.Location = new System.Drawing.Point(280, 190);
+            this.AddConfig.Name = "AddConfig";
+            this.AddConfig.Size = new System.Drawing.Size(75, 23);
+            this.AddConfig.TabIndex = 4;
+            this.AddConfig.Text = "Add";
+            this.AddConfig.UseVisualStyleBackColor = true;
+            this.AddConfig.Click += new System.EventHandler(this.AddConfigClick);
             // 
-            // bits64
+            // DeleteConfig
             // 
-            this.bits64.AutoSize = true;
-            this.bits64.Location = new System.Drawing.Point(190, 171);
-            this.bits64.Name = "bits64";
-            this.bits64.Size = new System.Drawing.Size(52, 17);
-            this.bits64.TabIndex = 16;
-            this.bits64.Text = "64-Bit";
-            this.bits64.UseVisualStyleBackColor = true;
-            this.bits64.CheckedChanged += new System.EventHandler(this.bits64_CheckedChanged);
+            this.DeleteConfig.Location = new System.Drawing.Point(361, 190);
+            this.DeleteConfig.Name = "DeleteConfig";
+            this.DeleteConfig.Size = new System.Drawing.Size(75, 23);
+            this.DeleteConfig.TabIndex = 3;
+            this.DeleteConfig.Text = "Delete";
+            this.DeleteConfig.UseVisualStyleBackColor = true;
+            this.DeleteConfig.Click += new System.EventHandler(this.DeleteConfigClick);
             // 
-            // bits32
+            // label4
             // 
-            this.bits32.AutoSize = true;
-            this.bits32.Checked = true;
-            this.bits32.Location = new System.Drawing.Point(109, 171);
-            this.bits32.Name = "bits32";
-            this.bits32.Size = new System.Drawing.Size(52, 17);
-            this.bits32.TabIndex = 15;
-            this.bits32.TabStop = true;
-            this.bits32.Text = "32-Bit";
-            this.bits32.UseVisualStyleBackColor = true;
-            this.bits32.CheckedChanged += new System.EventHandler(this.bits32_CheckedChanged);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 7);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(172, 13);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "List of available LightWave configs";
             // 
-            // btnDeleteConfig
+            // ConfigList
             // 
-            this.btnDeleteConfig.Enabled = false;
-            this.btnDeleteConfig.Image = global::Amleto.Properties.Resources.bin_closed;
-            this.btnDeleteConfig.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnDeleteConfig.Location = new System.Drawing.Point(408, 7);
-            this.btnDeleteConfig.Name = "btnDeleteConfig";
-            this.btnDeleteConfig.Size = new System.Drawing.Size(31, 23);
-            this.btnDeleteConfig.TabIndex = 2;
-            this.btnDeleteConfig.UseVisualStyleBackColor = true;
-            this.btnDeleteConfig.Click += new System.EventHandler(this.btnDeleteConfig_Click);
+            this.ConfigList.AllowUserToAddRows = false;
+            this.ConfigList.AllowUserToDeleteRows = false;
+            this.ConfigList.AllowUserToResizeRows = false;
+            this.ConfigList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.ConfigList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ConfigDefault,
+            this.ConfigName,
+            this.ConfigBits,
+            this.ConfigDir});
+            this.ConfigList.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.ConfigList.Location = new System.Drawing.Point(6, 24);
+            this.ConfigList.Name = "ConfigList";
+            this.ConfigList.RowHeadersVisible = false;
+            this.ConfigList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.ConfigList.Size = new System.Drawing.Size(430, 161);
+            this.ConfigList.TabIndex = 1;
             // 
-            // selectConfig
+            // ConfigDefault
             // 
-            this.selectConfig.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.selectConfig.FormattingEnabled = true;
-            this.selectConfig.Location = new System.Drawing.Point(106, 7);
-            this.selectConfig.Name = "selectConfig";
-            this.selectConfig.Size = new System.Drawing.Size(296, 21);
-            this.selectConfig.TabIndex = 1;
-            this.selectConfig.SelectedIndexChanged += new System.EventHandler(this.selectConfig_SelectedIndexChanged);
+            this.ConfigDefault.HeaderText = "Default";
+            this.ConfigDefault.Name = "ConfigDefault";
+            this.ConfigDefault.ReadOnly = true;
+            this.ConfigDefault.Width = 50;
             // 
-            // label15
+            // ConfigName
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(8, 10);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(74, 13);
-            this.label15.TabIndex = 0;
-            this.label15.Text = "Config. Name:";
+            this.ConfigName.HeaderText = "Name";
+            this.ConfigName.Name = "ConfigName";
+            this.ConfigName.ReadOnly = true;
             // 
-            // label22
+            // ConfigBits
             // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(9, 175);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(67, 13);
-            this.label22.TabIndex = 12;
-            this.label22.Text = "LW Binaries:";
+            this.ConfigBits.HeaderText = "32/64 Bit";
+            this.ConfigBits.Name = "ConfigBits";
+            this.ConfigBits.ReadOnly = true;
+            this.ConfigBits.Width = 75;
             // 
-            // tabPage4
+            // ConfigDir
             // 
-            this.tabPage4.Controls.Add(this.label21);
-            this.tabPage4.Controls.Add(this.textSMTPPassword);
-            this.tabPage4.Controls.Add(this.textSTMPUser);
-            this.tabPage4.Controls.Add(this.label20);
-            this.tabPage4.Controls.Add(this.textSMTPServer);
-            this.tabPage4.Controls.Add(this.label19);
-            this.tabPage4.Controls.Add(this.textMailFrom);
-            this.tabPage4.Controls.Add(this.label18);
-            this.tabPage4.Controls.Add(this.label17);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(442, 219);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Email Setup";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.ConfigDir.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ConfigDir.HeaderText = "Path";
+            this.ConfigDir.Name = "ConfigDir";
+            this.ConfigDir.ReadOnly = true;
+            // 
+            // tabLogging
+            // 
+            this.tabLogging.Controls.Add(this.cbEnableLogging);
+            this.tabLogging.Controls.Add(this.SelectLogFile);
+            this.tabLogging.Controls.Add(this.textLogFile);
+            this.tabLogging.Controls.Add(this.label14);
+            this.tabLogging.Location = new System.Drawing.Point(4, 22);
+            this.tabLogging.Name = "tabLogging";
+            this.tabLogging.Padding = new System.Windows.Forms.Padding(3);
+            this.tabLogging.Size = new System.Drawing.Size(442, 219);
+            this.tabLogging.TabIndex = 0;
+            this.tabLogging.Text = "Logging";
+            this.tabLogging.UseVisualStyleBackColor = true;
+            // 
+            // cbEnableLogging
+            // 
+            this.cbEnableLogging.AutoSize = true;
+            this.cbEnableLogging.Location = new System.Drawing.Point(62, 42);
+            this.cbEnableLogging.Name = "cbEnableLogging";
+            this.cbEnableLogging.Size = new System.Drawing.Size(100, 17);
+            this.cbEnableLogging.TabIndex = 8;
+            this.cbEnableLogging.Text = "Enable Logging";
+            this.cbEnableLogging.UseVisualStyleBackColor = true;
+            this.cbEnableLogging.CheckedChanged += new System.EventHandler(this.cbEnableLogging_CheckedChanged);
+            // 
+            // SelectLogFile
+            // 
+            this.SelectLogFile.Image = global::Amleto.Properties.Resources.folder_explore;
+            this.SelectLogFile.Location = new System.Drawing.Point(374, 63);
+            this.SelectLogFile.Name = "SelectLogFile";
+            this.SelectLogFile.Size = new System.Drawing.Size(31, 23);
+            this.SelectLogFile.TabIndex = 7;
+            this.SelectLogFile.UseVisualStyleBackColor = true;
+            this.SelectLogFile.Click += new System.EventHandler(this.SelectLogFile_Click);
+            // 
+            // tabNetwork
+            // 
+            this.tabNetwork.Controls.Add(this.textPort);
+            this.tabNetwork.Controls.Add(this.label2);
+            this.tabNetwork.Controls.Add(this.checkAutoPort);
+            this.tabNetwork.Controls.Add(this.label3);
+            this.tabNetwork.Controls.Add(this.label7);
+            this.tabNetwork.Controls.Add(this.label8);
+            this.tabNetwork.Location = new System.Drawing.Point(4, 22);
+            this.tabNetwork.Name = "tabNetwork";
+            this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
+            this.tabNetwork.Size = new System.Drawing.Size(442, 219);
+            this.tabNetwork.TabIndex = 1;
+            this.tabNetwork.Text = "Network";
+            this.tabNetwork.UseVisualStyleBackColor = true;
+            // 
+            // tabEmail
+            // 
+            this.tabEmail.Controls.Add(this.label21);
+            this.tabEmail.Controls.Add(this.textSMTPPassword);
+            this.tabEmail.Controls.Add(this.textSTMPUser);
+            this.tabEmail.Controls.Add(this.label20);
+            this.tabEmail.Controls.Add(this.textSMTPServer);
+            this.tabEmail.Controls.Add(this.label19);
+            this.tabEmail.Controls.Add(this.textMailFrom);
+            this.tabEmail.Controls.Add(this.label18);
+            this.tabEmail.Controls.Add(this.label17);
+            this.tabEmail.Location = new System.Drawing.Point(4, 22);
+            this.tabEmail.Name = "tabEmail";
+            this.tabEmail.Size = new System.Drawing.Size(442, 219);
+            this.tabEmail.TabIndex = 3;
+            this.tabEmail.Text = "Email Setup";
+            this.tabEmail.UseVisualStyleBackColor = true;
             // 
             // label21
             // 
@@ -476,7 +389,7 @@ namespace Amleto
             this.label21.Size = new System.Drawing.Size(413, 33);
             this.label21.TabIndex = 0;
             this.label21.Text = "Settings to use if you want to use the email notification feature of Amleto. Inco" +
-                "rrect settings may prevent emails notifications.";
+    "rrect settings may prevent emails notifications.";
             // 
             // textSMTPPassword
             // 
@@ -569,7 +482,7 @@ namespace Amleto
             this.label23.Size = new System.Drawing.Size(413, 33);
             this.label23.TabIndex = 5;
             this.label23.Text = "If you change these settings you will need to restart Amleto in order to make the" +
-                "m active.";
+    "m active.";
             // 
             // testUrl
             // 
@@ -632,19 +545,19 @@ namespace Amleto
             this.offerWebInterface.UseVisualStyleBackColor = true;
             this.offerWebInterface.CheckedChanged += new System.EventHandler(this.offerWebInterface_CheckedChanged);
             // 
-            // tabPage5
+            // tabDrives
             // 
-            this.tabPage5.Controls.Add(this.listMapDrives);
-            this.tabPage5.Controls.Add(this.btnAddDrive);
-            this.tabPage5.Controls.Add(this.btnDelDrive);
-            this.tabPage5.Controls.Add(this.lblMappedDrives);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(442, 219);
-            this.tabPage5.TabIndex = 5;
-            this.tabPage5.Text = "Network drives";
-            this.tabPage5.UseVisualStyleBackColor = true;
+            this.tabDrives.Controls.Add(this.listMapDrives);
+            this.tabDrives.Controls.Add(this.btnAddDrive);
+            this.tabDrives.Controls.Add(this.btnDelDrive);
+            this.tabDrives.Controls.Add(this.lblMappedDrives);
+            this.tabDrives.Location = new System.Drawing.Point(4, 22);
+            this.tabDrives.Name = "tabDrives";
+            this.tabDrives.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDrives.Size = new System.Drawing.Size(442, 219);
+            this.tabDrives.TabIndex = 5;
+            this.tabDrives.Text = "Network drives";
+            this.tabDrives.UseVisualStyleBackColor = true;
             // 
             // listMapDrives
             // 
@@ -719,27 +632,6 @@ namespace Amleto
             // 
             this.errorProvider.ContainerControl = this;
             // 
-            // SelectLogFile
-            // 
-            this.SelectLogFile.Image = global::Amleto.Properties.Resources.folder_explore;
-            this.SelectLogFile.Location = new System.Drawing.Point(374, 63);
-            this.SelectLogFile.Name = "SelectLogFile";
-            this.SelectLogFile.Size = new System.Drawing.Size(31, 23);
-            this.SelectLogFile.TabIndex = 7;
-            this.SelectLogFile.UseVisualStyleBackColor = true;
-            this.SelectLogFile.Click += new System.EventHandler(this.SelectLogFile_Click);
-            // 
-            // cbEnableLogging
-            // 
-            this.cbEnableLogging.AutoSize = true;
-            this.cbEnableLogging.Location = new System.Drawing.Point(62, 42);
-            this.cbEnableLogging.Name = "cbEnableLogging";
-            this.cbEnableLogging.Size = new System.Drawing.Size(100, 17);
-            this.cbEnableLogging.TabIndex = 8;
-            this.cbEnableLogging.Text = "Enable Logging";
-            this.cbEnableLogging.UseVisualStyleBackColor = true;
-            this.cbEnableLogging.CheckedChanged += new System.EventHandler(this.cbEnableLogging_CheckedChanged);
-            // 
             // SetupWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -759,17 +651,18 @@ namespace Amleto
             this.Text = "Preferences";
             this.Load += new System.EventHandler(this.SetupWin_Load);
             this.tabs.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
+            this.tabConfigs.ResumeLayout(false);
+            this.tabConfigs.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ConfigList)).EndInit();
+            this.tabLogging.ResumeLayout(false);
+            this.tabLogging.PerformLayout();
+            this.tabNetwork.ResumeLayout(false);
+            this.tabNetwork.PerformLayout();
+            this.tabEmail.ResumeLayout(false);
+            this.tabEmail.PerformLayout();
             this.tabWeb.ResumeLayout(false);
             this.tabWeb.PerformLayout();
-            this.tabPage5.ResumeLayout(false);
+            this.tabDrives.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.listMapDrives)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
@@ -785,30 +678,15 @@ namespace Amleto
         private System.Windows.Forms.CheckBox checkAutoPort;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textPort;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textProgPath;
-        private System.Windows.Forms.Button btnSelectProg;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textConfigPath;
-        private System.Windows.Forms.Button btnSelectConfig;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textPluginPath;
-        private System.Windows.Forms.Button btnSelectPlugin;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox textLogFile;
         private System.Windows.Forms.TabControl tabs;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.ComboBox selectConfig;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Button btnDeleteConfig;
-        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabLogging;
+        private System.Windows.Forms.TabPage tabNetwork;
+        private System.Windows.Forms.TabPage tabConfigs;
+        private System.Windows.Forms.TabPage tabEmail;
         private System.Windows.Forms.TextBox textSMTPPassword;
         private System.Windows.Forms.TextBox textSTMPUser;
         private System.Windows.Forms.Label label20;
@@ -818,9 +696,6 @@ namespace Amleto
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.RadioButton bits64;
-        private System.Windows.Forms.RadioButton bits32;
-        private System.Windows.Forms.Label label22;
         private System.Windows.Forms.TabPage tabWeb;
         private System.Windows.Forms.Label lblWebPort;
         private System.Windows.Forms.CheckBox offerWebInterface;
@@ -830,7 +705,7 @@ namespace Amleto
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.ErrorProvider errorProvider;
-        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.TabPage tabDrives;
         private System.Windows.Forms.Label lblMappedDrives;
         private System.Windows.Forms.DataGridView listMapDrives;
         private System.Windows.Forms.Button btnAddDrive;
@@ -841,5 +716,14 @@ namespace Amleto
         private System.Windows.Forms.DataGridViewTextBoxColumn drivePassword;
         private System.Windows.Forms.CheckBox cbEnableLogging;
         private System.Windows.Forms.Button SelectLogFile;
+        private System.Windows.Forms.Button SetDefault;
+        private System.Windows.Forms.Button AddConfig;
+        private System.Windows.Forms.Button DeleteConfig;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView ConfigList;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ConfigDefault;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ConfigName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ConfigBits;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ConfigDir;
     }
 }

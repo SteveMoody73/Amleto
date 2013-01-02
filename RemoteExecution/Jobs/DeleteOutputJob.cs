@@ -10,7 +10,7 @@ namespace RemoteExecution.Jobs
     {
     	public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            string baseDir = "" + Directory.GetParent(ClientServices.ClientDir + "\\Output\\");
+            string baseDir = Path.Combine(ClientServices.GetClientDir(), "Output");
 
             try
             {
