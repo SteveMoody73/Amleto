@@ -56,11 +56,11 @@ namespace RemoteExecution.Jobs
                         {
                             if (line.ToUpper().Contains("MODULE \"") || line.StartsWith("  Module \""))
                             {
-                                // Get the original plugin filename path
-                                string originalPluging = line.Replace(@"\\", @"\").Trim();
-                                originalPluging = originalPluging.Substring(originalPluging.IndexOf("\""));
-                                originalPluging = originalPluging.Remove(originalPluging.Length - 1);
-                                string name = Path.GetFileNameWithoutExtension(originalPluging);
+                                // Get the original plugin filename path and replace it with the new path
+                                string originalPlugin = line.Replace(@"\\", @"\").Trim();
+                                originalPlugin = originalPlugin.Substring(originalPlugin.IndexOf("\"") + 1);
+                                originalPlugin = originalPlugin.Replace('\"', ' ').Trim();
+                                string name = Path.GetFileName(originalPlugin);
                                 string newPlugin = Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName);
                                 newPlugin = Path.Combine(Path.Combine(newPlugin, "ExtPlugins"), name);
                                 writer.WriteLine("  Module \"" + newPlugin.Replace(@"\", @"\\") + "\"");

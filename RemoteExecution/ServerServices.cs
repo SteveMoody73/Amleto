@@ -259,29 +259,29 @@ namespace RemoteExecution
         {
             if (_currConnection == null)
                 return new byte[] { };
-            string path = "";
+            string file = "";
             switch (t)
             {
                 case FileType.Absolute:
-                    path = "";
+                    file = filename;
                     break;
                 case FileType.Config:
-                    path = Configs[_currConnection.Config].ConfigPath + "\\";
+                    file = Path.Combine(Configs[_currConnection.Config].ConfigPath, filename);
                     break;
                 case FileType.Program:
-                    path = Configs[_currConnection.Config].ProgramPath + "\\";
+                    file = Path.Combine(Configs[_currConnection.Config].ProgramPath, filename);
                     break;
                 case FileType.Plugin:
-                    path = Configs[_currConnection.Config].PluginPath + "\\";
+                    file = Path.Combine(Configs[_currConnection.Config].PluginPath, filename);
                     break;
                 case FileType.Support:
-                    path = Configs[_currConnection.Config].SupportPath + "\\";
+                    file = Path.Combine(Configs[_currConnection.Config].SupportPath, filename);
                     break;
             }
 
-            if (!File.Exists(path + filename))
+            if (!File.Exists(file))
                 return null;
-            return File.ReadAllBytes(path + filename);
+            return File.ReadAllBytes(file);
         }
 
         private static ClientConnection ReturnClient(int id)
@@ -566,11 +566,11 @@ namespace RemoteExecution
         public List<string> GetExtPluginFileList()
         {
             string lwExtFile = Path.GetFileName(Configs[_currConnection.Config].ConfigFile).ToUpper().Replace("LW", "LWEXT");
-            lwExtFile = Path.Combine(Configs[_currConnection.Config].ConfigFile, lwExtFile);
+            lwExtFile = Path.Combine(Configs[_currConnection.Config].ConfigPath, lwExtFile);
            
             List<string> res = new List<string>();
 
-            if (_currConnection == null || lwExtFile != "")
+            if (_currConnection == null || lwExtFile == "")
                 return new List<string>();
 
             try
@@ -582,7 +582,7 @@ namespace RemoteExecution
                     {
                         string plugin = line.Replace(@"\\", @"\").Trim();
                         plugin = plugin.Substring(plugin.IndexOf("\""));
-                        plugin = plugin.Remove(plugin.Length - 1);
+                        plugin = plugin.Replace('\"', ' ').Trim();
                         res.Add(plugin);
                     }
                 }

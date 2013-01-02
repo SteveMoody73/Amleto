@@ -42,6 +42,7 @@ namespace RemoteExecution.Jobs
                 {
                     messageBack(0, "Downloading " + _remoteFile);
                     byte[] res = Server.GetFile(FileType.Absolute, _remoteFile);
+                    Directory.CreateDirectory(Path.GetDirectoryName(localFile));
                     FileStream stream = File.Create(localFile, res.Length);
                     stream.Write(res, 0, res.Length);
                     stream.Close();

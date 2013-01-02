@@ -23,8 +23,9 @@ namespace RemoteExecution.Jobs
 
             try
             {
+                string remoteFileName = Path.GetFileName(_file);
                 string localPath = Path.Combine(Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName), "ExtPlugins");
-                string localFile = Path.Combine(localPath, Path.GetFileName(_file));
+                string localFile = Path.Combine(localPath, remoteFileName);
                 Directory.CreateDirectory(localPath);
             
                 if (_force || !File.Exists(localFile))
@@ -35,7 +36,7 @@ namespace RemoteExecution.Jobs
                     stream.Close();
                     stream.Dispose();
                 }
-                messageBack(0, "Saved at " + _file);
+                messageBack(0, "Saved at " + remoteFileName);
             }
             catch (Exception e)
             {

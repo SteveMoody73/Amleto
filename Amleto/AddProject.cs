@@ -495,198 +495,205 @@ namespace Amleto
             string[] lines = _server.FileReadAllLines(textScene.Text);
             foreach (string l in lines)
             {
-                if (l.StartsWith("CameraName "))
+                try
                 {
-                    _cameras.Add(new CameraSettings { Width = 640, Height = 480, Aspect = 1.0, UseGlobalResolution = false });
-                    camerapos++;
-                    cameraName.Items.Add(l.Substring(l.LastIndexOf(' ') + 1));
-                    cameraName.SelectedIndex = 0;
-                }
-                else if (l.StartsWith("FrameSize "))
-                {
-                    string[] p = l.Split(' ');
-                    try
+                    if (l.StartsWith("CameraName "))
                     {
-                        _cameras[camerapos].Width = int.Parse(p[1]);
-                        _cameras[camerapos].Height = int.Parse(p[2]);
+                        _cameras.Add(new CameraSettings { Width = 640, Height = 480, Aspect = 1.0, UseGlobalResolution = false });
+                        camerapos++;
+                        cameraName.Items.Add(l.Substring(l.LastIndexOf(' ') + 1));
+                        cameraName.SelectedIndex = 0;
                     }
-                    catch (Exception ex)
+                    else if (l.StartsWith("FrameSize "))
                     {
-						Debug.WriteLine("Error splitting FrameSize: " + ex);
+                        string[] p = l.Split(' ');
+                        try
+                        {
+                            _cameras[camerapos].Width = int.Parse(p[1]);
+                            _cameras[camerapos].Height = int.Parse(p[2]);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("Error splitting FrameSize: " + ex);
+                        }
                     }
-                }
-                else if (l.StartsWith("UseGlobalResolution "))
-                {
-                    string[] p = l.Split(' ');
-                    if (p[1][0] == '0')
-                        _cameras[camerapos].UseGlobalResolution = false;
-                    else
-                        _cameras[camerapos].UseGlobalResolution = true;
-                }
-                else if (l.StartsWith("PixelAspect "))
-                {
-                    string[] p = l.Split(' ');
-                    try
+                    else if (l.StartsWith("UseGlobalResolution "))
                     {
-                        _cameras[camerapos].Aspect = double.Parse(p[1]);
+                        string[] p = l.Split(' ');
+                        if (p[1][0] == '0')
+                            _cameras[camerapos].UseGlobalResolution = false;
+                        else
+                            _cameras[camerapos].UseGlobalResolution = true;
                     }
-                    catch (Exception ex)
+                    else if (l.StartsWith("PixelAspect "))
                     {
-						Debug.WriteLine("Error PixelAspect: " + ex);
+                        string[] p = l.Split(' ');
+                        try
+                        {
+                            _cameras[camerapos].Aspect = double.Parse(p[1]);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("Error PixelAspect: " + ex);
+                        }
                     }
-                }
-                else if (l.StartsWith("Plugin CameraHandler"))
-                {
-                    string[] p = l.Split(' ');
-                    _cameraTypes.Add(p[3]);
-                }
-                else if (l.StartsWith("CurrentCamera"))
-                {
-                    try
+                    else if (l.StartsWith("Plugin CameraHandler"))
                     {
-                        currentCamera = int.Parse(l.Substring(l.LastIndexOf(' ') + 1));
-                        cameraName.SelectedIndex = currentCamera;
-                        cameraType.Text = _cameraTypes[cameraName.SelectedIndex];
+                        string[] p = l.Split(' ');
+                        _cameraTypes.Add(p[3]);
                     }
-                    catch (Exception ex)
+                    else if (l.StartsWith("CurrentCamera"))
                     {
-						Debug.WriteLine("Error CurrentCamera: " + ex);
+                        try
+                        {
+                            currentCamera = int.Parse(l.Substring(l.LastIndexOf(' ') + 1));
+                            cameraName.SelectedIndex = currentCamera;
+                            cameraType.Text = _cameraTypes[cameraName.SelectedIndex];
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("Error CurrentCamera: " + ex);
+                        }
                     }
-                }
-                else if (l.StartsWith("AASamples "))
-                    cameraAntialias.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("Sampler "))
-                    samplingPattern.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("EnableRadiosity"))
-                    radiosityType.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("RadiosityType") && radiosityType.SelectedIndex > 0)
-                    radiosityType.SelectedIndex += Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("RadiosityInterpolated"))
-                    interpolatedGI.Checked = l.EndsWith("1");
-                else if (l.StartsWith("RadiosityTransparency"))
-                    backdropTranspGI.Checked = l.EndsWith("1");
-                else if (l.StartsWith("CacheRadiosity"))
-                    cachedGI.Checked = l.EndsWith("1");
-                else if (l.StartsWith("VolumetricRadiosity"))
-                    volumetricGI.Checked = !l.EndsWith("0");
-                else if (l.StartsWith("RadiosityUseAmbient"))
-                    useAmbientGI.Checked = l.EndsWith("1");
-                else if (l.StartsWith("RadiosityDirectionalRays"))
-                    directionalGI.Checked = l.EndsWith("1");
-                else if (l.StartsWith("RadiosityIntensity"))
-                    intensityGI.Text = "" + (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1)) * 100.0);
-                else if (l.StartsWith("RadiosityTolerance"))
-                    toleranceGI.Text = string.Format("{0:0.00}", (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1)) * 100.0));
-                else if (l.StartsWith("RadiosityRays"))
-                    rayGI.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("RadiosityMinSpacing"))
-                    minEvalGI.Text = string.Format("{0:0.00}", (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1)) * 1000.0));
-                else if (l.StartsWith("RadiosityMinPixelSpacing"))
-                    minPixelGI.Text = string.Format("{0:0.00}", (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1))));
-                else if (l.StartsWith("IndirectBounces"))
-                    indirectGI.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("Plugin MasterHandler"))
-                {
-                    string[] p = l.Split(' ');
-                    masterList.Items.Add(p[3], _server.IsStripped(p[3]));
-                }
-                else if (l.StartsWith("SaveAlpha "))
-                {
-                    if (l.EndsWith("1"))
-                        SaveAlpha.Checked = true;
-                    else
-                        SaveAlpha.Checked = false;
-                }
-                else if (l.StartsWith("SaveAlphaImagesPrefix "))
-                {
-                    AlphaPrefix.Text = l.Substring(l.LastIndexOf('\\') + 1);
-                }
-                else if (l.StartsWith("SaveRGBImagesPrefix "))
-                {
-                    textOutputDir.Text = Directory.GetParent(l.Substring(20)).FullName;
-                    textPrefix.Text = l.Substring(l.LastIndexOf('\\') + 1);
-                }
-                else if (l.StartsWith("AlphaImageSaver "))
-                {
-                    string imgFormat = l.Substring(l.IndexOf(' ') + 1);
-                    AlphaImageFormat.SelectedIndex = _server.ImageFormats(0).IndexOf(imgFormat);
-                }
-                else if (l.StartsWith("FirstFrame "))
-                    textStartFrame.Text = l.Substring(l.LastIndexOf(' ') + 1);
-                else if (l.StartsWith("LastFrame "))
-                    textEndFrame.Text = l.Substring(l.LastIndexOf(' ') + 1);
-                else if (l.StartsWith("FrameStep "))
-                    textFrameStep.Text = l.Substring(l.LastIndexOf(' ') + 1);
-                else if (l.StartsWith("RGBImageSaver "))
-                {
-                    string imgFormat = l.Substring(l.IndexOf(' ') + 1);
-                    listImageFormat.SelectedIndex = _server.ImageFormats(0).IndexOf(imgFormat);
-                }
-                else if (l.StartsWith("OutputFilenameFormat "))
-                    listOuputFormat.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("RenderMode "))
-                    renderMode.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("RayTraceEffects "))
-                {
-                    int effect = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                    traceShadow.Checked = ((effect & 1) != 0);
-                    traceReflection.Checked = ((effect & 2) != 0);
-                    traceRefraction.Checked = ((effect & 4) != 0);
-                    traceTransp.Checked = ((effect & 8) != 0);
-                    traceOcclusion.Checked = ((effect & 16) != 0);
-                }
-                else if (l.StartsWith("GlobalFrameSize "))
-                {
-                    string[] p = l.Split(' ');
-                    imageWidth.Text = p[1];
-                    imageHeight.Text = p[2];
-                }
-                else if (l.StartsWith("GlobalPixelAspect "))
-                    imageAspect.Text = l.Substring(l.LastIndexOf(' ') + 1);
-                else if (l.StartsWith("RayRecursionLimit "))
-                    recusionLimit.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                else if (l.StartsWith("RenderLines "))
-                {
-                    if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
-                        renderLine.Checked = true;
-                }
-                else if (l.StartsWith("AdaptiveSampling "))
-                {
-                    if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
-                        adaptiveSampling.Checked = true;
-                }
-                else if (l.StartsWith("AdaptiveThreshold "))
-                    adaptiveThreshold.Text = l.Substring(l.LastIndexOf(' ') + 1);
-                else if (l.StartsWith("FilterType "))
-                {
-                    if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
-                        softFilter.Checked = true;
-                }
-                else if (l.StartsWith("Antialiasing "))
-                {
-                    antialias = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                }
-                else if (l.StartsWith("EnhancedAA "))
-                {
-                    if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
-                        enhance = true;
-                }
-                else if (l.StartsWith("AntiAliasingLevel "))
-                {
-                    antialiaslevel = true;
-                    int n = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
-                    if (n > 0)
-                        antialias = 1 + n;
-                    else if (antialias > 0)
+                    else if (l.StartsWith("AASamples "))
+                        cameraAntialias.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("Sampler "))
+                        samplingPattern.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("EnableRadiosity"))
+                        radiosityType.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("RadiosityType") && radiosityType.SelectedIndex > 0)
+                        radiosityType.SelectedIndex += Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("RadiosityInterpolated"))
+                        interpolatedGI.Checked = l.EndsWith("1");
+                    else if (l.StartsWith("RadiosityTransparency"))
+                        backdropTranspGI.Checked = l.EndsWith("1");
+                    else if (l.StartsWith("CacheRadiosity"))
+                        cachedGI.Checked = l.EndsWith("1");
+                    else if (l.StartsWith("VolumetricRadiosity"))
+                        volumetricGI.Checked = !l.EndsWith("0");
+                    else if (l.StartsWith("RadiosityUseAmbient"))
+                        useAmbientGI.Checked = l.EndsWith("1");
+                    else if (l.StartsWith("RadiosityDirectionalRays"))
+                        directionalGI.Checked = l.EndsWith("1");
+                    else if (l.StartsWith("RadiosityIntensity"))
+                        intensityGI.Text = "" + (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1)) * 100.0);
+                    else if (l.StartsWith("RadiosityTolerance"))
+                        toleranceGI.Text = string.Format("{0:0.00}", (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1)) * 100.0));
+                    else if (l.StartsWith("RadiosityRays"))
+                        rayGI.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("RadiosityMinSpacing"))
+                        minEvalGI.Text = string.Format("{0:0.00}", (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1)) * 1000.0));
+                    else if (l.StartsWith("RadiosityMinPixelSpacing"))
+                        minPixelGI.Text = string.Format("{0:0.00}", (Convert.ToDouble(l.Substring(l.LastIndexOf(' ') + 1))));
+                    else if (l.StartsWith("IndirectBounces"))
+                        indirectGI.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("Plugin MasterHandler"))
                     {
-                        antialias = antialias * 2 + 14;
-                        if (enhance)
-                            antialias++;
+                        string[] p = l.Split(' ');
+                        masterList.Items.Add(p[3], _server.IsStripped(p[3]));
+                    }
+                    else if (l.StartsWith("SaveAlpha "))
+                    {
+                        if (l.EndsWith("1"))
+                            SaveAlpha.Checked = true;
+                        else
+                            SaveAlpha.Checked = false;
+                    }
+                    else if (l.StartsWith("SaveAlphaImagesPrefix "))
+                    {
+                        AlphaPrefix.Text = l.Substring(l.LastIndexOf('\\') + 1);
+                    }
+                    else if (l.StartsWith("SaveRGBImagesPrefix "))
+                    {
+                        textOutputDir.Text = Directory.GetParent(l.Substring(20)).FullName;
+                        textPrefix.Text = l.Substring(l.LastIndexOf('\\') + 1);
+                    }
+                    else if (l.StartsWith("AlphaImageSaver "))
+                    {
+                        string imgFormat = l.Substring(l.IndexOf(' ') + 1);
+                        AlphaImageFormat.SelectedIndex = _server.ImageFormats(0).IndexOf(imgFormat);
+                    }
+                    else if (l.StartsWith("FirstFrame "))
+                        textStartFrame.Text = l.Substring(l.LastIndexOf(' ') + 1);
+                    else if (l.StartsWith("LastFrame "))
+                        textEndFrame.Text = l.Substring(l.LastIndexOf(' ') + 1);
+                    else if (l.StartsWith("FrameStep "))
+                        textFrameStep.Text = l.Substring(l.LastIndexOf(' ') + 1);
+                    else if (l.StartsWith("RGBImageSaver "))
+                    {
+                        string imgFormat = l.Substring(l.IndexOf(' ') + 1);
+                        listImageFormat.SelectedIndex = _server.ImageFormats(0).IndexOf(imgFormat);
+                    }
+                    else if (l.StartsWith("OutputFilenameFormat "))
+                        listOuputFormat.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("RenderMode "))
+                        renderMode.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("RayTraceEffects "))
+                    {
+                        int effect = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                        traceShadow.Checked = ((effect & 1) != 0);
+                        traceReflection.Checked = ((effect & 2) != 0);
+                        traceRefraction.Checked = ((effect & 4) != 0);
+                        traceTransp.Checked = ((effect & 8) != 0);
+                        traceOcclusion.Checked = ((effect & 16) != 0);
+                    }
+                    else if (l.StartsWith("GlobalFrameSize "))
+                    {
+                        string[] p = l.Split(' ');
+                        imageWidth.Text = p[1];
+                        imageHeight.Text = p[2];
+                    }
+                    else if (l.StartsWith("GlobalPixelAspect "))
+                        imageAspect.Text = l.Substring(l.LastIndexOf(' ') + 1);
+                    else if (l.StartsWith("RayRecursionLimit "))
+                        recusionLimit.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("RenderLines "))
+                    {
+                        if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
+                            renderLine.Checked = true;
+                    }
+                    else if (l.StartsWith("AdaptiveSampling "))
+                    {
+                        if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
+                            adaptiveSampling.Checked = true;
+                    }
+                    else if (l.StartsWith("AdaptiveThreshold "))
+                        adaptiveThreshold.Text = l.Substring(l.LastIndexOf(' ') + 1);
+                    else if (l.StartsWith("FilterType "))
+                    {
+                        if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
+                            softFilter.Checked = true;
+                    }
+                    else if (l.StartsWith("Antialiasing "))
+                    {
+                        antialias = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    }
+                    else if (l.StartsWith("EnhancedAA "))
+                    {
+                        if (l.Substring(l.LastIndexOf(' ') + 1) == "1")
+                            enhance = true;
+                    }
+                    else if (l.StartsWith("AntiAliasingLevel "))
+                    {
+                        antialiaslevel = true;
+                        int n = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                        if (n > 0)
+                            antialias = 1 + n;
+                        else if (antialias > 0)
+                        {
+                            antialias = antialias * 2 + 14;
+                            if (enhance)
+                                antialias++;
+                        }
+                    }
+                    else if (l.StartsWith("ReconstructionFilter "))
+                    {
+                        reconFilter.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
                     }
                 }
-                else if (l.StartsWith("ReconstructionFilter "))
+                catch (Exception e)
                 {
-                    reconFilter.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    Debug.WriteLine("Error processing line: " + l + "\n" + e);
                 }
             }
 
