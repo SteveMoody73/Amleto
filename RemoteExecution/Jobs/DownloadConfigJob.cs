@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace RemoteExecution.Jobs
@@ -23,27 +24,34 @@ namespace RemoteExecution.Jobs
             Directory.CreateDirectory(localPath);
 			if (!File.Exists(localFile))
             {
-                byte[] res = Server.GetFile(FileType.Config, _file);
-                FileStream stream = File.Create(localFile, res.Length);
-                stream.Write(res, 0, res.Length);
-                stream.Close();
-                stream.Dispose();
-
-				if (ClientServices.IsMainConfig(localFile))
+                try
                 {
-                    string[] lines = File.ReadAllLines(localFile);
-                    StreamWriter writer = new StreamWriter(localFile);
-                    foreach (string line in lines)
+                    byte[] res = Server.GetFile(FileType.Config, _file);
+                    FileStream stream = File.Create(localFile, res.Length);
+                    stream.Write(res, 0, res.Length);
+                    stream.Close();
+                    stream.Dispose();
+
+				    if (ClientServices.IsMainConfig(localFile))
                     {
-                        if (line.StartsWith("DefaultSegmentMemory"))
-                            writer.WriteLine("DefaultSegmentMemory " + (ClientServices.Settings.MemorySegment * 1024 * 1024));
-                        else if (line.StartsWith("RenderThreads"))
-                            writer.WriteLine("RenderThreads "+ClientServices.Settings.NumThreads);
-                        else
-                            writer.WriteLine(line);
+                        string[] lines = File.ReadAllLines(localFile);
+                        StreamWriter writer = new StreamWriter(localFile);
+                        foreach (string line in lines)
+                        {
+                            if (line.StartsWith("DefaultSegmentMemory"))
+                                writer.WriteLine("DefaultSegmentMemory " + (ClientServices.Settings.MemorySegment * 1024 * 1024));
+                            else if (line.StartsWith("RenderThreads"))
+                                writer.WriteLine("RenderThreads "+ClientServices.Settings.NumThreads);
+                            else
+                                writer.WriteLine(line);
+                        }
+                        writer.Close();
+                        writer.Dispose();
                     }
-                    writer.Close();
-                    writer.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("DownloadConfigJob: " + e);
                 }
             }
             messageBack(0,"Saved at " + _file);

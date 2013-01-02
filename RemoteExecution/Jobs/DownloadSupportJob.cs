@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace RemoteExecution.Jobs
@@ -22,20 +24,28 @@ namespace RemoteExecution.Jobs
             localFolder = Path.Combine(localFolder, "Support");
             string localFile = Path.Combine(localFolder, _file);
             string destinationFolder = Path.GetDirectoryName(localFile);
-            
-            Directory.CreateDirectory(localFolder);
-            Directory.CreateDirectory(destinationFolder);
-            
-            if (_force || !File.Exists(localFile))
-            {
-                byte[] res = Server.GetFile(FileType.Support, _file);
-                FileStream stream = File.Create(localFile, res.Length);
-                stream.Write(res, 0, res.Length);
-                stream.Close();
-                stream.Dispose();
-            }
 
-            messageBack(0, "Saved at " + _file);
+            try
+            {
+                Directory.CreateDirectory(localFolder);
+                if (destinationFolder != null)
+                    Directory.CreateDirectory(destinationFolder);
+
+                if (_force || !File.Exists(localFile))
+                {
+                    byte[] res = Server.GetFile(FileType.Support, _file);
+                    FileStream stream = File.Create(localFile, res.Length);
+                    stream.Write(res, 0, res.Length);
+                    stream.Close();
+                    stream.Dispose();
+                }
+
+                messageBack(0, "Saved at " + _file);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("DownloadSupportJob: " + e);
+            }
         }
     }
 }

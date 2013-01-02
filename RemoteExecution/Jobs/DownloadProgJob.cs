@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace RemoteExecution.Jobs
@@ -24,18 +25,24 @@ namespace RemoteExecution.Jobs
             localFolder = Path.Combine(localFolder, "Program");
             string localFile = Path.Combine(localFolder, _file);
 
-            Directory.CreateDirectory(localFolder);
-
-            if (_force || !File.Exists(localFile))
+            try
             {
-                byte[] res = Server.GetFile(FileType.Program,_file);
-                FileStream stream = File.Create(localFile, res.Length);
-                stream.Write(res, 0, res.Length);
-                stream.Close();
-                stream.Dispose();
-            }
+                Directory.CreateDirectory(localFolder);
 
-            messageBack(0,"Saved at " + _file);
+                if (_force || !File.Exists(localFile))
+                {
+                    byte[] res = Server.GetFile(FileType.Program, _file);
+                    FileStream stream = File.Create(localFile, res.Length);
+                    stream.Write(res, 0, res.Length);
+                    stream.Close();
+                    stream.Dispose();
+                }
+                messageBack(0, "Saved at " + _file);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("DownloadProgJob: " + e);
+            }
         }
     }
 }
