@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 
 namespace RemoteExecution.Jobs
@@ -16,6 +17,7 @@ namespace RemoteExecution.Jobs
             List<string> support = Server.GetSupportFileList();
             List<string> plugins = Server.GetPluginFileList();
             List<string> config = Server.GetConfigFileList();
+    	    List<string> extPlugins = Server.GetExtPluginFileList();
 
             lock (jobs)
             {
@@ -25,6 +27,8 @@ namespace RemoteExecution.Jobs
                     jobs.Enqueue(new DownloadSupportJob(s, true));
                 foreach (string s in plugins)
                     jobs.Enqueue(new DownloadPluginJob(s, true));
+                foreach (string s in extPlugins)
+                    jobs.Enqueue(new DownloadExtraPluginsJob(s, false));
                 foreach (string s in config)
                     jobs.Enqueue(new DownloadConfigJob(s));
                 jobs.Enqueue(new ClientReadyJob());

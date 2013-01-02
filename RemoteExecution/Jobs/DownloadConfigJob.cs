@@ -48,6 +48,27 @@ namespace RemoteExecution.Jobs
                         writer.Close();
                         writer.Dispose();
                     }
+				    else if (localFile.ToUpper().Contains("LWEXT"))
+				    {
+				        string[] lines = File.ReadAllLines(localFile);
+                        StreamWriter writer = new StreamWriter(localFile);
+                        foreach (string line in lines)
+                        {
+                            if (line.ToUpper().Contains("MODULE \"") || line.StartsWith("  Module \""))
+                            {
+                                // Get the original plugin filename path
+                                string originalPluging = line.Replace(@"\\", @"\").Trim();
+                                originalPluging = originalPluging.Substring(originalPluging.IndexOf("\""));
+                                originalPluging = originalPluging.Remove(originalPluging.Length - 1);
+                                string name = Path.GetFileNameWithoutExtension(originalPluging);
+                                string newPlugin = Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName);
+                                newPlugin = Path.Combine(Path.Combine(newPlugin, "ExtPlugins"), name);
+                                writer.WriteLine("  Module \"" + newPlugin.Replace(@"\", @"\\") + "\"");
+                            }
+                            else
+                                writer.WriteLine(line);
+                        }				        
+				    }
                 }
                 catch (Exception e)
                 {

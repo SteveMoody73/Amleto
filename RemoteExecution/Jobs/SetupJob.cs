@@ -16,6 +16,7 @@ namespace RemoteExecution.Jobs
             List<string> support = Server.GetSupportFileList();
             List<string> plugins = Server.GetPluginFileList();
             List<string> config = Server.GetConfigFileList();
+    	    List<string> extPlugins = Server.GetExtPluginFileList();
 
             lock (jobs)
             {
@@ -35,10 +36,14 @@ namespace RemoteExecution.Jobs
                     if (!File.Exists(Path.Combine(Path.Combine(localPath, "Plugins"), s)))
                         jobs.Enqueue(new DownloadPluginJob(s, false));
                 }
+                foreach (string s in extPlugins)
+                {
+                    string file = Path.GetFileName(s);
+                    if (!File.Exists(Path.Combine(Path.Combine(localPath, "ExtPlugins"), file)))
+                        jobs.Enqueue(new DownloadExtraPluginsJob(s, false));
+                }
                 foreach (string s in config)
                 {
-                    string path = Path.Combine(localPath, "Config");
-                    string file = Path.Combine(path, s);
                     if (!File.Exists(Path.Combine(Path.Combine(localPath, "Config"), s)))
                         jobs.Enqueue(new DownloadConfigJob(s));
                 }

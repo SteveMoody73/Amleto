@@ -563,6 +563,38 @@ namespace RemoteExecution
             return res;
         }
 
+        public List<string> GetExtPluginFileList()
+        {
+            string lwExtFile = Path.GetFileName(Configs[_currConnection.Config].ConfigFile).ToUpper().Replace("LW", "LWEXT");
+            lwExtFile = Path.Combine(Configs[_currConnection.Config].ConfigFile, lwExtFile);
+           
+            List<string> res = new List<string>();
+
+            if (_currConnection == null || lwExtFile != "")
+                return new List<string>();
+
+            try
+            {
+                string[] lines = File.ReadAllLines(lwExtFile);
+                foreach (string line in lines)
+                {
+                    if (line.ToUpper().Contains("MODULE \"") || line.StartsWith("  Module \""))
+                    {
+                        string plugin = line.Replace(@"\\", @"\").Trim();
+                        plugin = plugin.Substring(plugin.IndexOf("\""));
+                        plugin = plugin.Remove(plugin.Length - 1);
+                        res.Add(plugin);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Getting additional plugin file list: " + ex);
+            }
+
+            return res;
+        }
+
         public List<string> GetConfigFileList()
         {
             List<string> res = new List<string>();

@@ -17,7 +17,7 @@ namespace RemoteExecution.Jobs
 
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            messageBack(0,"Sending log back to server");
+            messageBack(0, "Sending log back to server");
             ReceiverLog(ClientServices.OldMessages);
         }
     }

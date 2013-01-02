@@ -53,6 +53,7 @@
     <Compile Include="ClientConnection.cs" />
     <Compile Include="ClientServices.cs" />
     <Compile Include="ClientSettings.cs" />
+    <Compile Include="Jobs\DownloadExtraPluginsJob.cs" />
     <Compile Include="Jobs\DownloadSupportJob.cs" />
     <Compile Include="NetworkDrives.cs" />
     <Compile Include="ConfigSet.cs" />
