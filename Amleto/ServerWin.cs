@@ -1188,7 +1188,7 @@ namespace Amleto
             foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
-                _masterServer.AddPriorityJob(id, new ForceSetupJob());
+                _masterServer.AddPriorityJob(id, new SetupJob(true));
             }
         }
 

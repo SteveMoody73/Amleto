@@ -63,7 +63,6 @@
     <Compile Include="Jobs\ClientReadyJob.cs" />
     <Compile Include="Jobs\DeleteOutputJob.cs" />
     <Compile Include="Jobs\DeleteContentJob.cs" />
-    <Compile Include="Jobs\ForceSetupJob.cs" />
     <Compile Include="Jobs\SendLogJob.cs" />
     <Compile Include="Jobs\DownloadConfigJob.cs" />
     <Compile Include="Jobs\DownloadJob.cs" />
