@@ -19,8 +19,6 @@ namespace RemoteExecution.Jobs
 
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            messageBack(0,"Downloading setup prog " + _file);
-
             string localFolder = Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName);
             localFolder = Path.Combine(localFolder, "Program");
             string localFile = Path.Combine(localFolder, _file);
@@ -42,6 +40,7 @@ namespace RemoteExecution.Jobs
 
                 if (needToDownload)
                 {
+                    messageBack(0, "Downloading setup prog " + _file);
                     byte[] res = Server.GetFile(FileType.Program, _file);
                     FileStream stream = File.Create(localFile, res.Length);
                     stream.Write(res, 0, res.Length);
@@ -49,8 +48,8 @@ namespace RemoteExecution.Jobs
                     stream.Dispose();
                     FileInfo local = new FileInfo(localFile);
                     local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
+                    messageBack(0, "Saved at " + _file);
                 }
-                messageBack(0, "Saved at " + _file);
             }
             catch (Exception e)
             {

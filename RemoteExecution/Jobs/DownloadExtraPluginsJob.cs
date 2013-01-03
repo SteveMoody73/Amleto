@@ -19,8 +19,6 @@ namespace RemoteExecution.Jobs
 
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            messageBack(0, "Downloading plugin " + Path.GetFileName(_file));
-
             try
             {
                 string remoteFileName = Path.GetFileName(_file);
@@ -41,9 +39,8 @@ namespace RemoteExecution.Jobs
                 }
 
                 if (needToDownload)
-            
-                if (_force || !File.Exists(localFile))
                 {
+                    messageBack(0, "Downloading plugin " + Path.GetFileName(_file));
                     byte[] res = Server.GetFile(FileType.Absolute, _file);
                     FileStream stream = File.Create(localFile, res.Length);
                     stream.Write(res, 0, res.Length);
@@ -51,8 +48,8 @@ namespace RemoteExecution.Jobs
                     stream.Dispose();
                     FileInfo local = new FileInfo(localFile);
                     local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
+                    messageBack(0, "Saved at " + remoteFileName);
                 }
-                messageBack(0, "Saved at " + remoteFileName);
             }
             catch (Exception e)
             {

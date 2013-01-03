@@ -17,7 +17,6 @@ namespace RemoteExecution.Jobs
 
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            messageBack(0, "Downloading config " + _file);
             string localPath = Path.Combine(Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName), "Config");
             string localFile = Path.Combine(localPath, _file);
 
@@ -38,6 +37,8 @@ namespace RemoteExecution.Jobs
             {
                 try
                 {
+                    messageBack(0, "Downloading config " + _file);
+
                     byte[] res = Server.GetFile(FileType.Config, _file);
                     FileStream stream = File.Create(localFile, res.Length);
                     stream.Write(res, 0, res.Length);
@@ -85,13 +86,13 @@ namespace RemoteExecution.Jobs
                     }
                     FileInfo local = new FileInfo(localFile);
                     local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
+                    messageBack(0, "Saved at " + _file);
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine("DownloadConfigJob: " + e);
                 }
             }
-            messageBack(0,"Saved at " + _file);
         }
     }
 }
