@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("virtualcoder.co.uk")]
 [assembly: AssemblyProduct("Amleto Distributed rendering solution")]
-[assembly: AssemblyCopyright("Copyright © 2003-2012")]
+[assembly: AssemblyCopyright("Copyright © 2003-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.1.2.*")]
+[assembly: AssemblyVersion("3.2.0.*")]
 [assembly: AssemblyFileVersion("3.0.0.0")]
