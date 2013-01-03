@@ -255,11 +255,10 @@ namespace RemoteExecution
             return res;
         }
 
-        public byte[] GetFile(FileType t, string filename)
+        private string GetFullFilename(FileType t, string filename)
         {
-            if (_currConnection == null)
-                return new byte[] { };
             string file = "";
+
             switch (t)
             {
                 case FileType.Absolute:
@@ -279,8 +278,31 @@ namespace RemoteExecution
                     break;
             }
 
+            return file;
+        }
+
+        public FileInfo GetFileInfo(FileType t, string filename)
+        {
+            if (_currConnection == null)
+                return null;
+
+            string file = GetFullFilename(t, filename);
+
             if (!File.Exists(file))
                 return null;
+
+            return new FileInfo(file);
+        }
+        
+        public byte[] GetFile(FileType t, string filename)
+        {
+            if (_currConnection == null)
+                return new byte[] { };
+            string file = GetFullFilename(t, filename);
+
+            if (!File.Exists(file))
+                return new byte[] { }; 
+
             return File.ReadAllBytes(file);
         }
 

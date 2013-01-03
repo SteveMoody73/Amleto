@@ -22,7 +22,19 @@ namespace RemoteExecution.Jobs
             string localFile = Path.Combine(localPath, _file);
 
             Directory.CreateDirectory(localPath);
-			if (!File.Exists(localFile))
+            FileInfo remote = Server.GetFileInfo(FileType.Program, _file);
+
+            bool needToDownload = false;
+            if (!File.Exists(localFile))
+                needToDownload = true;
+            else
+            {
+                FileInfo local = new FileInfo(localFile);
+                if (remote.LastWriteTimeUtc != local.LastWriteTimeUtc || remote.Length != local.Length)
+                    needToDownload = true;
+            }
+
+            if (needToDownload)
             {
                 try
                 {
@@ -41,12 +53,12 @@ namespace RemoteExecution.Jobs
                             if (line.StartsWith("DefaultSegmentMemory"))
                                 writer.WriteLine("DefaultSegmentMemory " + (ClientServices.Settings.MemorySegment * 1024 * 1024));
                             else if (line.StartsWith("RenderThreads"))
-                                writer.WriteLine("RenderThreads "+ClientServices.Settings.NumThreads);
+                                writer.WriteLine("RenderThreads " + ClientServices.Settings.NumThreads);
                             else
                                 writer.WriteLine(line);
                         }
                         writer.Close();
-                        writer.Dispose();
+                        writer.Dispose();                        
                     }
 				    else if (localFile.ToUpper().Contains("LWEXT"))
 				    {
@@ -67,8 +79,12 @@ namespace RemoteExecution.Jobs
                             }
                             else
                                 writer.WriteLine(line);
-                        }				        
-				    }
+                        }
+                        writer.Close();
+                        writer.Dispose();
+                    }
+                    FileInfo local = new FileInfo(localFile);
+                    local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
                 }
                 catch (Exception e)
                 {

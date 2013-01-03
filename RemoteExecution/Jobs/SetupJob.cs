@@ -21,8 +21,8 @@ namespace RemoteExecution.Jobs
 
         public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
-            messageBack(0,"Check files to setup...");
-            Server.SetCurrentJob("Setting up client.");
+            messageBack(0, "Checking the LightWave setup on the Client");
+            Server.SetCurrentJob("Setting up client");
             
             List<string> progs = Server.GetSetupFileList();
             List<string> support = Server.GetSupportFileList();

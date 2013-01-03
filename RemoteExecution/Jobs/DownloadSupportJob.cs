@@ -31,13 +31,27 @@ namespace RemoteExecution.Jobs
                 if (destinationFolder != null)
                     Directory.CreateDirectory(destinationFolder);
 
-                if (_force || !File.Exists(localFile))
+                FileInfo remote = Server.GetFileInfo(FileType.Support, _file);
+
+                bool needToDownload = false;
+                if (!File.Exists(localFile) || _force)
+                    needToDownload = true;
+                else
+                {
+                    FileInfo local = new FileInfo(localFile);
+                    if (remote.LastWriteTimeUtc != local.LastWriteTimeUtc || remote.Length != local.Length)
+                        needToDownload = true;
+                }
+
+                if (needToDownload)
                 {
                     byte[] res = Server.GetFile(FileType.Support, _file);
                     FileStream stream = File.Create(localFile, res.Length);
                     stream.Write(res, 0, res.Length);
                     stream.Close();
                     stream.Dispose();
+                    FileInfo local = new FileInfo(localFile);
+                    local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
                 }
 
                 messageBack(0, "Saved at " + _file);

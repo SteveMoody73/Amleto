@@ -27,6 +27,20 @@ namespace RemoteExecution.Jobs
                 string localPath = Path.Combine(Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName), "ExtPlugins");
                 string localFile = Path.Combine(localPath, remoteFileName);
                 Directory.CreateDirectory(localPath);
+
+                FileInfo remote = Server.GetFileInfo(FileType.Absolute, _file);
+
+                bool needToDownload = false;
+                if (!File.Exists(localFile) || _force)
+                    needToDownload = true;
+                else
+                {
+                    FileInfo local = new FileInfo(localFile);
+                    if (remote.LastWriteTimeUtc != local.LastWriteTimeUtc || remote.Length != local.Length)
+                        needToDownload = true;
+                }
+
+                if (needToDownload)
             
                 if (_force || !File.Exists(localFile))
                 {
@@ -35,6 +49,8 @@ namespace RemoteExecution.Jobs
                     stream.Write(res, 0, res.Length);
                     stream.Close();
                     stream.Dispose();
+                    FileInfo local = new FileInfo(localFile);
+                    local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
                 }
                 messageBack(0, "Saved at " + remoteFileName);
             }
