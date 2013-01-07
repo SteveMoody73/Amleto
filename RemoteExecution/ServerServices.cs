@@ -664,8 +664,9 @@ namespace RemoteExecution
                         d.DynamicInvoke(new object[] { GetConnectedHosts() });
                         i++;
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Debug.WriteLine("CallUpdateClientList: " + e);
                         ClientStatus -= (StatusClientChange)d;
                     }
                 }
@@ -781,6 +782,23 @@ namespace RemoteExecution
             return res;
         }
 
+        public void SendFile(string basePath, string filename, byte[] file)
+        {
+            if (_currConnection == null)
+                return;
+
+            if (_currConnection.CurrentRender == null)
+                return;
+
+            lock (_clients)
+            {
+                lock (Projects)
+                {
+                    _currConnection.CurrentRender.SendFile(basePath, filename, file);
+                }
+            }
+        }
+
         public void SendImage(int frame, int sliceNumber, byte[] img)
         {
             if (_currConnection == null)
@@ -891,8 +909,9 @@ namespace RemoteExecution
                         d.DynamicInvoke(new object[] { GetProjects() });
                         i++;
                     }
-                    catch
+                    catch(Exception e)
                     {
+                        Debug.WriteLine("CallUpdateProjectList: " + e);
                         ProjectStatus -= (StatusProjectChange)d;
                     }
                 }

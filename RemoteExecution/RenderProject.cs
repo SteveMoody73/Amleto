@@ -43,8 +43,17 @@ namespace RemoteExecution
         public bool OverwriteFrames;
         [XmlElement("FileNameFormat")]
         public int FileNameFormat;
-        [XmlIgnore]
-        public static string[] FileNameFormats ={ "{0}\\{1}{2:000}.", "{0}\\{1}{2:000}{3}", "{0}\\{1}{2:0000}.", "{0}\\{1}{2:0000}{3}", "{0}\\{1}_{2:000}.", "{0}\\{1}_{2:000}{3}", "{0}\\{1}_{2:0000}.", "{0}\\{1}_{2:0000}{3}" };
+
+        [XmlIgnore] public static string[] FileNameFormats = {
+                                                                 "{0}\\{1}{2:000}.", "{0}\\{1}{2:000}{3}",
+                                                                 "{0}\\{1}{2:0000}.", "{0}\\{1}{2:0000}{3}",
+                                                                 "{0}\\{1}_{2:000}.", "{0}\\{1}_{2:000}{3}",
+                                                                 "{0}\\{1}_{2:0000}.", "{0}\\{1}_{2:0000}{3}",
+                                                                 "{0}\\{1}{2:00000}.", "{0}\\{1}{2:00000}{3}",
+                                                                 "{0}\\{1}{2:000000}.", "{0}\\{1}{2:000000}{3}",
+                                                                 "{0}\\{1}_{2:00000}.", "{0}\\{1}_{2:00000}{3}",
+                                                                 "{0}\\{1}_{2:000000}.", "{0}\\{1}_{2:000000}{3}"
+                                                             };
         [XmlElement("ImageFormat")]
         public int ImageFormat;
         [XmlElement("AlphaImageFormat")]
@@ -55,8 +64,6 @@ namespace RemoteExecution
         private List<RenderJob> _jobs = new List<RenderJob>();
         [XmlIgnore]
         public int StartJobs;
-        [XmlIgnore]
-        public TreeNode Node;
         [XmlElement("Antialias")]
         public int Antialias;
         [XmlElement("ReconFilter")]
@@ -215,6 +222,7 @@ namespace RemoteExecution
             job.SaveAlpha = SaveAlpha;
 			job.OverrideSettings = OverrideSettings;
             job.OverwriteFrames = OverwriteFrames;
+            job.FilenameFormat = FileNameFormats[FileNameFormat];
 
             foreach (string s in StrippedMaster)
                 job.StrippedMaster.Add(s);
@@ -237,7 +245,6 @@ namespace RemoteExecution
                 Log += "Project modified on: " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "\n";
                 Log += "*******************************************************\n";
             }
-            Node = new TreeNode(SceneFile.Substring(SceneFile.LastIndexOf('\\') + 1));
 
             if (!ContentDir.EndsWith("\\"))
                 ContentDir += "\\";
@@ -251,7 +258,6 @@ namespace RemoteExecution
 			        RenderJob job = new RenderJob(SceneFile.Substring(ContentDir.Length), StartFrame, StartFrame, 1, 0,
 			                                      ServerServices.Configs[Config].ImageFormats[ImageFormat], SaveAlpha,
 			                                      ServerServices.Configs[Config].ImageFormats[AlphaImageFormat]);
-			        //job.timeSpent = new Stopwatch();
 			        CopyJobParams(job);
 			        job.SliceNumber = i;
 
@@ -592,6 +598,15 @@ namespace RemoteExecution
     	public int NbRemainingJobs()
         {
             return _jobs.Count;
+        }
+
+        public void SendFile(string basePath, string filename, byte[] file)
+        {
+            if (basePath == "")
+                basePath = OutputDir;
+
+            string outFilename = Path.Combine(basePath, filename);
+            File.WriteAllBytes(outFilename, file);
         }
 
         public string SaveImage(int frame, int sliceNumber, byte[] img)

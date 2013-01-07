@@ -33,8 +33,6 @@ namespace Amleto
 
         private int _lastActiveTime = -1;
 
-        public static string SelectedServerPath="C:\\";
-
         private bool _needToUpdateClient = true;
 
         private Queue<FinishedFrame> _framesToAdd=new Queue<FinishedFrame>();
@@ -58,7 +56,6 @@ namespace Amleto
             Location = Properties.Settings.Default.WinPosition;
             autoRenderLast.Checked = Properties.Settings.Default.AutoShowLast;
             textPreviewSpeed.Text = "" + Properties.Settings.Default.PlaySpeed;
-            SelectedServerPath = Properties.Settings.Default.SelectedPath;
         }
 
         void dataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -533,7 +530,6 @@ namespace Amleto
             Properties.Settings.Default.WinPosition = this.Location;
             Properties.Settings.Default.AutoShowLast = autoRenderLast.Checked;
             Properties.Settings.Default.PlaySpeed = Convert.ToInt32(textPreviewSpeed.Text);
-            Properties.Settings.Default.SelectedPath = SelectedServerPath;
             Properties.Settings.Default.Save();
 
             if (_isMaster && MessageBox.Show("Are you sure you want to exit?", "Closing Amleto", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)

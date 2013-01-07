@@ -150,7 +150,7 @@ namespace AmletoClient
             this.localScratch.Name = "localScratch";
             this.localScratch.Size = new System.Drawing.Size(229, 20);
             this.localScratch.TabIndex = 13;
-            this.localScratch.Text = "C:\\TEMP";
+            this.localScratch.Text = "";
             // 
             // label7
             // 
