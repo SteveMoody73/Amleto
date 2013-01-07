@@ -460,7 +460,26 @@ namespace RemoteExecution.Jobs
                 string outputPath = Path.Combine(ClientServices.GetClientDir(), "Output");
                 string fname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_{1:0000}{2}", Instance, i, ext);
                 string afname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_a{1:0000}{2}", Instance, i, ext);
-                
+
+                // Process any files from image saver plugins
+                foreach (OutputPlugins plugin in Plugins)
+                {
+                    if (plugin.PluginType == "BufferExport")
+                    {
+                        DirectoryInfo bufferPath = new DirectoryInfo(outputPath);
+                        foreach (FileInfo file in bufferPath.GetFiles(plugin.BaseFilename + "*"))
+                        {
+                            string nameFormat = FilenameFormat.Substring(FilenameFormat.IndexOf("\\") + 1);
+                            string fileNumber = string.Format(nameFormat, "", "", i, plugin.FileExtension);
+                            if (file.FullName.Contains(fileNumber))
+                            {
+                                Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
+                                messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(file.FullName) + " rendered successfully");
+                            }
+                        }
+                    }
+                }
+
                 if (File.Exists(fname))
                 {
                     try
@@ -496,25 +515,6 @@ namespace RemoteExecution.Jobs
                         Server.FrameLost(i, SliceNumber);
                     }
                 }
-
-                // Process any files from image saver plugins
-                foreach (OutputPlugins plugin in Plugins)
-                {
-                    if (plugin.PluginType == "BufferExport")
-                    {
-                        DirectoryInfo bufferPath = new DirectoryInfo(outputPath);
-                        foreach(FileInfo file in bufferPath.GetFiles(plugin.BaseFilename + "*"))
-                        {
-                            string nameFormat = FilenameFormat.Substring(FilenameFormat.IndexOf("\\") + 1);
-                            string fileNumber = string.Format(nameFormat, "", "", i, plugin.FileExtension);
-                            if (file.FullName.Contains(fileNumber))
-                            {
-                                Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
-                            }
-                        }
-                    }
-                }
-
             }
             Server.SetCurrentJob("");
             GC.Collect();

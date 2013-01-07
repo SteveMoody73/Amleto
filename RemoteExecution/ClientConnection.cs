@@ -63,10 +63,10 @@ namespace RemoteExecution
 
         public void StoreSettings()
         {
-        	var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
+        	var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
         	if (openSubKey != null)
         	{
-        		var registryKey = openSubKey.CreateSubKey("Amleto3");
+        		var registryKey = openSubKey.CreateSubKey("Amleto");
         		if (registryKey != null)
         		{
         			var subKey = registryKey.CreateSubKey("ClientsConfig");
@@ -88,10 +88,10 @@ namespace RemoteExecution
 
     	public void RestoreSettings()
         {
-			var openSubKey = Registry.LocalMachine.OpenSubKey("SOFTWARE", true);
+			var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
 			if (openSubKey != null)
 			{
-				var registryKey = openSubKey.CreateSubKey("Amleto3");
+				var registryKey = openSubKey.CreateSubKey("Amleto");
 				if (registryKey != null)
 				{
 					var subKey = registryKey.CreateSubKey("ClientsConfig");
