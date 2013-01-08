@@ -21,7 +21,7 @@ namespace RemoteExecution.Jobs
             string localFile = Path.Combine(localPath, _file);
 
             Directory.CreateDirectory(localPath);
-            FileInfo remote = Server.GetFileInfo(FileType.Program, _file);
+            FileInfo remote = Server.GetFileInfo(FileType.Config, _file);
 
             bool needToDownload = false;
             if (!File.Exists(localFile))
