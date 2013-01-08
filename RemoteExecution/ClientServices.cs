@@ -131,7 +131,7 @@ namespace RemoteExecution
                 }
             }
 
-            while (OldMessages.Count > 300)
+            while (OldMessages.Count > 3000)
                 OldMessages.RemoveAt(0);
 
             OldMessages.Add(fullMsg);

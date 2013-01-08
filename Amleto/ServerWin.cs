@@ -244,7 +244,7 @@ namespace Amleto
                     row.Cells.Add(cell);
                 }
 
-                while (messageList.Rows.Count > 300)
+                while (messageList.Rows.Count > 3000)
                     messageList.Rows.RemoveAt(0);
 
                 if (messageList.SelectedRows.Count > 0)
