@@ -445,8 +445,9 @@ namespace RemoteExecution
                                 IsWorking = false;
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Debug.WriteLine("JobsExecuter: " + e);
                         IsWorking = false;
                     }
                 }
