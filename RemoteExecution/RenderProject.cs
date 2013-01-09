@@ -155,32 +155,23 @@ namespace RemoteExecution
         public string EmailSubjectNotOk = "";
         [XmlElement("EmailLog")]
         public bool EmailContainLog = true;
-        [XmlIgnore]
-        public bool IsFinished;
+        [XmlElement("RenderTime")] public TimeSpan RenderTime;
+        [XmlElement("RenderedFrameCount")] public int RenderedFrameCount;
+        [XmlElement("FinalStatus")] public string FinalStatus;
 
-        [XmlIgnore]
-        public List<FinishedFrame> RenderedFrames = new List<FinishedFrame>();
-
-        [XmlIgnore]
-        public string EmailFrom = "amleto@yourdomain.com";
-        [XmlIgnore]
-        public string SmtpServer = "mail.yourdomain.com";
-        [XmlIgnore]
-        public string SmtpUsername = "";
-        [XmlIgnore]
-        public string SmtpPassword = "";
-        [XmlIgnore]
-        public int SmtpPort = 25;
-        [XmlIgnore]
-        public string SmtpLogin = "";
-
-        [XmlIgnore]
-        public string Log = "";
-
-		[XmlIgnore]
-		public DateTime StartTime;
-		[XmlIgnore]
-		public bool StartTimeSet;
+        [XmlIgnore] public bool IsFinished;
+        [XmlIgnore] public List<FinishedFrame> RenderedFrames = new List<FinishedFrame>();
+        [XmlIgnore] public string EmailFrom = "amleto@yourdomain.com";
+        [XmlIgnore] public string SmtpServer = "mail.yourdomain.com";
+        [XmlIgnore] public string SmtpUsername = "";
+        [XmlIgnore] public string SmtpPassword = "";
+        [XmlIgnore] public int SmtpPort = 25;
+        [XmlIgnore] public string SmtpLogin = "";
+        [XmlIgnore] public string Log = "";
+		[XmlIgnore] public DateTime StartTime;
+        [XmlIgnore] public DateTime UpdateTime;
+        [XmlIgnore] public bool StartTimeSet;
+        [XmlIgnore] public bool UpdateTimeSet;
 
         private void CopyJobParams(RenderJob job)
         {

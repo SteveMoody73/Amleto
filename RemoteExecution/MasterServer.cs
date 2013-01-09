@@ -17,6 +17,7 @@ namespace RemoteExecution
     {
     	private ServerServices.StatusClientChange _clientStatus;
         private ServerServices.StatusProjectChange _projectStatus;
+        private ServerServices.StatusFinishedChange _finishedStatus;
         private ServerServices.StatusFinishedFrameChange _imagePreview;
         private ServerServices.StatusStringChange _messageConsumer;
         private List<MapDrive> _mappedDrives = new List<MapDrive>();
@@ -213,6 +214,12 @@ namespace RemoteExecution
             ServerServices.ProjectStatus += projectStatus;
         }
 
+        public void AddFinishedStatus(ServerServices.StatusFinishedChange finishedStatus)
+        {
+            _finishedStatus = finishedStatus;
+            ServerServices.FinishedStatus += finishedStatus;
+        }
+
         public void AddImagePreview(ServerServices.StatusFinishedFrameChange imagePreview)
         {
             _imagePreview = imagePreview;
@@ -248,6 +255,7 @@ namespace RemoteExecution
             ServerServices.MessageConsumer -= _messageConsumer;
             ServerServices.ImagePreviewStatus -= _imagePreview;
             ServerServices.ProjectStatus -= _projectStatus;
+            ServerServices.FinishedStatus -= _finishedStatus;
             ServerServices.ClientStatus -= _clientStatus;
         }
 

@@ -16,28 +16,32 @@ namespace Amleto
 {
     public partial class ServerWin : Form
     {
-        MasterServer _masterServer;
-        bool _isMaster;
-        TcpChannel _channel;
+        private const bool IsBeta = true;
+
+        private MasterServer _masterServer;
+        private bool _isMaster;
+        private TcpChannel _channel;
 
         private List<ClientConnection> _clients;
         private List<RenderProject> _projects;
+        private List<RenderProject> _finishedProjects;
         private readonly object _clientsLock = new object();
         private readonly object _projectsLock = new object();
 
         private EventBridge _eventBridge;
 
-        private Stopwatch _clientListRefresh = new Stopwatch();
-        private Stopwatch _projectListRefresh = new Stopwatch();
-        private Stopwatch _imageRefresh = new Stopwatch();
+        private readonly Stopwatch _clientListRefresh = new Stopwatch();
+        private readonly Stopwatch _projectListRefresh = new Stopwatch();
+        private readonly Stopwatch _finishedListRefresh = new Stopwatch();
+        private readonly Stopwatch _imageRefresh = new Stopwatch();
 
         private int _lastActiveTime = -1;
 
         private bool _needToUpdateClient = true;
 
-        private Queue<FinishedFrame> _framesToAdd=new Queue<FinishedFrame>();
+        private readonly Queue<FinishedFrame> _framesToAdd = new Queue<FinishedFrame>();
 
-		public ServerWin()
+        public ServerWin()
         {
             InitializeComponent();
 
@@ -49,22 +53,18 @@ namespace Amleto
                 Properties.Settings.Default.Save();
             }
 
-            clientStatusGrid.DataError += dataGrid_DataError;
-            projectStatusGrid.DataError += dataGrid_DataError;
+            ClientStatusGrid.DataError += dataGrid_DataError;
+            ActiveProjectGrid.DataError += dataGrid_DataError;
 
             Size = Properties.Settings.Default.WinSize;
             Location = Properties.Settings.Default.WinPosition;
             autoRenderLast.Checked = Properties.Settings.Default.AutoShowLast;
-            textPreviewSpeed.Text = "" + Properties.Settings.Default.PlaySpeed;
+            textPreviewSpeed.Text = Properties.Settings.Default.PlaySpeed.ToString();
         }
 
-        void dataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        private void dataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.Cancel = true;
-        }
-
-        private void ServerWin_Load(object sender, EventArgs e)
-        {
         }
 
         private void ShowImage(FinishedFrame frame)
@@ -110,7 +110,7 @@ namespace Amleto
             }
             TreeNode child = AddSortSceneBranch(baseNode, fname);
 
-            if (autoRenderLast.Checked == true && btnPlay.Checked == false && _framesToAdd.Count == 0)
+            if (autoRenderLast.Checked && btnPlay.Checked == false && _framesToAdd.Count == 0)
                 renderTree.SelectedNode = child;
         }
 
@@ -119,20 +119,25 @@ namespace Amleto
             try
             {
                 MemoryStream mem = new MemoryStream(_masterServer.FileReadAllBytes(fname));
-                Invoke((MethodInvoker)delegate()
-                                      	{
-                                      		try { UpdatePreviewPanel(new Bitmap(mem)); }
-											catch (Exception ex) { Debug.WriteLine("Error updating preview panel:" + ex); }
-                                      	});
+                Invoke((MethodInvoker) delegate
+                    {
+                        try
+                        {
+                            UpdatePreviewPanel(new Bitmap(mem));
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("Error updating preview panel:" + ex);
+                        }
+                    });
                 mem.Close();
                 mem.Dispose();
                 splitContainer3.Panel2.AutoScrollMinSize = pictureRender.Image.Size;
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error updating preview panel: " + ex);
+                Debug.WriteLine("Error updating preview panel: " + ex);
             }
-
         }
 
         private void UpdatePreviewPanel(Image img)
@@ -147,36 +152,36 @@ namespace Amleto
                 if (branch.Nodes[i].Text.CompareTo(toAdd) > 0)
                     return branch.Nodes.Insert(i, toAdd);
             }
-            return  branch.Nodes.Add(toAdd);
+            return branch.Nodes.Add(toAdd);
         }
 
-        private TreeNode SortSceneBranch(TreeNode branch,string toAdd)
+        private TreeNode SortSceneBranch(TreeNode branch, string toAdd)
         {
             List<string> elements = new List<string>();
-            
-			for (int i = 0; i < branch.Nodes.Count; i++)
+
+            for (int i = 0; i < branch.Nodes.Count; i++)
                 elements.Add(branch.Nodes[i].Text);
-            
-			if(toAdd != null)
+
+            if (toAdd != null)
                 elements.Add(toAdd);
-            
-			elements.Sort();
+
+            elements.Sort();
             branch.Nodes.Clear();
             TreeNode res = null;
-            
-			foreach (string t in elements)
-			{
-				TreeNode child = branch.Nodes.Add(t);
-				if (t == toAdd)
-					res = child;
-			}
+
+            foreach (string t in elements)
+            {
+                TreeNode child = branch.Nodes.Add(t);
+                if (t == toAdd)
+                    res = child;
+            }
             return res;
         }
 
-        private void DoAddFrames(List<FinishedFrame> frames)
+        private void DoAddFrames(IEnumerable<FinishedFrame> frames)
         {
             TreeNode baseNode = null;
-        	string prevNodeName = "-----------------------";
+            string prevNodeName = "-----------------------";
 
             foreach (FinishedFrame frame in frames)
             {
@@ -198,18 +203,18 @@ namespace Amleto
                     prevNodeName = frame.Nodename;
                 }
                 TreeNode child = new TreeNode(frame.Filename);
-            	if (baseNode != null) baseNode.Nodes.Add(child);
+                if (baseNode != null) baseNode.Nodes.Add(child);
             }
 
             for (int i = 0; i < renderTree.Nodes.Count; i++)
             {
-                SortSceneBranch(renderTree.Nodes[i],null);
+                SortSceneBranch(renderTree.Nodes[i], null);
             }
         }
 
         private void ConsumeMessage(string msg)
         {
-            BeginInvoke((MethodInvoker)delegate { DoConsumeMessage(msg);  });
+            BeginInvoke((MethodInvoker) delegate { DoConsumeMessage(msg); });
         }
 
         private void DoConsumeMessage(string msg)
@@ -281,24 +286,24 @@ namespace Amleto
             }
         }
 
-        private void DoRepaintClientList()
+        private void RepaintClientList()
         {
             List<string> oldSelected = new List<string>();
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
-                oldSelected.Add((string)row.Cells[0].Value);
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
+                oldSelected.Add(row.Cells[0].Value.ToString());
 
-			int vpos = clientStatusGrid.FirstDisplayedScrollingRowIndex;
+            int pos = ClientStatusGrid.FirstDisplayedScrollingRowIndex;
 
             lock (_clientsLock)
             {
                 List<ClientConnection> hosts = _clients;
                 try
                 {
-                    clientStatusGrid.Rows.Clear();
+                    ClientStatusGrid.Rows.Clear();
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine("Error clearing grid row" + ex);
+                    Debug.WriteLine("Error clearing grid row" + ex);
                 }
 
                 List<string> configsName = _masterServer.ConfigNames;
@@ -308,40 +313,38 @@ namespace Amleto
                     DataGridViewRow row = new DataGridViewRow();
                     DataGridViewCell cell = new DataGridViewTextBoxCell();
 
-					try { cell.Value = "" + client.Id; }
-					catch (Exception ex) { Debug.WriteLine("Error setting client id: " + ex); }
-					try { row.Cells.Add(cell); }
-					catch (Exception ex) { Debug.WriteLine("Error adding cell client id: " + ex); }
-
-                    cell = new DataGridViewTextBoxCell();
-                    try { cell.Value = client.HostName + " (" + client.IPAddress + ")"; }
-					catch (Exception ex) { Debug.WriteLine("Error setting hostname: " + ex); }
-					try { row.Cells.Add(cell); }
-					catch (Exception ex) { Debug.WriteLine("Error adding hostname: " + ex); }
-
-                    cell = new DataGridViewTextBoxCell();
-					try { cell.Value = "" + client.Instance; }
-					catch (Exception ex) { Debug.WriteLine("Error setting client instance: " + ex); }
-                    try { row.Cells.Add(cell); }
-					catch (Exception ex) { Debug.WriteLine("Error adding client instance: " + ex); }
-					
-                    DataGridViewComboBoxCell dcell = new DataGridViewComboBoxCell();
-
-					foreach (string s in configsName)
-                    {
-                            try { dcell.Items.Add(s); }
-							catch (Exception ex) { Debug.WriteLine("Error adding config item: " + ex); }
-					}
-                    
-					try { dcell.Value = configsName[client.Config]; }
-					catch (Exception ex) { Debug.WriteLine("Error adding config name: " + ex); }
-
-					try { row.Cells.Add(dcell); }
-					catch (Exception ex) { Debug.WriteLine("Error adding cell: " + ex); }
-
-                    cell = new DataGridViewImageCell();
                     try
                     {
+                        // Client ID
+                        cell.Value = client.Id;
+                        row.Cells.Add(cell);
+
+                        // Hostname
+                        cell = new DataGridViewTextBoxCell {Value = client.HostName + " (" + client.IPAddress + ")"};
+                        row.Cells.Add(cell);
+
+                        // Instance
+                        cell = new DataGridViewTextBoxCell {Value = client.Instance};
+                        row.Cells.Add(cell);
+    
+                        // Configs
+                        DataGridViewComboBoxCell configList = new DataGridViewComboBoxCell();
+                        foreach (string s in configsName)
+                        {
+                            try
+                            {
+                                configList.Items.Add(s);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("Error adding config item: " + ex);
+                            }
+                        }
+                        configList.Value = configsName[client.Config];
+                        row.Cells.Add(configList);
+                    
+                        // Status
+                        cell = new DataGridViewImageCell();
                         if (client.CurrentJob.StartsWith("Downloading"))
                             cell.Value = iconList.Images[2];
                         else if (client.CurrentJob.StartsWith("Project"))
@@ -354,42 +357,36 @@ namespace Amleto
                             cell.Value = iconList.Images[3];
                         else
                             cell.Value = iconList.Images[2];
+
+                        row.Cells.Add(cell);
+
+                        // Current Job
+                        cell = new DataGridViewTextBoxCell {Value = client.CurrentJob};
+                        row.Cells.Add(cell);
+
+                        ClientStatusGrid.Rows.Add(row);
                     }
-					catch (Exception ex)
-					{
-						Debug.WriteLine("Error setting cell items: " + ex);
-					}
-
-                    try { row.Cells.Add(cell); }
-					catch (Exception ex) { Debug.WriteLine("Error adding cell: " + ex); }
-
-					cell = new DataGridViewTextBoxCell();
-					try { cell.Value = client.CurrentJob; }
-					catch (Exception ex) { Debug.WriteLine("Error setting cell currentjob: " + ex); }
-					try { row.Cells.Add(cell); }
-					catch (Exception ex) { Debug.WriteLine("Error adding cell currentjob: " + ex); }
-					try { clientStatusGrid.Rows.Add(row); }
-					catch (Exception ex) { Debug.WriteLine("Error adding client status row: " + ex); }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Error adding client status row: " + ex);
+                    }
 
                     try
                     {
-                        if (oldSelected.Contains((string)row.Cells[0].Value))
-                            row.Selected = true;
-                        else
-                            row.Selected = false;
+                        row.Selected = oldSelected.Contains((string) row.Cells[0].Value);
                     }
                     catch (Exception ex)
-					{
-						Debug.WriteLine("Error selecting row: " + ex);
-					}
+                    {
+                        Debug.WriteLine("Error selecting row: " + ex);
+                    }
                 }
                 try
                 {
-                    clientStatusGrid.FirstDisplayedScrollingRowIndex = vpos;
+                    ClientStatusGrid.FirstDisplayedScrollingRowIndex = pos;
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine("Error setting client status grid row index:" + ex);
+                    Debug.WriteLine("Error setting client status grid row index:" + ex);
                 }
             }
         }
@@ -407,132 +404,227 @@ namespace Amleto
             }
         }
 
-        private void DoRepaintProjectList()
+        private void RefreshFinishedList(List<RenderProject> finishedProjects)
+        {
+            lock (_projectsLock)
+            {
+                _finishedProjects = finishedProjects;
+            }
+            if (!_finishedListRefresh.IsRunning)
+            {
+                _finishedListRefresh.Reset();
+                _finishedListRefresh.Start();
+            }
+        }
+
+        private void RepaintProjectList()
         {
             string oldSelected = "";
-            if (clientStatusGrid.SelectedRows.Count > 0)
-                oldSelected = (string)clientStatusGrid.SelectedRows[0].Cells[0].Value;
-            int vpos = clientStatusGrid.FirstDisplayedScrollingRowIndex;
+            if (ActiveProjectGrid.SelectedRows.Count > 0)
+                oldSelected = ActiveProjectGrid.SelectedRows[0].Cells[0].Value.ToString();
+
+            int pos = ActiveProjectGrid.FirstDisplayedScrollingRowIndex;
 
             lock (_projectsLock)
             {
                 try
                 {
-                    projectStatusGrid.Rows.Clear();
+                    ActiveProjectGrid.Rows.Clear();
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine("Error clearing project status rows: " + ex);
+                    Debug.WriteLine("Error clearing project status rows: " + ex);
                 }
 
                 foreach (RenderProject project in _projects)
                 {
                     DataGridViewRow row = new DataGridViewRow();
-                    
+
                     // Project ID
-                    DataGridViewCell cell = new DataGridViewTextBoxCell();                    
-                    cell.Value = "" + project.ProjectId;
+                    DataGridViewCell cell = new DataGridViewTextBoxCell();
+                    cell.Value = project.ProjectId;
                     row.Cells.Add(cell);
+                    
                     // Project Name
-                    cell = new DataGridViewTextBoxCell();
-                    cell.Value = project.SceneFile.Substring(project.SceneFile.LastIndexOf('\\') + 1);
+                    cell = new DataGridViewTextBoxCell
+                               {Value = project.SceneFile.Substring(project.SceneFile.LastIndexOf('\\') + 1)};
                     row.Cells.Add(cell);
+                    
                     // Project Owner
-                    cell = new DataGridViewTextBoxCell();
-                    cell.Value = project.Owner;
+                    cell = new DataGridViewTextBoxCell {Value = project.Owner};
                     row.Cells.Add(cell);
+                    
                     // Start Frame
-                    cell = new DataGridViewTextBoxCell();
-                    cell.Value = "" + project.StartFrame;
+                    cell = new DataGridViewTextBoxCell {Value = project.StartFrame};
                     row.Cells.Add(cell);
+                    
                     // End Frame
-                    cell = new DataGridViewTextBoxCell();
-                    cell.Value = "" + project.EndFrame;
+                    cell = new DataGridViewTextBoxCell {Value = project.EndFrame};
                     row.Cells.Add(cell);
+                    
                     // Number of frames to render
-                    cell = new DataGridViewTextBoxCell();
-                    cell.Value = "" + project.StartJobs;
+                    cell = new DataGridViewTextBoxCell {Value = project.StartJobs};
                     row.Cells.Add(cell);
+                    
                     // Percent completed
                     cell = new DataGridViewTextBoxCell();
                     if (project.StartJobs == 0)
                         cell.Value = "";
                     else
                     {
-						string status = ((project.StartJobs - project.NbRemainingJobs()) * 100 / project.StartJobs) + "%";
-						if (project.Paused)
-							status = "(Paused) " + status;
-						
-						cell.Value = status;
-                    }                    
-					row.Cells.Add(cell);
+                        string projectStatus = ((project.StartJobs - project.NbRemainingJobs())*100/project.StartJobs) + "%";
+                        if (project.Paused)
+                            projectStatus = "(Paused) " + projectStatus;
+
+                        cell.Value = projectStatus;
+                    }
+                    row.Cells.Add(cell);
+
                     // Elapsed Time
                     cell = new DataGridViewTextBoxCell();
                     if (project.StartTimeSet)
                     {
                         TimeSpan elapsed = DateTime.Now - project.StartTime;
                         cell.Value = String.Format("{0:00}:{1:00}:{2:00}",
-                            (elapsed.Days * 24) + elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
-                    }
-                    else
-                        cell.Value = "";
-                    row.Cells.Add(cell);
-                    // Estimated time
-                    cell = new DataGridViewTextBoxCell();
-                    if (project.StartTimeSet && project.RenderedFrames.Count > 0)
-                    {
-                        TimeSpan elapsed = DateTime.Now - project.StartTime;
-                        long frameTime = elapsed.Ticks / (long)project.RenderedFrames.Count;
-                        long totalframes = (long)project.StartJobs;
-                        if (project.SaveAlpha)
-                            totalframes *= 2;
-                        long remainFrames = (long)(totalframes - project.RenderedFrames.Count);
-                        long estimated = remainFrames * frameTime;
-                        TimeSpan remain = new TimeSpan(estimated);
-                        cell.Value = String.Format("{0:00}:{1:00}:{2:00}",
-                            (remain.Days * 24) + remain.Hours, remain.Minutes, remain.Seconds);
+                                                   (elapsed.Days*24) + elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
                     }
                     else
                         cell.Value = "";
                     row.Cells.Add(cell);
                     
+                    // Estimated time
+                    cell = new DataGridViewTextBoxCell();
+                    if (project.StartTimeSet && project.UpdateTimeSet)
+                    {
+                        TimeSpan elapsed = project.UpdateTime - project.StartTime;
+                        long frameTime = elapsed.Ticks/ project.RenderedFrames.Count;
+                        long totalframes = project.StartJobs;
+                        if (project.SaveAlpha)
+                            totalframes *= 2;
+                        long remainFrames = totalframes - project.RenderedFrames.Count;
+                        long estimated = remainFrames*frameTime;
+                        TimeSpan remain = new TimeSpan(estimated);
+                        cell.Value = String.Format("{0:00}:{1:00}:{2:00}",
+                                                   (remain.Days*24) + remain.Hours, remain.Minutes, remain.Seconds);                        
+                    }
+                    else
+                        cell.Value = "";
+                    row.Cells.Add(cell);
+
                     try
                     {
-                        projectStatusGrid.Rows.Add(row);
+                        ActiveProjectGrid.Rows.Add(row);
                     }
-					catch (Exception ex)
-					{
-						Debug.WriteLine("Error adding project status row: " + ex);
-					}
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Error adding project status row: " + ex);
+                    }
 
-                    if ((string)row.Cells[0].Value == oldSelected)
+                    if ((string) row.Cells[0].Value.ToString() == oldSelected)
                         row.Selected = true;
                 }
+
                 try
                 {
-                    clientStatusGrid.FirstDisplayedScrollingRowIndex = vpos;
+                    ActiveProjectGrid.FirstDisplayedScrollingRowIndex = pos;
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine("Error adding project status: " + ex);
+                    Debug.WriteLine("Error adding project status: " + ex);
                 }
             }
         }
 
-        private void mnuExit_Click(object sender, EventArgs e)
+        private void RepaintFinishedList()
+        {
+            string oldSelected = "";
+            if (FinishedProjectGrid.SelectedRows.Count > 0)
+                oldSelected = (string)FinishedProjectGrid.SelectedRows[0].Cells[0].Value.ToString();
+
+            int pos = FinishedProjectGrid.FirstDisplayedScrollingRowIndex;
+
+            lock (_projectsLock)
+            {
+                try
+                {
+                    FinishedProjectGrid.Rows.Clear();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error clearing finished project status rows: " + ex);
+                }
+
+                foreach (RenderProject project in _finishedProjects)
+                {
+                    DataGridViewRow row = new DataGridViewRow();
+
+                    // Project ID
+                    DataGridViewCell cell = new DataGridViewTextBoxCell();
+                    cell.Value = project.ProjectId;
+                    row.Cells.Add(cell);
+
+                    // Project Name
+                    cell = new DataGridViewTextBoxCell
+                               {Value = project.SceneFile.Substring(project.SceneFile.LastIndexOf('\\') + 1)};
+                    row.Cells.Add(cell);
+
+                    // Frame count
+                    cell = new DataGridViewTextBoxCell {Value = project.RenderedFrameCount.ToString()};
+                    row.Cells.Add(cell);
+
+                    // Status
+                    cell = new DataGridViewTextBoxCell {Value = project.FinalStatus};
+                    row.Cells.Add(cell);
+
+                    // Final Render Time
+                    cell = new DataGridViewTextBoxCell
+                               {
+                                   Value = String.Format("{0:00}:{1:00}:{2:00}",
+                                                         (project.RenderTime.Days*24) + project.RenderTime.Hours,
+                                                         project.RenderTime.Minutes, project.RenderTime.Seconds)
+                               };
+                    row.Cells.Add(cell);
+
+                    try
+                    {
+                        FinishedProjectGrid.Rows.Add(row);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Error adding finished project status row: " + ex);
+                    }
+
+                    if ((string)row.Cells[0].Value.ToString() == oldSelected)
+                        row.Selected = true;
+                }
+
+                try
+                {
+                    FinishedProjectGrid.FirstDisplayedScrollingRowIndex = pos;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error adding finsihed project status: " + ex);
+                }
+            }
+        }
+
+        private void MenuExitClick(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void ServerWin_FormClosing(object sender, FormClosingEventArgs e)
+        private void ServerWinFormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.WinSize = this.Size;
-            Properties.Settings.Default.WinPosition = this.Location;
+            Properties.Settings.Default.WinSize = Size;
+            Properties.Settings.Default.WinPosition = Location;
             Properties.Settings.Default.AutoShowLast = autoRenderLast.Checked;
             Properties.Settings.Default.PlaySpeed = Convert.ToInt32(textPreviewSpeed.Text);
             Properties.Settings.Default.Save();
 
-            if (_isMaster && MessageBox.Show("Are you sure you want to exit?", "Closing Amleto", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (_isMaster &&
+                MessageBox.Show("Are you sure you want to exit?", "Closing Amleto", MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question) != DialogResult.Yes)
                 e.Cancel = true;
             else
             {
@@ -542,11 +634,10 @@ namespace Amleto
                         _masterServer.Shutdown();
                     _masterServer.Disconnect();
                 }
-				catch (Exception ex)
-				{
-					Debug.WriteLine("Error shutting down server: " + ex);
-				}
-
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error shutting down server: " + ex);
+                }
             }
         }
 
@@ -569,15 +660,15 @@ namespace Amleto
         {
             if (!_isMaster)
                 return;
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
             AddProject dlg = new AddProject(_masterServer, files[0]);
             dlg.ShowDialog();
             dlg.Dispose();
         }
 
-        private void mnuOptions_Click(object sender, EventArgs e)
+        private void MenuOptionsClick(object sender, EventArgs e)
         {
-            bool needToReset=false;
+            bool needToReset = false;
 
             SetupWin dlg = new SetupWin(_masterServer, true);
             dlg.Port = _masterServer.Port;
@@ -607,13 +698,13 @@ namespace Amleto
                 _masterServer.SmtpPassword = dlg.SmtpPassword;
                 _masterServer.OfferWeb = dlg.OfferWeb;
                 _masterServer.OfferWebPort = dlg.OfferWebPort;
-                string res=_masterServer.SetMappedDrives(dlg.MappedDrives);
+                string res = _masterServer.SetMappedDrives(dlg.MappedDrives);
                 if (res != "")
                     MessageBox.Show(res);
 
                 _masterServer.LoadFileFormats();
                 _masterServer.SaveSettings();
-                DoRepaintClientList();
+                RepaintClientList();
             }
             dlg.Dispose();
 
@@ -640,7 +731,7 @@ namespace Amleto
                     return;
                 }
                 textPreviewSpeed.ReadOnly = true;
-                playTimer.Interval = 1000 / Convert.ToInt32(textPreviewSpeed.Text);
+                playTimer.Interval = 1000/Convert.ToInt32(textPreviewSpeed.Text);
                 playTimer.Enabled = true;
                 playTimer.Start();
             }
@@ -677,33 +768,31 @@ namespace Amleto
 
         private void textPreviewSpeed_Leave(object sender, EventArgs e)
         {
-            int a;
+            int speed;
             try
             {
-                a = Convert.ToInt32(textPreviewSpeed.Text);
+                speed = Convert.ToInt32(textPreviewSpeed.Text);
             }
-			catch (Exception ex)
-			{
-				Debug.WriteLine("Error setting text preview speed: " + ex);
-				a = 10;
-                textPreviewSpeed.Text = "" + a;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error setting text preview speed: " + ex);
+                speed = 10;
             }
 
-            if (a < 1)
+            if (speed < 1)
+                speed = 1;
+
+            if (speed > 60)
             {
-                a = 1;
-                textPreviewSpeed.Text = "" + a;
+                speed = 60;
             }
-            if (a > 60)
-            {
-                a = 60;
-                textPreviewSpeed.Text = "" + a;
-            }
+
+            textPreviewSpeed.Text = speed.ToString();
         }
 
         private void mnuSendKill_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new KillJob());
@@ -719,45 +808,47 @@ namespace Amleto
 
         private void pauseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (projectStatusGrid.SelectedRows.Count == 0)
+            if (ActiveProjectGrid.SelectedRows.Count == 0)
                 return;
-            int id = Convert.ToInt32(projectStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ActiveProjectGrid.SelectedRows[0].Cells[0].Value);
             _masterServer.PauseProject(id);
         }
 
         private void resumeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (projectStatusGrid.SelectedRows.Count == 0)
+            if (ActiveProjectGrid.SelectedRows.Count == 0)
                 return;
-            int id = Convert.ToInt32(projectStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ActiveProjectGrid.SelectedRows[0].Cells[0].Value);
             _masterServer.ResumeProject(id);
         }
 
         private void stopToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (projectStatusGrid.SelectedRows.Count == 0)
+            if (ActiveProjectGrid.SelectedRows.Count == 0)
                 return;
-            int id = Convert.ToInt32(projectStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ActiveProjectGrid.SelectedRows[0].Cells[0].Value);
             _masterServer.StopProject(id);
         }
 
         private void changePriortyStripMenuItem_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = (ToolStripMenuItem)sender;
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            ToolStripMenuItem item = (ToolStripMenuItem) sender;
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
-                _masterServer.SetClientPriority(id, (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), item.Text));
+                _masterServer.SetClientPriority(id,
+                                                (ProcessPriorityClass)
+                                                Enum.Parse(typeof (ProcessPriorityClass), item.Text));
             }
-       }
+        }
 
         private void SetupJobMenu()
         {
-            if (projectStatusGrid.SelectedRows.Count == 0)
+            if (ActiveProjectGrid.SelectedRows.Count == 0)
             {
-                editNodeToolStripMenuItem.Enabled=false;
-                pauseToolStripMenuItem.Enabled=false;
-                resumeToolStripMenuItem.Enabled=false;
+                editNodeToolStripMenuItem.Enabled = false;
+                pauseToolStripMenuItem.Enabled = false;
+                resumeToolStripMenuItem.Enabled = false;
                 stopToolStripMenuItem.Enabled = false;
                 return;
             }
@@ -765,7 +856,7 @@ namespace Amleto
             editNodeToolStripMenuItem.Enabled = true;
             stopToolStripMenuItem.Enabled = true;
 
-            int id = Convert.ToInt32(projectStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ActiveProjectGrid.SelectedRows[0].Cells[0].Value);
 
             if (_masterServer.IsProjectPaused(id))
             {
@@ -779,47 +870,49 @@ namespace Amleto
             }
         }
 
-        private void projectStatusGrid_MouseClick(object sender, MouseEventArgs e)
+        private void ProjectStatusGridMouseClick(object sender, MouseEventArgs e)
         {
-            DataGridView.HitTestInfo hitInfo = projectStatusGrid.HitTest(e.X, e.Y);
+            DataGridView.HitTestInfo hitInfo = ActiveProjectGrid.HitTest(e.X, e.Y);
             if (hitInfo.RowIndex == -1)
                 return;
-            projectStatusGrid.Rows[hitInfo.RowIndex].Selected = true;
+            ActiveProjectGrid.Rows[hitInfo.RowIndex].Selected = true;
 
             if (e.Button != MouseButtons.Right)
                 return;
-            if (projectStatusGrid.SelectedRows.Count == 0)
+            if (ActiveProjectGrid.SelectedRows.Count == 0)
                 return;
 
             SetupJobMenu();
 
             contextMenuProjects.Items.Clear();
-            contextMenuProjects.Items.AddRange(new ToolStripItem[] {
-            addToolStripMenuItem,
-            editNodeToolStripMenuItem,
-            pauseToolStripMenuItem,
-            resumeToolStripMenuItem,
-            stopToolStripMenuItem});
+            contextMenuProjects.Items.AddRange(new ToolStripItem[]
+                {
+                    addToolStripMenuItem,
+                    editNodeToolStripMenuItem,
+                    pauseToolStripMenuItem,
+                    resumeToolStripMenuItem,
+                    stopToolStripMenuItem
+                });
             contextMenuProjects.Show(MousePosition.X, MousePosition.Y);
         }
 
         private void SetupNodesMenu()
         {
-            if (clientStatusGrid.SelectedRows.Count == 0)
+            if (ClientStatusGrid.SelectedRows.Count == 0)
             {
-                mnuSendKill.Enabled=false;
+                mnuSendKill.Enabled = false;
                 resendConfigToolStripMenuItem.Enabled = false;
-                showMessagesToolStripMenuItem.Enabled=false;
-                configToolStripMenuItem.Enabled=false;
-                renderPriorityToolStripMenuItem.Enabled=false;
-                setupActivationTimeToolStripMenuItem.Enabled=false;
-                pauseClientToolStripMenuItem.Enabled=false;
-                resumeClientToolStripMenuItem.Enabled=false;
-                closeNodeToolStripMenuItem.Enabled=false;
+                showMessagesToolStripMenuItem.Enabled = false;
+                configToolStripMenuItem.Enabled = false;
+                renderPriorityToolStripMenuItem.Enabled = false;
+                setupActivationTimeToolStripMenuItem.Enabled = false;
+                pauseClientToolStripMenuItem.Enabled = false;
+                resumeClientToolStripMenuItem.Enabled = false;
+                closeNodeToolStripMenuItem.Enabled = false;
                 stopAllNodesToolStripMenuItem.Enabled = false;
-                cleanClientContentDirectoryToolStripMenuItem.Enabled=false;
-                cleanAllClientsContentDirectoryToolStripMenuItem.Enabled=true;
-                cleanClientOutputDirectoryToolStripMenuItem.Enabled=false;
+                cleanClientContentDirectoryToolStripMenuItem.Enabled = false;
+                cleanAllClientsContentDirectoryToolStripMenuItem.Enabled = true;
+                cleanClientOutputDirectoryToolStripMenuItem.Enabled = false;
                 cleanAllClientsOutputDirectoryToolStripMenuItem.Enabled = true;
                 return;
             }
@@ -839,7 +932,7 @@ namespace Amleto
             cleanClientOutputDirectoryToolStripMenuItem.Enabled = true;
             cleanAllClientsOutputDirectoryToolStripMenuItem.Enabled = true;
 
-            bool multiSelect = clientStatusGrid.SelectedRows.Count > 1;
+            bool multiSelect = ClientStatusGrid.SelectedRows.Count > 1;
 
             if (multiSelect)
             {
@@ -852,7 +945,7 @@ namespace Amleto
                 setupActivationTimeToolStripMenuItem.Enabled = true;
             }
 
-            int id = Convert.ToInt32(clientStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ClientStatusGrid.SelectedRows[0].Cells[0].Value);
             ProcessPriorityClass priority = _masterServer.GetClientPriority(id);
 
             List<string> configs = _masterServer.ConfigNames;
@@ -900,52 +993,54 @@ namespace Amleto
 
         private void clientStatusGrid_MouseClick(object sender, MouseEventArgs e)
         {
-            DataGridView.HitTestInfo hitInfo = clientStatusGrid.HitTest(e.X, e.Y);
+            DataGridView.HitTestInfo hitInfo = ClientStatusGrid.HitTest(e.X, e.Y);
             if (hitInfo.RowIndex == -1)
                 return;
 
             // Multiple select!
             if (ModifierKeys != Keys.Control)
             {
-                if (clientStatusGrid.Rows[hitInfo.RowIndex].Selected == false)
+                if (ClientStatusGrid.Rows[hitInfo.RowIndex].Selected == false)
                 {
-                    foreach (DataGridViewRow row in clientStatusGrid.Rows)
+                    foreach (DataGridViewRow row in ClientStatusGrid.Rows)
                         row.Selected = false;
                 }
             }
-            clientStatusGrid.Rows[hitInfo.RowIndex].Selected = true;
+            ClientStatusGrid.Rows[hitInfo.RowIndex].Selected = true;
 
             if (e.Button != MouseButtons.Right)
                 return;
-            if (clientStatusGrid.SelectedRows.Count == 0)
+            if (ClientStatusGrid.SelectedRows.Count == 0)
                 return;
             SetupNodesMenu();
 
             contextMenuNodes.Items.Clear();
-            contextMenuNodes.Items.AddRange(new ToolStripItem[] {
-            mnuSendKill,
-            showMessagesToolStripMenuItem,
-            resendConfigToolStripMenuItem,
-            configToolStripMenuItem,
-            renderPriorityToolStripMenuItem,
-            setupActivationTimeToolStripMenuItem,
-            pauseClientToolStripMenuItem,
-            resumeClientToolStripMenuItem,
-            closeNodeToolStripMenuItem,
-            stopAllNodesToolStripMenuItem,
-            cleanClientContentDirectoryToolStripMenuItem,
-            cleanAllClientsContentDirectoryToolStripMenuItem,
-            cleanClientOutputDirectoryToolStripMenuItem,
-            cleanAllClientsOutputDirectoryToolStripMenuItem});
+            contextMenuNodes.Items.AddRange(new ToolStripItem[]
+                {
+                    mnuSendKill,
+                    showMessagesToolStripMenuItem,
+                    resendConfigToolStripMenuItem,
+                    configToolStripMenuItem,
+                    renderPriorityToolStripMenuItem,
+                    setupActivationTimeToolStripMenuItem,
+                    pauseClientToolStripMenuItem,
+                    resumeClientToolStripMenuItem,
+                    closeNodeToolStripMenuItem,
+                    stopAllNodesToolStripMenuItem,
+                    cleanClientContentDirectoryToolStripMenuItem,
+                    cleanAllClientsContentDirectoryToolStripMenuItem,
+                    cleanClientOutputDirectoryToolStripMenuItem,
+                    cleanAllClientsOutputDirectoryToolStripMenuItem
+                });
             contextMenuNodes.Show(MousePosition.X, MousePosition.Y);
         }
 
-        void ConfigSet_Click(object sender, EventArgs e)
+        private void ConfigSet_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-            int configNumber = (int)menuItem.Tag;
+            int configNumber = (int) menuItem.Tag;
 
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.SetClientConfig(id, configNumber);
@@ -958,13 +1053,20 @@ namespace Amleto
             if (_clientListRefresh.ElapsedMilliseconds > 500)
             {
                 _clientListRefresh.Reset();
-                DoRepaintClientList();
+                RepaintClientList();
             }
 
-            if (_projectListRefresh.ElapsedMilliseconds > 500)
+            if (_projectListRefresh.ElapsedMilliseconds > 1000)
             {
                 _projectListRefresh.Reset();
-                DoRepaintProjectList();
+                _projectListRefresh.Start();
+                RepaintProjectList();
+            }
+
+            if (_finishedListRefresh.ElapsedMilliseconds > 500)
+            {
+                _finishedListRefresh.Reset();
+                RepaintFinishedList();
             }
 
             if (_imageRefresh.ElapsedMilliseconds > 500)
@@ -973,17 +1075,17 @@ namespace Amleto
                 DoShowImages();
             }
 
-            int t = DateTime.Now.Hour * 2 + (DateTime.Now.Minute < 30 ? 0 : 1);
-            if(t != _lastActiveTime)
+            int t = DateTime.Now.Hour*2 + (DateTime.Now.Minute < 30 ? 0 : 1);
+            if (t != _lastActiveTime)
             {
-                _lastActiveTime=t;
-                BeginInvoke((MethodInvoker)delegate { RestoreClientList(); });
+                _lastActiveTime = t;
+                BeginInvoke((MethodInvoker) delegate { RestoreClientList(); });
             }
         }
 
         private void pauseClientToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.PauseClient(id);
@@ -992,7 +1094,7 @@ namespace Amleto
 
         private void resumeClientToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.ResumeClient(id);
@@ -1001,9 +1103,11 @@ namespace Amleto
 
         private void closeNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to stop the selected node(s) remotely?", "Stop node", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
+            if (
+                MessageBox.Show("Are you sure you want to stop the selected node(s) remotely?", "Stop node",
+                                MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
                 return;
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new QuitJob());
@@ -1012,9 +1116,11 @@ namespace Amleto
 
         private void stopAllNodesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to stop ALL the connected nodes remotely?", "Stop all nodes", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
+            if (
+                MessageBox.Show("Are you sure you want to stop ALL the connected nodes remotely?", "Stop all nodes",
+                                MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
                 return;
-            foreach (DataGridViewRow row in clientStatusGrid.Rows)
+            foreach (DataGridViewRow row in ClientStatusGrid.Rows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new QuitJob());
@@ -1025,18 +1131,18 @@ namespace Amleto
         {
             if (!_needToUpdateClient)
                 return;
-            if (clientStatusGrid.SelectedRows.Count == 0)
+            if (ClientStatusGrid.SelectedRows.Count == 0)
                 return;
-            int id = Convert.ToInt32(clientStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ClientStatusGrid.SelectedRows[0].Cells[0].Value);
             _needToUpdateClient = false;
-            clientStatusGrid.EndEdit();
-            DataGridViewRow row = clientStatusGrid.SelectedRows[0];
+            ClientStatusGrid.EndEdit();
+            DataGridViewRow row = ClientStatusGrid.SelectedRows[0];
             row.Cells[3].Selected = false;
             row.Cells[0].Selected = true;
-            string newVal=(string)row.Cells[3].Value;
+            string newVal = (string) row.Cells[3].Value;
 
             List<string> configsName = _masterServer.ConfigNames;
-            int configId=configsName.FindIndex(delegate(string x) { return x == newVal; });
+            int configId = configsName.FindIndex(delegate(string x) { return x == newVal; });
             _masterServer.SetClientConfig(id, configId);
 
             _needToUpdateClient = true;
@@ -1044,16 +1150,16 @@ namespace Amleto
 
         private void showMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (clientStatusGrid.SelectedRows.Count == 0)
+            if (ClientStatusGrid.SelectedRows.Count == 0)
                 return;
-            int id = Convert.ToInt32(clientStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ClientStatusGrid.SelectedRows[0].Cells[0].Value);
 
             _masterServer.AddPriorityJob(id, new SendLogJob(_eventBridge.ReceiveLog));
         }
 
         private void ShowClientLog(List<string> log)
         {
-            BeginInvoke((MethodInvoker)delegate { DoShowClientLog(log); });
+            BeginInvoke((MethodInvoker) delegate { DoShowClientLog(log); });
         }
 
         private void DoShowClientLog(List<string> log)
@@ -1065,10 +1171,10 @@ namespace Amleto
 
         private void editNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (projectStatusGrid.SelectedRows.Count == 0)
+            if (ActiveProjectGrid.SelectedRows.Count == 0)
                 return;
-            int id = Convert.ToInt32(projectStatusGrid.SelectedRows[0].Cells[0].Value);
-            AddProject dlg=new AddProject(_masterServer,_masterServer.GetProject(id));
+            int id = Convert.ToInt32(ActiveProjectGrid.SelectedRows[0].Cells[0].Value);
+            AddProject dlg = new AddProject(_masterServer, _masterServer.GetProject(id));
             dlg.ShowDialog();
             dlg.Dispose();
         }
@@ -1080,16 +1186,16 @@ namespace Amleto
 
         private void setupActivationTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (clientStatusGrid.SelectedRows.Count == 0)
+            if (ClientStatusGrid.SelectedRows.Count == 0)
                 return;
-            int id = Convert.ToInt32(clientStatusGrid.SelectedRows[0].Cells[0].Value);
+            int id = Convert.ToInt32(ClientStatusGrid.SelectedRows[0].Cells[0].Value);
 
             ClientActiveWin dlg = new ClientActiveWin();
             dlg.ActiveHours = _masterServer.GetClientActivationTime(id);
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 _masterServer.SetClientActivationTime(id, dlg.ActiveHours);
-                BeginInvoke((MethodInvoker)delegate { RestoreClientList(); });
+                BeginInvoke((MethodInvoker) delegate { RestoreClientList(); });
             }
             dlg.Dispose();
         }
@@ -1098,33 +1204,37 @@ namespace Amleto
         {
             SetupJobMenu();
             jobsToolStripMenuItem.DropDownItems.Clear();
-            jobsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            addToolStripMenuItem,
-            editNodeToolStripMenuItem,
-            pauseToolStripMenuItem,
-            resumeToolStripMenuItem,
-            stopToolStripMenuItem});
+            jobsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[]
+                {
+                    addToolStripMenuItem,
+                    editNodeToolStripMenuItem,
+                    pauseToolStripMenuItem,
+                    resumeToolStripMenuItem,
+                    stopToolStripMenuItem
+                });
         }
 
         private void nodesToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             SetupNodesMenu();
             nodesToolStripMenuItem.DropDownItems.Clear();
-            nodesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            mnuSendKill,
-            showMessagesToolStripMenuItem,
-            resendConfigToolStripMenuItem,
-            configToolStripMenuItem,
-            renderPriorityToolStripMenuItem,
-            setupActivationTimeToolStripMenuItem,
-            pauseClientToolStripMenuItem,
-            resumeClientToolStripMenuItem,
-            closeNodeToolStripMenuItem,
-            stopAllNodesToolStripMenuItem,
-            cleanClientContentDirectoryToolStripMenuItem,
-            cleanAllClientsContentDirectoryToolStripMenuItem,
-            cleanClientOutputDirectoryToolStripMenuItem,
-            cleanAllClientsOutputDirectoryToolStripMenuItem});
+            nodesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[]
+                {
+                    mnuSendKill,
+                    showMessagesToolStripMenuItem,
+                    resendConfigToolStripMenuItem,
+                    configToolStripMenuItem,
+                    renderPriorityToolStripMenuItem,
+                    setupActivationTimeToolStripMenuItem,
+                    pauseClientToolStripMenuItem,
+                    resumeClientToolStripMenuItem,
+                    closeNodeToolStripMenuItem,
+                    stopAllNodesToolStripMenuItem,
+                    cleanClientContentDirectoryToolStripMenuItem,
+                    cleanAllClientsContentDirectoryToolStripMenuItem,
+                    cleanClientOutputDirectoryToolStripMenuItem,
+                    cleanAllClientsOutputDirectoryToolStripMenuItem
+                });
         }
 
         private void tool_MouseHover(object sender, EventArgs e)
@@ -1137,7 +1247,7 @@ namespace Amleto
             else
             {
                 Control control = sender as Control;
-                toolStripStatus.Text = (string)control.Tag;
+                toolStripStatus.Text = (string) control.Tag;
             }
         }
 
@@ -1148,7 +1258,10 @@ namespace Amleto
 
         private void clearListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to clear the rendered list?\nThis affect all users and is permanent.", "Clear rendered list", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (
+                MessageBox.Show(
+                    "Are you sure you want to clear the rendered list?\nThis affect all users and is permanent.",
+                    "Clear rendered list", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
             renderTree.Nodes.Clear();
         }
@@ -1170,7 +1283,8 @@ namespace Amleto
             RenderProject project = _masterServer.GetProject(projectId);
             if (project == null)
             {
-                MessageBox.Show("Cannot retreive project information", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Cannot retreive project information", "Error", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
                 return;
             }
 
@@ -1181,7 +1295,7 @@ namespace Amleto
 
         private void resendConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new SetupJob(true));
@@ -1190,7 +1304,7 @@ namespace Amleto
 
         private void cleanClientContentDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new DeleteContentJob());
@@ -1199,7 +1313,7 @@ namespace Amleto
 
         private void cleanAllClientsContentDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.Rows)
+            foreach (DataGridViewRow row in ClientStatusGrid.Rows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new DeleteContentJob());
@@ -1208,7 +1322,7 @@ namespace Amleto
 
         private void cleanClientOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.SelectedRows)
+            foreach (DataGridViewRow row in ClientStatusGrid.SelectedRows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new DeleteOutputJob());
@@ -1217,7 +1331,7 @@ namespace Amleto
 
         private void cleanAllClientsOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in clientStatusGrid.Rows)
+            foreach (DataGridViewRow row in ClientStatusGrid.Rows)
             {
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 _masterServer.AddPriorityJob(id, new DeleteOutputJob());
@@ -1226,7 +1340,10 @@ namespace Amleto
 
         private void ServerWin_Shown(object sender, EventArgs e)
         {
-            Text = "Amleto Server " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Text = "Amleto Server " + Assembly.GetExecutingAssembly().GetName().Version;
+            if (IsBeta)
+                Text = Text + " (Beta)";
+
             BroadcastFinder findMaster = new BroadcastFinder();
             if (findMaster.Server != "") // Let's connect to the master
             {
@@ -1249,14 +1366,20 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-							Debug.WriteLine("Error creating TCPChannel" + ex);
+                            Debug.WriteLine("Error creating TCPChannel" + ex);
                         }
                     }
 
                     ChannelServices.RegisterChannel(_channel, false);
-                    _masterServer = (MasterServer)Activator.CreateInstance(typeof(MasterServer), 
-						new object[] { Environment.UserName }, 
-						new object[] { new UrlAttribute("tcp://" + findMaster.Server + ":" + findMaster.Port) });
+                    _masterServer = (MasterServer) Activator.CreateInstance(typeof (MasterServer),
+                                                                            new object[] {Environment.UserName},
+                                                                            new object[]
+                                                                                {
+                                                                                    new UrlAttribute("tcp://" +
+                                                                                                     findMaster.Server +
+                                                                                                     ":" +
+                                                                                                     findMaster.Port)
+                                                                                });
 
                     List<string> oldMessages = _masterServer.GetOldMessages();
                     foreach (string s in oldMessages)
@@ -1264,14 +1387,14 @@ namespace Amleto
                     List<FinishedFrame> oldFrames = _masterServer.GetOldFrames();
                     DoAddFrames(oldFrames);
 
-                    DoRepaintClientList();
-                    DoRepaintProjectList();
+                    RepaintClientList();
+                    RepaintProjectList();
 
                     Text = Text + " - Terminal";
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine("Error showing server window: " + ex);
+                    Debug.WriteLine("Error showing server window: " + ex);
                 }
             }
             else // We should be master
@@ -1302,10 +1425,12 @@ namespace Amleto
                 Text = Text + " - Master";
             }
 
-            _eventBridge = new EventBridge(RefreshClientList, RefreshProjectList, ShowImage, ConsumeMessage, ShowClientLog);
+            _eventBridge = new EventBridge(RefreshClientList, RefreshProjectList, RefreshFinishedList, ShowImage,
+                                           ConsumeMessage, ShowClientLog);
 
             _masterServer.AddClientStatus(_eventBridge.ClientRefresh);
             _masterServer.AddProjectStatus(_eventBridge.ProjectRefresh);
+            _masterServer.AddFinishedStatus(_eventBridge.FinishedRefresh);
             _masterServer.AddImagePreview(_eventBridge.ImagePreview);
             _masterServer.AddMessageConsumer(_eventBridge.MessageConsume);
             if (_isMaster)

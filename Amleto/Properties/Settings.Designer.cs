@@ -37,7 +37,7 @@ namespace Amleto.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("715, 500")]
+        [global::System.Configuration.DefaultSettingValueAttribute("900, 750")]
         public global::System.Drawing.Size WinSize {
             get {
                 return ((global::System.Drawing.Size)(this["WinSize"]));

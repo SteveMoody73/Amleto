@@ -457,6 +457,8 @@ namespace RemoteExecution.Jobs
 
             for (int i = StartFrame; i <= EndFrame; i += Step)
             {
+                bool uploadError = false;
+
                 string outputPath = Path.Combine(ClientServices.GetClientDir(), "Output");
                 string fname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_{1:0000}{2}", Instance, i, ext);
                 string afname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_a{1:0000}{2}", Instance, i, ext);
@@ -473,8 +475,17 @@ namespace RemoteExecution.Jobs
                             string fileNumber = string.Format(nameFormat, "", "", i, plugin.FileExtension);
                             if (file.FullName.Contains(fileNumber))
                             {
-                                Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
-                                messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(file.FullName) + " rendered successfully");
+                                try
+                                {
+                                    Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
+                                    messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(file.FullName) + " rendered successfully");
+                                }
+                                catch (Exception e)
+                                {
+                                    messageBack(1, "Error while uploading frame " + i);
+                                    Debug.WriteLine("Error sending file :" + e);
+                                    uploadError = true;
+                                }
                             }
                         }
                     }
@@ -486,13 +497,12 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(0,"Frame " + i + " rendered successfully");
                         Server.SendImage(i, SliceNumber, File.ReadAllBytes(fname));
-                        if (!SaveAlpha)
-                            Server.FrameFinished(i, SliceNumber);
                     }
-                    catch
+                    catch (Exception e)
                     {
                         messageBack(1, "Error while uploading frame " + i);
-                        Server.FrameLost(i, SliceNumber);
+                        Debug.WriteLine("Error sending file :" + e);
+                        uploadError = true;
                     }
                 }
                 else
@@ -507,14 +517,18 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(0, "Frame " + i + " alpha rendered successfully");
                         Server.SendImageAlpha(i, SliceNumber, File.ReadAllBytes(afname));
-                        Server.FrameFinished(i, SliceNumber);
                     }
-                    catch
+                    catch (Exception e)
                     {
                         messageBack(1, "Error while uploading frame " + i + " Alpha");
-                        Server.FrameLost(i, SliceNumber);
+                        Debug.WriteLine("Error sending file :" + e);
+                        uploadError = true;
                     }
                 }
+                if (uploadError)
+                    Server.FrameLost(i, SliceNumber);
+                else
+                    Server.FrameFinished(i, SliceNumber);
             }
             Server.SetCurrentJob("");
             GC.Collect();

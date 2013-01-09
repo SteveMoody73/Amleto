@@ -20,13 +20,15 @@ namespace RemoteExecution
     {
 		public delegate void StatusClientChange(List<ClientConnection> clients);
 		public delegate void StatusProjectChange(List<RenderProject> projects);
-		public delegate void StatusStringChange(string msg);
+        public delegate void StatusFinishedChange(List<RenderProject> finished);
+        public delegate void StatusStringChange(string msg);
 		public delegate void StatusStringStringChange(string op, string msg);
 		public delegate void StatusFinishedFrameChange(FinishedFrame frame);
 
 		public static event StatusClientChange ClientStatus;
 		public static event StatusProjectChange ProjectStatus;
-		public static event StatusFinishedFrameChange ImagePreviewStatus;
+        public static event StatusFinishedChange FinishedStatus;
+        public static event StatusFinishedFrameChange ImagePreviewStatus;
 		public static event StatusStringChange MessageConsumer;
 
 		private static List<ClientConnection> _clients = new List<ClientConnection>();
@@ -151,32 +153,41 @@ namespace RemoteExecution
                     // Either paused or activation time disable it...
                     if (!_currConnection.CanBeUsed)
                         return false;
+
                     if (_currConnection.CurrentRender == null && Projects.Count > 0)
                     {
+                        RenderProject project = null;
                         foreach (RenderProject t in Projects)
                         {
-                        	if (t.Paused == false && t.Config == _currConnection.Config && t.HasFreeJobs())
+                            if (t.Paused == false && t.Config == _currConnection.Config && t.HasFreeJobs())
+                            {
+                                project = t;
+                                break;
+                            }
+                        }
+
+                        if (project != null)
+                        {
+                            if (!project.StartTimeSet)
+                            {
+                                project.StartTimeSet = true;
+                                project.StartTime = DateTime.Now;
+                            }
+
+                            _currConnection.CurrentRender = project;
+                        	if (IsFirstClient())
                         	{
-								if (!t.StartTimeSet)
-								{
-									t.StartTimeSet = true;
-									t.StartTime = DateTime.Now;
-								}
-                        		_currConnection.CurrentRender = t;
-                        		if (IsFirstClient())
-                        		{
-                                    AddMessage(2, "Sending scene " + _currConnection.CurrentRender.SceneId + " to " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")");
-                        			ChangeCurrentJobLabel("Downloading content for " + _currConnection.CurrentRender.SceneId);
-                        			_currConnection.IsReady = false;
-                        			_currConnection.Jobs.AddRange(_currConnection.CurrentRender.GetContentJobs());
-                        			_currConnection.Jobs.Add(new ClientReadyJob());
-                        		}
-                        		else
-                        		{
-                        			ChangeCurrentJobLabel("Project " + _currConnection.CurrentRender.SceneId + " assigned. Waiting for first node on host.");
-                        			_currConnection.Jobs.Add(new WaitFirstJob());
-                        		}
+                                AddMessage(2, "Sending scene " + _currConnection.CurrentRender.SceneId + " to " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")");
+                        		ChangeCurrentJobLabel("Downloading content for " + _currConnection.CurrentRender.SceneId);
+                        		_currConnection.IsReady = false;
+                        		_currConnection.Jobs.AddRange(_currConnection.CurrentRender.GetContentJobs());
+                        		_currConnection.Jobs.Add(new ClientReadyJob());
                         	}
+                        	else
+                        	{
+                        		ChangeCurrentJobLabel("Project " + _currConnection.CurrentRender.SceneId + " assigned. Waiting for first node on host.");
+                        		_currConnection.Jobs.Add(new WaitFirstJob());
+                            }
                         }
                     }
                     else if (_currConnection.CurrentRender != null && _currConnection.Jobs.Count == 0)
@@ -187,8 +198,12 @@ namespace RemoteExecution
                             _currConnection.Jobs.Add(_currConnection.CurrentRender.GetRenderJob(_currConnection.Id, _currConnection.Instance));
                         }
                     }
+
+                    CallUpdateProjectList();
+
                     if (_currConnection.Jobs.Count > 0)
                         return true;
+
                     _currConnection.CurrentRender = null;
                     ChangeCurrentJobLabel("");
                     return false;
@@ -332,9 +347,9 @@ namespace RemoteExecution
                     ReturnClient(id).Priority = priority;
                     ReturnClient(id).PriorityJobs.Add(new SetPriorityJob(priority));
                 }
-                catch
+                catch (Exception e)
                 {
-                    return;
+                    Debug.WriteLine("SetClientPriority: " + e);
                 }
             }
         }
@@ -352,9 +367,9 @@ namespace RemoteExecution
                     node.Config = newConfig;
                     node.Jobs.Add(new ChangeConfigJob(Configs[newConfig].Name));
                 }
-                catch
+                catch (Exception e)
                 {
-                    return;
+                    Debug.WriteLine("SetClientConfig: " + e);
                 }
             }
         }
@@ -367,8 +382,9 @@ namespace RemoteExecution
                 {
                     return ReturnClient(id).Priority;
                 }
-                catch
+                catch (Exception e)
                 {
+                    Debug.WriteLine("GetClientPriority: " + e);
                     return ProcessPriorityClass.Normal;
                 }
             }
@@ -378,6 +394,7 @@ namespace RemoteExecution
         {
             if (_currConnection == null)
                 return;
+
             lock (_clients)
             {
                 _currConnection.Priority = priority;
@@ -434,7 +451,10 @@ namespace RemoteExecution
                     fname = _currConnection.CurrentRender.FinishFrame(frame, sliceNumber, _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance);
                     if (fname != null)
                         sceneId = _currConnection.CurrentRender.SceneId;
-                    
+
+                    _currConnection.CurrentRender.UpdateTime = DateTime.Now;
+                    _currConnection.CurrentRender.UpdateTimeSet = true;
+
                     if (_currConnection.CurrentRender.NbRemainingJobs() == 0)
                     {
                         _currConnection.CurrentRender.CloseLogs();
@@ -442,6 +462,7 @@ namespace RemoteExecution
                     }
                 }
             }
+
             if (hasSlices)
                 AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " uploaded slice " + sliceNumber + " of frame " + frame + ".");
             else
@@ -451,7 +472,7 @@ namespace RemoteExecution
             {
                 AddMessage(4, "Frame " + frame + " rebuilt.");
                 CallUpdateImagesPreview(sceneId, fname);
-            }
+            }            
             CallUpdateProjectList();
         }
 
@@ -466,6 +487,8 @@ namespace RemoteExecution
                 lock (Projects)
                 {
                     _currConnection.CurrentRender.ReleaseFrame(frame, sliceNumber, _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance);
+                    _currConnection.CurrentRender.UpdateTime = DateTime.Now;
+                    _currConnection.CurrentRender.UpdateTimeSet = true;
                 }
             }
             AddMessage(1, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ") " + _currConnection.Instance + " lost frame " + frame + ".");
@@ -698,6 +721,7 @@ namespace RemoteExecution
             else
                 RemoveProject(project);
             CallUpdateProjectList();
+            CallUpdateFinishedList();
         }
 
         private static void RemoveProject(RenderProject project)
@@ -705,8 +729,14 @@ namespace RemoteExecution
             while (FinishedProjects.Count > 50)
                 FinishedProjects.RemoveAt(0);
             GC.Collect();
+
+            project.RenderedFrameCount = project.RenderedFrames.Count;
+            project.RenderTime = DateTime.Now - project.StartTime;
+            project.FinalStatus = "Finished";
+
             FinishedProjects.Add(project);
             Projects.Remove(project);
+            
             foreach (ClientConnection t in _clients)
             {
             	if (t.CurrentRender == project)
@@ -718,9 +748,18 @@ namespace RemoteExecution
         {
             lock (Projects)
             {
-                Projects.Add(project);
+                if (project.StartJobs > 0)
+                {
+                    Projects.Add(project);
+                }
+                else
+                {
+                    project.FinalStatus = "No Frames to Render";
+                    FinishedProjects.Add(project);
+                }
             }
             CallUpdateProjectList();
+            CallUpdateFinishedList();
         }
 
         public static void ReplaceProject(int projectId, RenderProject project)
@@ -776,6 +815,17 @@ namespace RemoteExecution
             MemoryStream stream = new MemoryStream();
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(stream, Projects);
+            stream.Position = 0;
+            List<RenderProject> res = (List<RenderProject>)formatter.Deserialize(stream);
+            stream.Dispose();
+            return res;
+        }
+
+        public static List<RenderProject> GetFinishedProjects()
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, FinishedProjects);
             stream.Position = 0;
             List<RenderProject> res = (List<RenderProject>)formatter.Deserialize(stream);
             stream.Dispose();
@@ -845,8 +895,9 @@ namespace RemoteExecution
                         d.DynamicInvoke(new object[] { new FinishedFrame(sceneId, fname) });
                         i++;
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Debug.WriteLine("CallUpdateImagesPreview: " + e);
                         ImagePreviewStatus -= (StatusFinishedFrameChange)d;
                     }
                 }
@@ -885,8 +936,9 @@ namespace RemoteExecution
                     d.DynamicInvoke(new object[] { fullMsg });
                     i++;
                 }
-                catch
+                catch (Exception e)
                 {
+                    Debug.WriteLine("AddMessage: " + e);
                     MessageConsumer -= (StatusStringChange)d;
                 }
             }
@@ -913,6 +965,27 @@ namespace RemoteExecution
                     {
                         Debug.WriteLine("CallUpdateProjectList: " + e);
                         ProjectStatus -= (StatusProjectChange)d;
+                    }
+                }
+            }
+        }
+
+        private static void CallUpdateFinishedList()
+        {
+            if (FinishedStatus != null)
+            {
+                for (int i = 0; i < FinishedStatus.GetInvocationList().Length; )
+                {
+                    Delegate d = FinishedStatus.GetInvocationList()[i];
+                    try
+                    {
+                        d.DynamicInvoke(new object[] { GetFinishedProjects() });
+                        i++;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine("CallUpdateFinshedList: " + e);
+                        FinishedStatus -= (StatusFinishedChange)d;
                     }
                 }
             }
@@ -994,11 +1067,14 @@ namespace RemoteExecution
                     	}
                     }
                 	Projects.Remove(proj);
+                    proj.FinalStatus = "Stopped";
+                    if (proj.StartTimeSet && proj.UpdateTimeSet)
+                        proj.RenderTime = proj.UpdateTime - proj.StartTime;
                     FinishedProjects.Add(proj);
                 }
             }
-            if (proj != null)
-                CallUpdateProjectList();
+            CallUpdateProjectList();
+            CallUpdateFinishedList();
         }
 
         public static void PauseClient(int id)
@@ -1009,9 +1085,9 @@ namespace RemoteExecution
                 {
                     ReturnClient(id).Paused = true;
                 }
-                catch
+                catch (Exception e)
                 {
-                    return;
+                    Debug.WriteLine("PauseClient: " + e);
                 }
             }
             CallUpdateClientList();
@@ -1025,9 +1101,9 @@ namespace RemoteExecution
                 {
                     ReturnClient(id).Paused = false;
                 }
-                catch
+                catch (Exception e)
                 {
-                    return;
+                    Debug.WriteLine("ResumeClient: " + e);
                 }
             }
             CallUpdateClientList();
@@ -1041,11 +1117,12 @@ namespace RemoteExecution
                 {
                     return ReturnClient(id).Paused;
                 }
-                catch
+                catch (Exception e)
                 {
-                    return false;
+                    Debug.WriteLine("IsClientPaused: " + e);                    
                 }
             }
+            return false;
         }
 
         public static void SaveAllNodeConfig()
@@ -1091,11 +1168,12 @@ namespace RemoteExecution
                 {
                     return ReturnClient(id).ActiveHours;
                 }
-                catch
+                catch (Exception e)
                 {
-                    return null;
+                    Debug.WriteLine("GetClientActivationTime: " + e);
                 }
             }
+            return "";
         }
 
         public static void SetClientActivationTime(int id, string activationTime)

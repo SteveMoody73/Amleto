@@ -9,18 +9,21 @@ namespace RemoteExecution
     {
         private ServerServices.StatusClientChange _clientStatus;
         private ServerServices.StatusProjectChange _projectStatus;
+        private ServerServices.StatusFinishedChange _finishedStatus;
         private ServerServices.StatusFinishedFrameChange _imagePreview;
         private ServerServices.StatusStringChange _messageConsumer;
         private SendLogJob.LogReceiver _logReceiver;
 
         public EventBridge(ServerServices.StatusClientChange clientStatus,
             ServerServices.StatusProjectChange projectStatus,
+            ServerServices.StatusFinishedChange finishedStatus,
             ServerServices.StatusFinishedFrameChange imagePreview,
             ServerServices.StatusStringChange messageConsumer,
             SendLogJob.LogReceiver logReceiver)
         {
             _clientStatus = clientStatus;
             _projectStatus = projectStatus;
+            _finishedStatus = finishedStatus;
             _imagePreview = imagePreview;
             _messageConsumer = messageConsumer;
             _logReceiver = logReceiver;
@@ -34,6 +37,11 @@ namespace RemoteExecution
         public void ProjectRefresh(List<RenderProject> projects)
         {
             _projectStatus.Invoke(projects);
+        }
+
+        public void FinishedRefresh(List<RenderProject> finished)
+        {
+            _finishedStatus.Invoke(finished);
         }
 
         public void ImagePreview(FinishedFrame frame)
