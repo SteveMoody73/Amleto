@@ -7,9 +7,12 @@ namespace AmletoClient
 {
     public partial class ClientWin : Form
     {
-        delegate void VoidStringParamFunction(string msg);
-        VoidStringParamFunction _messageAdder;
-        ClientServices _clientService = new ClientServices();
+        private const bool IsBeta = true;
+
+        private delegate void VoidStringParamFunction(string msg);
+
+        private VoidStringParamFunction _messageAdder;
+        private ClientServices _clientService = new ClientServices();
 
         public ClientWin()
         {
@@ -28,7 +31,7 @@ namespace AmletoClient
             {
                 ClientServices.Shutdown();
                 _clientService.StartService();
-            } 
+            }
             dlg.Dispose();
         }
 
@@ -41,8 +44,8 @@ namespace AmletoClient
 
         private void AddMessage(string msg)
         {
-            if(msg != null)
-                BeginInvoke(_messageAdder, new object[] { msg });
+            if (msg != null)
+                BeginInvoke(_messageAdder, new object[] {msg});
         }
 
         private void DoAddMessage(string msg)
@@ -78,11 +81,11 @@ namespace AmletoClient
                     row.Cells.Add(cell);
                 }
 
-                if(messageList.SelectedRows.Count > 0)
+                if (messageList.SelectedRows.Count > 0)
                     messageList.SelectedRows[0].Selected = false;
                 while (messageList.Rows.Count > 3000)
                     messageList.Rows.RemoveAt(0);
-              
+
                 row.Height = 17;
                 messageList.Rows.Add(row);
                 row.Selected = true;
@@ -92,7 +95,10 @@ namespace AmletoClient
 
         private void ClientWin_Load(object sender, EventArgs e)
         {
-            Text = "Amleto Client " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Text = "Amleto Client " + Assembly.GetExecutingAssembly().GetName().Version;
+            if (IsBeta)
+                Text = Text + " (Beta)";
+
             _messageAdder = DoAddMessage;
             ClientServices.MessageConsumer += AddMessage;
             _clientService.StartService();
