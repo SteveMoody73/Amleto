@@ -633,11 +633,29 @@ namespace Amleto
             if (_isMaster &&
                 MessageBox.Show("Are you sure you want to exit?", "Closing Amleto", MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Question) != DialogResult.Yes)
+            {
                 e.Cancel = true;
+            }
             else
             {
                 try
                 {
+                    // Save currently rendering jobs
+                    string savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+                    savePath = Path.Combine(savePath, "RenderJobs");
+                    if (Directory.Exists(savePath))
+                    {
+                        // Delete any existing saved files
+                        Directory.Delete(savePath, true);
+                    }
+                    Directory.CreateDirectory(savePath);
+
+                    foreach (RenderProject p in _masterServer.GetProjects())
+                    {
+                        string filename = Path.Combine(savePath, p.ProjectId + ".xml");
+                        p.Save(filename);
+                    }
+
                     if (_isMaster)
                         _masterServer.Shutdown();
                     _masterServer.Disconnect();
@@ -1442,8 +1460,26 @@ namespace Amleto
             _masterServer.AddFinishedStatus(_eventBridge.FinishedRefresh);
             _masterServer.AddImagePreview(_eventBridge.ImagePreview);
             _masterServer.AddMessageConsumer(_eventBridge.MessageConsume);
+
             if (_isMaster)
+            {
                 _masterServer.Startup();
+
+                // Restore previously saved jobs
+                string loadPath =
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+                loadPath = Path.Combine(loadPath, "RenderJobs");
+                if (Directory.Exists(loadPath))
+                {
+                    DirectoryInfo bufferPath = new DirectoryInfo(loadPath);
+                    foreach (FileInfo file in bufferPath.GetFiles("*.xml"))
+                    {
+                        RenderProject project = new RenderProject();
+                        project = project.Load(file.FullName);
+                        _masterServer.AddProject(project);
+                    }
+                }
+            }
         }
 
         private void FinishedProjectGridMouseClick(object sender, MouseEventArgs e)
