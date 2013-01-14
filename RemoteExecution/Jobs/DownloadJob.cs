@@ -43,10 +43,22 @@ namespace RemoteExecution.Jobs
                     messageBack(0, "Downloading " + _remoteFile);
                     byte[] res = Server.GetFile(FileType.Absolute, _remoteFile);
                     Directory.CreateDirectory(Path.GetDirectoryName(localFile));
-                    FileStream stream = File.Create(localFile, res.Length);
-                    stream.Write(res, 0, res.Length);
-                    stream.Close();
-                    stream.Dispose();
+                    if (res.Length > 0)
+                    {
+                        FileStream stream = File.Create(localFile, res.Length);
+                        stream.Write(res, 0, res.Length);
+                        stream.Close();
+                        stream.Dispose();
+                    }
+                    else
+                    {
+                        // Create empty file
+                        FileStream stream = File.Create(localFile);
+                        stream.Write(res, 0, res.Length);
+                        stream.Close();
+                        stream.Dispose();
+                    }
+
                     FileInfo f = new FileInfo(localFile);
                     f.LastWriteTimeUtc = _modDate;
                     messageBack(0, "Saved at " + _localFile);
