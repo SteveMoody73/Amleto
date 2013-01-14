@@ -92,7 +92,7 @@ namespace Amleto
 			renderSetupTabs.TabPages.Remove(giTab);
         }
 
-        public AddProject(MasterServer server, RenderProject prj)
+        public AddProject(MasterServer server, RenderProject prj) 
             : this(server)
         {
             Text = "Edit project";
@@ -114,10 +114,6 @@ namespace Amleto
 
             textScene.Enabled = false;
             btnSelectScene.Enabled = false;
-            textContentDir.Enabled = false;
-            btnSelectContentDir.Enabled = false;
-            textOutputDir.Enabled = false;
-            btnSelectOuputDir.Enabled = false;
 
             RestoreProjectInfo(_project);
         }
