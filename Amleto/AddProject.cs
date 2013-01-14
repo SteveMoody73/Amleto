@@ -488,7 +488,19 @@ namespace Amleto
             int camerapos = -1;
             int currentCamera = 0;
 
-            textContentDir.Text = Directory.GetParent(Directory.GetParent(textScene.Text).FullName).FullName;
+            // Try to guess the content directory folder
+            string content = Directory.GetParent(Directory.GetParent(textScene.Text).FullName).FullName;
+            if (!Directory.Exists(Path.Combine(content, "Scenes")))
+            {
+                if (content.ToUpper().Contains("SCENES"))
+                {
+                    string newContent = content.Substring(0, content.ToUpper().LastIndexOf("SCENES") - 1);
+                    if (Directory.Exists(newContent))
+                        content = newContent;
+                }
+            }
+
+            textContentDir.Text = content;
             string[] lines = _server.FileReadAllLines(textScene.Text);
             foreach (string l in lines)
             {
