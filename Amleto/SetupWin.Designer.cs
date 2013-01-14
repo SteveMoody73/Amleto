@@ -128,7 +128,7 @@ namespace Amleto
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 38);
+            this.label2.Location = new System.Drawing.Point(6, 54);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(72, 13);
             this.label2.TabIndex = 1;
@@ -139,7 +139,7 @@ namespace Amleto
             this.checkAutoPort.AutoSize = true;
             this.checkAutoPort.Checked = true;
             this.checkAutoPort.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkAutoPort.Location = new System.Drawing.Point(106, 38);
+            this.checkAutoPort.Location = new System.Drawing.Point(106, 53);
             this.checkAutoPort.Name = "checkAutoPort";
             this.checkAutoPort.Size = new System.Drawing.Size(15, 14);
             this.checkAutoPort.TabIndex = 2;
@@ -148,7 +148,7 @@ namespace Amleto
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 85);
+            this.label3.Location = new System.Drawing.Point(6, 102);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(67, 13);
             this.label3.TabIndex = 4;
@@ -156,7 +156,7 @@ namespace Amleto
             // 
             // textPort
             // 
-            this.textPort.Location = new System.Drawing.Point(106, 82);
+            this.textPort.Location = new System.Drawing.Point(106, 99);
             this.textPort.Name = "textPort";
             this.textPort.Size = new System.Drawing.Size(61, 20);
             this.textPort.TabIndex = 5;
@@ -169,14 +169,14 @@ namespace Amleto
             this.label7.ForeColor = System.Drawing.Color.Green;
             this.label7.Location = new System.Drawing.Point(6, 3);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(401, 33);
+            this.label7.Size = new System.Drawing.Size(401, 47);
             this.label7.TabIndex = 0;
             this.label7.Text = resources.GetString("label7.Text");
             // 
             // label8
             // 
             this.label8.ForeColor = System.Drawing.Color.Green;
-            this.label8.Location = new System.Drawing.Point(6, 64);
+            this.label8.Location = new System.Drawing.Point(6, 81);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(427, 16);
             this.label8.TabIndex = 3;
@@ -389,7 +389,7 @@ namespace Amleto
             this.label21.Size = new System.Drawing.Size(413, 33);
             this.label21.TabIndex = 0;
             this.label21.Text = "Settings to use if you want to use the email notification feature of Amleto. Inco" +
-    "rrect settings may prevent emails notifications.";
+                "rrect settings may prevent emails notifications.";
             // 
             // textSMTPPassword
             // 
@@ -482,7 +482,7 @@ namespace Amleto
             this.label23.Size = new System.Drawing.Size(413, 33);
             this.label23.TabIndex = 5;
             this.label23.Text = "If you change these settings you will need to restart Amleto in order to make the" +
-    "m active.";
+                "m active.";
             // 
             // testUrl
             // 
@@ -626,7 +626,7 @@ namespace Amleto
             this.lblMappedDrives.Name = "lblMappedDrives";
             this.lblMappedDrives.Size = new System.Drawing.Size(430, 180);
             this.lblMappedDrives.TabIndex = 3;
-            this.lblMappedDrives.Text = "Defines the drives which amleto need to map at startup.";
+            this.lblMappedDrives.Text = "Defines the drives which amleto needs to map at startup.";
             // 
             // errorProvider
             // 

@@ -85,7 +85,7 @@ namespace Amleto.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Amleto Job completed")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Amleto Job was completed successfully")]
         public string SubjectOk {
             get {
                 return ((string)(this["SubjectOk"]));
@@ -97,7 +97,7 @@ namespace Amleto.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Amleto Job *NOT* completed")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Amleto Job was *NOT* completed")]
         public string SubjectNotOk {
             get {
                 return ((string)(this["SubjectNotOk"]));

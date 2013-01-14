@@ -61,6 +61,8 @@ namespace Amleto
             this.btnSelectContentDir = new System.Windows.Forms.Button();
             this.btnSelectScene = new System.Windows.Forms.Button();
             this.framesTab = new System.Windows.Forms.TabPage();
+            this.deleteSplitFrames = new System.Windows.Forms.CheckBox();
+            this.label27 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.slicesAcross = new System.Windows.Forms.TextBox();
             this.textStartFrame = new System.Windows.Forms.TextBox();
@@ -149,8 +151,6 @@ namespace Amleto
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.btnSaveProject = new System.Windows.Forms.Button();
             this.btnLoadProject = new System.Windows.Forms.Button();
-            this.label27 = new System.Windows.Forms.Label();
-            this.deleteSplitFrames = new System.Windows.Forms.CheckBox();
             this.renderSetupTabs.SuspendLayout();
             this.sceneTab.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -510,6 +510,28 @@ namespace Amleto
             this.framesTab.TabIndex = 0;
             this.framesTab.Text = "Frames";
             this.framesTab.UseVisualStyleBackColor = true;
+            // 
+            // deleteSplitFrames
+            // 
+            this.deleteSplitFrames.AutoSize = true;
+            this.deleteSplitFrames.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.deleteSplitFrames.Location = new System.Drawing.Point(235, 219);
+            this.deleteSplitFrames.Name = "deleteSplitFrames";
+            this.deleteSplitFrames.Size = new System.Drawing.Size(117, 17);
+            this.deleteSplitFrames.TabIndex = 30;
+            this.deleteSplitFrames.Text = "Delete Split Images";
+            this.toolTips.SetToolTip(this.deleteSplitFrames, "This will remove the split image files once they have been joined into final imag" +
+                    "e");
+            this.deleteSplitFrames.UseVisualStyleBackColor = true;
+            // 
+            // label27
+            // 
+            this.label27.Location = new System.Drawing.Point(27, 146);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(392, 32);
+            this.label27.TabIndex = 29;
+            this.label27.Text = "If using the split rendering option, make sure that your image format is PNG, BMP" +
+                " or JPG otherwise combining image segments at the end of rendering will fail.";
             // 
             // label26
             // 
@@ -1533,28 +1555,6 @@ namespace Amleto
             this.toolTips.SetToolTip(this.btnLoadProject, "Restore a project settings");
             this.btnLoadProject.UseVisualStyleBackColor = true;
             this.btnLoadProject.Click += new System.EventHandler(this.btnLoadProject_Click);
-            // 
-            // label27
-            // 
-            this.label27.Location = new System.Drawing.Point(27, 146);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(392, 32);
-            this.label27.TabIndex = 29;
-            this.label27.Text = "If using the split rendering option, make sure that your image format PNG, BMP or" +
-                " JPG otherwise combining image pieces at the end of rendering will fail.";
-            // 
-            // deleteSplitFrames
-            // 
-            this.deleteSplitFrames.AutoSize = true;
-            this.deleteSplitFrames.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.deleteSplitFrames.Location = new System.Drawing.Point(235, 219);
-            this.deleteSplitFrames.Name = "deleteSplitFrames";
-            this.deleteSplitFrames.Size = new System.Drawing.Size(117, 17);
-            this.deleteSplitFrames.TabIndex = 30;
-            this.deleteSplitFrames.Text = "Delete Split Images";
-            this.toolTips.SetToolTip(this.deleteSplitFrames, "This will remove the split image files once they have been joined into final imag" +
-                    "e");
-            this.deleteSplitFrames.UseVisualStyleBackColor = true;
             // 
             // AddProject
             // 

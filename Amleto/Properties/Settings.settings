@@ -18,10 +18,10 @@
       <Value Profile="(Default)">your@email.com</Value>
     </Setting>
     <Setting Name="SubjectOk" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Amleto Job completed</Value>
+      <Value Profile="(Default)">Amleto Job was completed successfully</Value>
     </Setting>
     <Setting Name="SubjectNotOk" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Amleto Job *NOT* completed</Value>
+      <Value Profile="(Default)">Amleto Job was *NOT* completed</Value>
     </Setting>
     <Setting Name="SendEmail" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

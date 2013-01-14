@@ -121,7 +121,7 @@
     <value>Amleto should by default find the location of your Lightwave installation, and offer you the best setup, review carefully the presented settings as those settings determine if Amleto will be able to work or not.</value>
   </data>
   <data name="label7.Text" xml:space="preserve">
-    <value>Check this option if you want to leave Amleto automatically select the port. If this option is checked, be sure that your clients runs on the same network as your server, and that the UDP port 61111 is not blocked by your firewall.</value>
+    <value>Check this option if you want to leave Amleto to automatically select the port. If this option is checked, be sure that your clients run on the same network as your server, and that the UDP port 61111 is not blocked by your firewall.</value>
   </data>
   <metadata name="ConfigDefault.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
