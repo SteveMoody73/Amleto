@@ -576,6 +576,14 @@ namespace Amleto
                     cell = new DataGridViewTextBoxCell {Value = project.FinalStatus};
                     row.Cells.Add(cell);
 
+                    // Start render time
+                    cell = new DataGridViewTextBoxCell();
+                    if (project.StartTimeSet)
+                        cell.Value = project.StartTime.ToString();
+                    else
+                        cell.Value = "";
+                    row.Cells.Add(cell);
+
                     // Final Render Time
                     cell = new DataGridViewTextBoxCell
                                {
@@ -879,6 +887,7 @@ namespace Amleto
 
             if (e.Button != MouseButtons.Right)
                 return;
+
             if (ActiveProjectGrid.SelectedRows.Count == 0)
                 return;
 
@@ -1435,6 +1444,64 @@ namespace Amleto
             _masterServer.AddMessageConsumer(_eventBridge.MessageConsume);
             if (_isMaster)
                 _masterServer.Startup();
+        }
+
+        private void FinishedProjectGridMouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right)
+                return;
+
+            DataGridView.HitTestInfo hitInfo = FinishedProjectGrid.HitTest(e.X, e.Y);
+
+            if (hitInfo.RowIndex != -1)
+                FinishedProjectGrid.Rows[hitInfo.RowIndex].Selected = true;
+
+            if (FinishedProjectGrid.SelectedRows.Count == 0)
+            {
+                FinishedMenuEdit.Enabled = false;
+                FinishedMenuClear.Enabled = false;
+            }
+            else
+            {
+                FinishedMenuEdit.Enabled = true;
+                FinishedMenuClear.Enabled = true;
+            }
+
+            contextMenuFinished.Items.Clear();
+            contextMenuFinished.Items.AddRange(new ToolStripItem[]
+                                                   {
+                                                       FinishedMenuEdit,
+                                                       FinishedMenuClear,
+                                                       FinishedMenuClearAll
+                                                   });
+
+            contextMenuFinished.Show(MousePosition.X, MousePosition.Y);
+        }
+
+        private void FinishedMenuEditClick(object sender, EventArgs e)
+        {
+            if (FinishedProjectGrid.SelectedRows.Count == 0)
+                return;
+
+            int id = Convert.ToInt32(FinishedProjectGrid.SelectedRows[0].Cells[0].Value);
+            AddProject dlg = new AddProject(_masterServer, _masterServer.GetProject(id));
+            dlg.ShowDialog();
+            dlg.Dispose();
+        }
+
+        private void FinishedMenuClearClick(object sender, EventArgs e)
+        {
+            if (FinishedProjectGrid.SelectedRows.Count == 0)
+                return;
+
+            int id = Convert.ToInt32(FinishedProjectGrid.SelectedRows[0].Cells[0].Value);
+            RenderProject project = _masterServer.GetProject(id);
+            _masterServer.RemoveFinished(project);
+        }
+
+        private void FinishedMenuClearAllClick(object sender, EventArgs e)
+        {
+            _masterServer.RemoveAllFinished();
         }
     }
 }

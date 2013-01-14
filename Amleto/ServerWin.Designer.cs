@@ -29,8 +29,8 @@ namespace Amleto
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServerWin));
             this.status = new System.Windows.Forms.StatusStrip();
             this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -115,6 +115,16 @@ namespace Amleto
             this.playTimer = new System.Windows.Forms.Timer(this.components);
             this.refreshTimer = new System.Windows.Forms.Timer(this.components);
             this.iconList = new System.Windows.Forms.ImageList(this.components);
+            this.contextMenuFinished = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.FinishedMenuEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedMenuClear = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedMenuClearAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TimeStarted = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RenderTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.projId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Project = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colOwner = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -124,11 +134,6 @@ namespace Amleto
             this.ProjectStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.elapsedCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EstimatedCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RenderTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.status.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -159,6 +164,7 @@ namespace Amleto
             this.mainToolStrip.SuspendLayout();
             this.contextMenuNodes.SuspendLayout();
             this.contextMenuProjects.SuspendLayout();
+            this.contextMenuFinished.SuspendLayout();
             this.SuspendLayout();
             // 
             // status
@@ -390,6 +396,7 @@ namespace Amleto
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn6,
             this.dataGridViewTextBoxColumn7,
+            this.TimeStarted,
             this.RenderTime});
             this.FinishedProjectGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FinishedProjectGrid.Location = new System.Drawing.Point(0, 0);
@@ -402,6 +409,7 @@ namespace Amleto
             this.FinishedProjectGrid.Size = new System.Drawing.Size(870, 185);
             this.FinishedProjectGrid.TabIndex = 1;
             this.FinishedProjectGrid.Tag = "Shows the projects in the queue. Right click to access the context menu.";
+            this.FinishedProjectGrid.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FinishedProjectGridMouseClick);
             // 
             // messages
             // 
@@ -409,7 +417,7 @@ namespace Amleto
             this.messages.Location = new System.Drawing.Point(4, 22);
             this.messages.Name = "messages";
             this.messages.Padding = new System.Windows.Forms.Padding(3);
-            this.messages.Size = new System.Drawing.Size(876, 615);
+            this.messages.Size = new System.Drawing.Size(876, 617);
             this.messages.TabIndex = 1;
             this.messages.Text = "Messages";
             this.messages.UseVisualStyleBackColor = true;
@@ -419,11 +427,11 @@ namespace Amleto
             this.messageList.AllowUserToAddRows = false;
             this.messageList.AllowUserToDeleteRows = false;
             this.messageList.AllowUserToResizeRows = false;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.Black;
-            this.messageList.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            this.messageList.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.messageList.BackgroundColor = System.Drawing.Color.White;
             this.messageList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.messageList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -436,13 +444,13 @@ namespace Amleto
             this.messageList.Name = "messageList";
             this.messageList.ReadOnly = true;
             this.messageList.RowHeadersVisible = false;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.Black;
-            this.messageList.RowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
+            this.messageList.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.messageList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.messageList.Size = new System.Drawing.Size(870, 609);
+            this.messageList.Size = new System.Drawing.Size(870, 611);
             this.messageList.TabIndex = 0;
             this.messageList.Tag = "Shows the system messages.";
             this.messageList.MouseEnter += new System.EventHandler(this.tool_MouseHover);
@@ -479,7 +487,7 @@ namespace Amleto
             this.tabRender.Location = new System.Drawing.Point(4, 22);
             this.tabRender.Name = "tabRender";
             this.tabRender.Padding = new System.Windows.Forms.Padding(3);
-            this.tabRender.Size = new System.Drawing.Size(876, 615);
+            this.tabRender.Size = new System.Drawing.Size(876, 617);
             this.tabRender.TabIndex = 2;
             this.tabRender.Text = "Renders preview";
             this.tabRender.UseVisualStyleBackColor = true;
@@ -503,7 +511,7 @@ namespace Amleto
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer2.Size = new System.Drawing.Size(870, 609);
+            this.splitContainer2.Size = new System.Drawing.Size(870, 611);
             this.splitContainer2.SplitterDistance = 35;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -563,7 +571,7 @@ namespace Amleto
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
             this.splitContainer3.Panel2.Controls.Add(this.pictureRender);
-            this.splitContainer3.Size = new System.Drawing.Size(870, 570);
+            this.splitContainer3.Size = new System.Drawing.Size(870, 572);
             this.splitContainer3.SplitterDistance = 286;
             this.splitContainer3.TabIndex = 1;
             // 
@@ -574,7 +582,7 @@ namespace Amleto
             this.renderTree.HideSelection = false;
             this.renderTree.Location = new System.Drawing.Point(0, 0);
             this.renderTree.Name = "renderTree";
-            this.renderTree.Size = new System.Drawing.Size(282, 566);
+            this.renderTree.Size = new System.Drawing.Size(282, 568);
             this.renderTree.TabIndex = 0;
             this.renderTree.Tag = "Shows the projects which have some rendered frames.";
             this.renderTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.renderTree_AfterSelect);
@@ -609,7 +617,7 @@ namespace Amleto
             this.pictureRender.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureRender.Location = new System.Drawing.Point(0, 0);
             this.pictureRender.Name = "pictureRender";
-            this.pictureRender.Size = new System.Drawing.Size(576, 566);
+            this.pictureRender.Size = new System.Drawing.Size(576, 568);
             this.pictureRender.TabIndex = 0;
             this.pictureRender.TabStop = false;
             // 
@@ -1059,6 +1067,76 @@ namespace Amleto
             this.iconList.Images.SetKeyName(5, "wait.ico");
             this.iconList.Images.SetKeyName(6, "zzz.ico");
             // 
+            // contextMenuFinished
+            // 
+            this.contextMenuFinished.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FinishedMenuEdit,
+            this.FinishedMenuClear,
+            this.FinishedMenuClearAll});
+            this.contextMenuFinished.Name = "contextMenuProjects";
+            this.contextMenuFinished.Size = new System.Drawing.Size(164, 92);
+            // 
+            // FinishedMenuEdit
+            // 
+            this.FinishedMenuEdit.Image = global::Amleto.Properties.Resources.application_form_edit;
+            this.FinishedMenuEdit.Name = "FinishedMenuEdit";
+            this.FinishedMenuEdit.Size = new System.Drawing.Size(163, 22);
+            this.FinishedMenuEdit.Text = "Edit and Restart";
+            this.FinishedMenuEdit.Click += new System.EventHandler(this.FinishedMenuEditClick);
+            // 
+            // FinishedMenuClear
+            // 
+            this.FinishedMenuClear.Name = "FinishedMenuClear";
+            this.FinishedMenuClear.Size = new System.Drawing.Size(163, 22);
+            this.FinishedMenuClear.Text = "Clear Project";
+            this.FinishedMenuClear.Click += new System.EventHandler(this.FinishedMenuClearClick);
+            // 
+            // FinishedMenuClearAll
+            // 
+            this.FinishedMenuClearAll.Name = "FinishedMenuClearAll";
+            this.FinishedMenuClearAll.Size = new System.Drawing.Size(163, 22);
+            this.FinishedMenuClearAll.Text = "Clear All Projects";
+            this.FinishedMenuClearAll.Click += new System.EventHandler(this.FinishedMenuClearAllClick);
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.Width = 40;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.HeaderText = "Finished Project Name";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.Width = 427;
+            // 
+            // dataGridViewTextBoxColumn6
+            // 
+            this.dataGridViewTextBoxColumn6.HeaderText = "Total Frames";
+            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            this.dataGridViewTextBoxColumn6.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn7
+            // 
+            this.dataGridViewTextBoxColumn7.HeaderText = "Status";
+            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            this.dataGridViewTextBoxColumn7.ReadOnly = true;
+            // 
+            // TimeStarted
+            // 
+            this.TimeStarted.HeaderText = "Time Started";
+            this.TimeStarted.Name = "TimeStarted";
+            this.TimeStarted.ReadOnly = true;
+            // 
+            // RenderTime
+            // 
+            this.RenderTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.RenderTime.HeaderText = "Render Time";
+            this.RenderTime.Name = "RenderTime";
+            this.RenderTime.ReadOnly = true;
+            // 
             // projId
             // 
             this.projId.HeaderText = "ID";
@@ -1068,10 +1146,10 @@ namespace Amleto
             // 
             // Project
             // 
-            this.Project.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Project.HeaderText = "Active Project Name";
             this.Project.Name = "Project";
             this.Project.ReadOnly = true;
+            this.Project.Width = 257;
             // 
             // colOwner
             // 
@@ -1116,42 +1194,10 @@ namespace Amleto
             // 
             // EstimatedCol
             // 
+            this.EstimatedCol.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.EstimatedCol.HeaderText = "Remaining (Est)";
             this.EstimatedCol.Name = "EstimatedCol";
             this.EstimatedCol.ReadOnly = true;
-            this.EstimatedCol.Width = 110;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            this.dataGridViewTextBoxColumn1.Width = 40;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn2.HeaderText = "Finished Project Name";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn6
-            // 
-            this.dataGridViewTextBoxColumn6.HeaderText = "Total Frames";
-            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
-            this.dataGridViewTextBoxColumn6.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn7
-            // 
-            this.dataGridViewTextBoxColumn7.HeaderText = "Status";
-            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
-            this.dataGridViewTextBoxColumn7.ReadOnly = true;
-            // 
-            // RenderTime
-            // 
-            this.RenderTime.HeaderText = "Render Time";
-            this.RenderTime.Name = "RenderTime";
-            this.RenderTime.ReadOnly = true;
             // 
             // ServerWin
             // 
@@ -1206,6 +1252,7 @@ namespace Amleto
             this.mainToolStrip.PerformLayout();
             this.contextMenuNodes.ResumeLayout(false);
             this.contextMenuProjects.ResumeLayout(false);
+            this.contextMenuFinished.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1296,6 +1343,10 @@ namespace Amleto
         private System.Windows.Forms.DataGridViewTextBoxColumn hostJob;
         private System.Windows.Forms.SplitContainer splitContainer4;
         private System.Windows.Forms.DataGridView FinishedProjectGrid;
+        private System.Windows.Forms.ContextMenuStrip contextMenuFinished;
+        private System.Windows.Forms.ToolStripMenuItem FinishedMenuEdit;
+        private System.Windows.Forms.ToolStripMenuItem FinishedMenuClear;
+        private System.Windows.Forms.ToolStripMenuItem FinishedMenuClearAll;
         private System.Windows.Forms.DataGridViewTextBoxColumn projId;
         private System.Windows.Forms.DataGridViewTextBoxColumn Project;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOwner;
@@ -1309,6 +1360,7 @@ namespace Amleto
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TimeStarted;
         private System.Windows.Forms.DataGridViewTextBoxColumn RenderTime;
     }
 }

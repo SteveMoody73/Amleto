@@ -288,7 +288,8 @@ namespace Amleto
             if (_projectId == -1)
                 _server.AddProject(_project);
             else
-                _server.ReplaceProject(_projectId, _project);
+                _server.ReplaceProject(_projectId, _project);                
+
             _shouldClose = true;
             Close();
         }

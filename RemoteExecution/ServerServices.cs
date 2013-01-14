@@ -755,6 +755,7 @@ namespace RemoteExecution
                 else
                 {
                     project.FinalStatus = "No Frames to Render";
+                    project.IsFinished = true;
                     FinishedProjects.Add(project);
                 }
             }
@@ -786,10 +787,32 @@ namespace RemoteExecution
                             c.PriorityJobs.Add(new KillJob());
                         }
                     }
-                    Projects.Add(project);
+
+                    project.IsFinished = false;
+                    project.StartTimeSet = false;
+                    project.UpdateTimeSet = false;
+
+                    if (project.StartJobs > 0)
+                    {
+                        Projects.Add(project);
+                        // Check if project is in the Finished list and remove it
+                        foreach (RenderProject p in Projects)
+                        {
+                            if (p.ProjectId == project.ProjectId)
+                                FinishedProjects.Remove(p);
+                        }
+
+                    }
+                    else
+                    {
+                        project.FinalStatus = "No Frames to Render";
+                        project.IsFinished = true;
+                        FinishedProjects.Add(project);
+                    }
                 }
             }
             CallUpdateProjectList();
+            CallUpdateFinishedList();
         }
 
         public static RenderProject GetProject(int projectId)
@@ -1070,6 +1093,7 @@ namespace RemoteExecution
                     proj.FinalStatus = "Stopped";
                     if (proj.StartTimeSet && proj.UpdateTimeSet)
                         proj.RenderTime = proj.UpdateTime - proj.StartTime;
+                    proj.IsFinished = true;
                     FinishedProjects.Add(proj);
                 }
             }
@@ -1191,5 +1215,40 @@ namespace RemoteExecution
 
             }
         }
+
+        public static void RemoveFinished(RenderProject project, bool needToLock)
+        {
+            if (needToLock)
+            {
+                lock (_clients)
+                {
+                    lock (Projects)
+                    {
+                        FinishedProjects.Remove(project);
+                    }
+                }
+            }
+            else
+                FinishedProjects.Remove(project);
+            CallUpdateFinishedList();
+        }
+
+        public static void RemoveAllFinished(bool needToLock)
+        {
+            if (needToLock)
+            {
+                lock (_clients)
+                {
+                    lock (Projects)
+                    {
+                        FinishedProjects.Clear();
+                    }
+                }
+            }
+            else
+                FinishedProjects.Clear();
+            CallUpdateFinishedList();
+        }
+
     }
 }

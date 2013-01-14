@@ -191,6 +191,16 @@ namespace RemoteExecution
             ServerServices.AddProject(project);
         }
 
+        public void RemoveFinished(RenderProject project)
+        {
+            ServerServices.RemoveFinished(project, true);
+        }
+
+        public void RemoveAllFinished()
+        {
+            ServerServices.RemoveAllFinished(true);
+        }
+
         public void ReplaceProject(int projectId, RenderProject project)
         {
             project.GenerateRenderJobs();
