@@ -150,7 +150,6 @@ namespace AmletoClient
             this.localScratch.Name = "localScratch";
             this.localScratch.Size = new System.Drawing.Size(229, 20);
             this.localScratch.TabIndex = 13;
-            this.localScratch.Text = "";
             // 
             // label7
             // 
@@ -231,14 +230,17 @@ namespace AmletoClient
             this.nbThreads.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.nbThreads.FormattingEnabled = true;
             this.nbThreads.Items.AddRange(new object[] {
+            "Automatic",
             "1",
             "2",
             "4",
             "8",
-            "16"});
+            "16",
+            "32",
+            "64"});
             this.nbThreads.Location = new System.Drawing.Point(145, 290);
             this.nbThreads.Name = "nbThreads";
-            this.nbThreads.Size = new System.Drawing.Size(51, 21);
+            this.nbThreads.Size = new System.Drawing.Size(101, 21);
             this.nbThreads.TabIndex = 17;
             // 
             // label10

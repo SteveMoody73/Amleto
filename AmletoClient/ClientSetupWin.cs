@@ -17,7 +17,10 @@ namespace AmletoClient
             serverPort.Text = ClientServices.Settings.ServerPort.ToString();
             localScratch.Text = ClientServices.Settings.ClientDir;
             logFile.Text = ClientServices.Settings.LogFile;
-            nbThreads.SelectedItem = ClientServices.Settings.NumThreads.ToString();
+            if (ClientServices.Settings.NumThreads == 0)
+                nbThreads.SelectedItem = "Automatic";
+            else
+                nbThreads.SelectedItem = ClientServices.Settings.NumThreads.ToString();
             memorySegment.Text = ClientServices.Settings.MemorySegment.ToString();
             SaveLog.Checked = ClientServices.Settings.SaveToLog;
 
@@ -52,7 +55,10 @@ namespace AmletoClient
 
             ClientServices.Settings.LogFile = logFile.Text;
             ClientServices.Settings.SaveToLog = SaveLog.Checked;
-            ClientServices.Settings.NumThreads = Convert.ToInt32((string)nbThreads.SelectedItem);
+            if (nbThreads.SelectedItem == "Automatic")
+                ClientServices.Settings.NumThreads = 0;
+            else
+                ClientServices.Settings.NumThreads = Convert.ToInt32((string)nbThreads.SelectedItem);
             ClientServices.Settings.MemorySegment = Convert.ToInt32(memorySegment.Text);
             ClientServices.ChangePriority();
             ClientServices.SaveSettings();
