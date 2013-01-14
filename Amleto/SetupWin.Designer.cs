@@ -648,7 +648,7 @@ namespace Amleto
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Preferences";
+            this.Text = "Options";
             this.Load += new System.EventHandler(this.SetupWin_Load);
             this.tabs.ResumeLayout(false);
             this.tabConfigs.ResumeLayout(false);
