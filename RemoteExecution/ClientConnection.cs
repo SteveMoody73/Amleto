@@ -29,6 +29,8 @@ namespace RemoteExecution
 		public int Config { get; set; }
 		public int BitSize { get; set; }
 		public string ActiveHours { get; set; }
+        public TimeSpan LastFrameTime;
+        public bool LastFrameTimeSet;
 
 		public ClientConnection(string hostName, string ipAddress, int instance, ProcessPriorityClass priority, int bitSize)
         {

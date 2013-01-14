@@ -1250,5 +1250,14 @@ namespace RemoteExecution
             CallUpdateFinishedList();
         }
 
+        public void SetLastRenderTime(TimeSpan timeSpent)
+        {
+            if (_currConnection == null)
+                return;
+
+            _currConnection.LastFrameTime = timeSpent;
+            _currConnection.LastFrameTimeSet = true;
+            CallUpdateClientList();
+        }
     }
 }

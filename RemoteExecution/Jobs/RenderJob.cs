@@ -425,6 +425,9 @@ namespace RemoteExecution.Jobs
                 writer.Close();
                 writer.Dispose();
 
+                TimeSpent = new Stopwatch();
+                TimeSpent.Start();
+                
                 Process process = new Process();
                 string configPath = Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName);
                 string programPath = Path.Combine(configPath, "Program");
@@ -447,6 +450,8 @@ namespace RemoteExecution.Jobs
                 ClientServices.SetRenderProcess(null);
                 process.Close();
                 process.Dispose();
+
+                TimeSpent.Stop();
             }
             catch (Exception ex)
             {
@@ -531,6 +536,7 @@ namespace RemoteExecution.Jobs
                     Server.FrameFinished(i, SliceNumber);
             }
             Server.SetCurrentJob("");
+            Server.SetLastRenderTime(TimeSpent.Elapsed);
             GC.Collect();
         }
 

@@ -360,6 +360,16 @@ namespace Amleto
 
                         row.Cells.Add(cell);
 
+                        // Last render time
+                        cell = new DataGridViewTextBoxCell();
+                        if (client.LastFrameTimeSet)
+                        {
+                            cell.Value = String.Format("{0:00}:{1:00}:{2:00}",
+                                                       (client.LastFrameTime.Days*24) + client.LastFrameTime.Hours,
+                                                       client.LastFrameTime.Minutes, client.LastFrameTime.Seconds);
+                        }
+                        row.Cells.Add(cell);
+
                         // Current Job
                         cell = new DataGridViewTextBoxCell {Value = client.CurrentJob};
                         row.Cells.Add(cell);
@@ -373,7 +383,13 @@ namespace Amleto
 
                     try
                     {
-                        row.Selected = oldSelected.Contains((string) row.Cells[0].Value);
+                        foreach (string s in oldSelected)
+                        {
+                            if (s == row.Cells[0].Value.ToString())
+                                row.Selected = true;
+                            else
+                                row.Selected = false;
+                        }
                     }
                     catch (Exception ex)
                     {
