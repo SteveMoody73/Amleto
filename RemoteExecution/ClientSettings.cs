@@ -36,6 +36,7 @@ namespace RemoteExecution
         static public ClientSettings LoadSettings()
         {
             string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+            Directory.CreateDirectory(settingsFile);
             settingsFile = Path.Combine(settingsFile, "ClientSettings.xml");
             ClientSettings settings = new ClientSettings();
 
