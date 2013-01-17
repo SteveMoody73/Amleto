@@ -1090,6 +1090,7 @@ namespace RemoteExecution
                     	}
                     }
                 	Projects.Remove(proj);
+                    proj.RenderedFrameCount = proj.RenderedFrames.Count;
                     proj.FinalStatus = "Stopped";
                     if (proj.StartTimeSet && proj.UpdateTimeSet)
                         proj.RenderTime = proj.UpdateTime - proj.StartTime;
