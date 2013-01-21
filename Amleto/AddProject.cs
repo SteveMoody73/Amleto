@@ -178,7 +178,7 @@ namespace Amleto
 
             masterList.Items.Clear();
 
-            textContentDir.Text = Directory.GetParent(Directory.GetParent(textScene.Text).FullName).FullName;
+            textContentDir.Text = project.ContentDir;
             string[] lines = _server.FileReadAllLines(textScene.Text);
             _cameraTypes.Clear();
             cameraName.Items.Clear();
