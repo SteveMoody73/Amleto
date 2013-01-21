@@ -488,10 +488,14 @@ namespace Amleto
                         cell.Value = "";
                     else
                     {
-                        string projectStatus = ((project.StartJobs - project.NbRemainingJobs())*100/project.StartJobs) + "%";
-                        if (project.Paused)
-                            projectStatus = "(Paused) " + projectStatus;
-
+                        string projectStatus = "";
+                        if (project.StartJobs > 0)
+                        {
+                            projectStatus =
+                                ((project.StartJobs - project.NbRemainingJobs())*100/project.StartJobs) + "%";
+                            if (project.Paused)
+                                projectStatus = "(Paused) " + projectStatus;
+                        }
                         cell.Value = projectStatus;
                     }
                     row.Cells.Add(cell);
@@ -510,7 +514,7 @@ namespace Amleto
                     
                     // Estimated time
                     cell = new DataGridViewTextBoxCell();
-                    if (project.StartTimeSet && project.UpdateTimeSet)
+                    if (project.StartTimeSet && project.UpdateTimeSet && project.RenderedFrames.Count > 0)
                     {
                         TimeSpan elapsed = project.UpdateTime - project.StartTime;
                         long frameTime = elapsed.Ticks/ project.RenderedFrames.Count;
