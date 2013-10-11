@@ -20,10 +20,12 @@ namespace Amleto
 		bool _shouldClose = true;
 		string _currentFileName = "";
 		int _projectId = -1;
+        private ServerSettings _settings;
 
 		public AddProject(MasterServer server)
         {
             _server = server;
+		    _settings = ServerSettings.LoadSettings();
             InitializeComponent();
 
             foreach (string s in server.ImageFormats(0))
@@ -81,10 +83,10 @@ namespace Amleto
                 MessageBox.Show("Error while selecting some defaults.");
             }
 
-            emailNotify.Checked = Properties.Settings.Default.SendEmail;
-            emailTo.Text = Properties.Settings.Default.ToEmail;
-            emailSubjectOk.Text = Properties.Settings.Default.SubjectOk;
-            emailSubjectNotOk.Text = Properties.Settings.Default.SubjectNotOk;
+            emailNotify.Checked = _settings.SendEmail;
+            emailTo.Text = _settings.ToEmail;
+            emailSubjectOk.Text = _settings.SubjectOk;
+            emailSubjectNotOk.Text = _settings.SubjectNotOk;
 
             renderSetupTabs.TabPages.Remove(logTab);
 			renderSetupTabs.TabPages.Remove(qualityTab);
@@ -256,11 +258,11 @@ namespace Amleto
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.SendEmail = emailNotify.Checked;
-            Properties.Settings.Default.ToEmail = emailTo.Text;
-            Properties.Settings.Default.SubjectOk = emailSubjectOk.Text;
-            Properties.Settings.Default.SubjectNotOk = emailSubjectNotOk.Text;
-            Properties.Settings.Default.Save();
+            _settings.SendEmail = emailNotify.Checked;
+            _settings.ToEmail = emailTo.Text;
+            _settings.SubjectOk = emailSubjectOk.Text;
+            _settings.SubjectNotOk = emailSubjectNotOk.Text;
+            ServerSettings.SaveSettings(_settings);
 
             if (_projectId != -1 && _project.IsFinished)
             {

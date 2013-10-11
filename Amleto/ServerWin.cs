@@ -41,25 +41,21 @@ namespace Amleto
 
         private readonly Queue<FinishedFrame> _framesToAdd = new Queue<FinishedFrame>();
 
+        private ServerSettings _settings;
+
         public ServerWin()
         {
             InitializeComponent();
 
             // Try to recover old setting...
-            if (Properties.Settings.Default.NeedToUpgradeSettings)
-            {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.NeedToUpgradeSettings = false;
-                Properties.Settings.Default.Save();
-            }
+            _settings = ServerSettings.LoadSettings();
 
             ClientStatusGrid.DataError += dataGrid_DataError;
             ActiveProjectGrid.DataError += dataGrid_DataError;
 
-            Size = Properties.Settings.Default.WinSize;
-            Location = Properties.Settings.Default.WinPosition;
-            autoRenderLast.Checked = Properties.Settings.Default.AutoShowLast;
-            textPreviewSpeed.Text = Properties.Settings.Default.PlaySpeed.ToString();
+            Size = _settings.WinSize;
+            autoRenderLast.Checked = _settings.AutoShowLast;
+            textPreviewSpeed.Text = _settings.PlaySpeed.ToString();
         }
 
         private void dataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -644,11 +640,10 @@ namespace Amleto
 
         private void ServerWinFormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.WinSize = Size;
-            Properties.Settings.Default.WinPosition = Location;
-            Properties.Settings.Default.AutoShowLast = autoRenderLast.Checked;
-            Properties.Settings.Default.PlaySpeed = Convert.ToInt32(textPreviewSpeed.Text);
-            Properties.Settings.Default.Save();
+            _settings.WinSize = Size;
+            _settings.AutoShowLast = autoRenderLast.Checked;
+            _settings.PlaySpeed = Convert.ToInt32(textPreviewSpeed.Text);
+            ServerSettings.SaveSettings(_settings);
 
             if (_isMaster &&
                 MessageBox.Show("Are you sure you want to exit?", "Closing Amleto", MessageBoxButtons.YesNo,

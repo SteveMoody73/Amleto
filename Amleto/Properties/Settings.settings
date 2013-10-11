@@ -1,36 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Amleto.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
   <Profiles />
-  <Settings>
-    <Setting Name="AutoShowLast" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="WinSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">900, 750</Value>
-    </Setting>
-    <Setting Name="WinPosition" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
-    </Setting>
-    <Setting Name="PlaySpeed" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">10</Value>
-    </Setting>
-    <Setting Name="ToEmail" Type="System.String" Scope="User">
-      <Value Profile="(Default)">your@email.com</Value>
-    </Setting>
-    <Setting Name="SubjectOk" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Amleto Job was completed successfully</Value>
-    </Setting>
-    <Setting Name="SubjectNotOk" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Amleto Job was *NOT* completed</Value>
-    </Setting>
-    <Setting Name="SendEmail" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="EmailIncluceActivity" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="NeedToUpgradeSettings" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-  </Settings>
+  <Settings />
 </SettingsFile>
