@@ -9,13 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amleto", "Amleto\Amleto.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmletoClientService", "AmletoClientService\AmletoClientService.csproj", "{6A56C58E-F178-4657-AB47-9AC354609DF2}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AmletoSetup", "AmletoSetup\AmletoSetup.vdproj", "{B90339C3-411E-4A74-8517-E449727D819F}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AmletoClientServiceSetup", "AmletoClientServiceSetup\AmletoClientServiceSetup.vdproj", "{E3B4F98F-3AE2-499D-8F87-D1904C49349D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmletoServerService", "AmletoServerService\AmletoServerService.csproj", "{006DE757-34B7-4344-AF91-F2CC339F27D3}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AmletoServerServiceSetup", "AmletoServerServiceSetup\AmletoServerServiceSetup.vdproj", "{2B3E3BE4-4F3C-4455-9CDC-136D6764785D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,22 +33,10 @@ Global
 		{6A56C58E-F178-4657-AB47-9AC354609DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A56C58E-F178-4657-AB47-9AC354609DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A56C58E-F178-4657-AB47-9AC354609DF2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B90339C3-411E-4A74-8517-E449727D819F}.Debug|Any CPU.ActiveCfg = Debug
-		{B90339C3-411E-4A74-8517-E449727D819F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B90339C3-411E-4A74-8517-E449727D819F}.Release|Any CPU.ActiveCfg = Release
-		{B90339C3-411E-4A74-8517-E449727D819F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3B4F98F-3AE2-499D-8F87-D1904C49349D}.Debug|Any CPU.ActiveCfg = Debug
-		{E3B4F98F-3AE2-499D-8F87-D1904C49349D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3B4F98F-3AE2-499D-8F87-D1904C49349D}.Release|Any CPU.ActiveCfg = Release
-		{E3B4F98F-3AE2-499D-8F87-D1904C49349D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{006DE757-34B7-4344-AF91-F2CC339F27D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{006DE757-34B7-4344-AF91-F2CC339F27D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{006DE757-34B7-4344-AF91-F2CC339F27D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{006DE757-34B7-4344-AF91-F2CC339F27D3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B3E3BE4-4F3C-4455-9CDC-136D6764785D}.Debug|Any CPU.ActiveCfg = Debug
-		{2B3E3BE4-4F3C-4455-9CDC-136D6764785D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B3E3BE4-4F3C-4455-9CDC-136D6764785D}.Release|Any CPU.ActiveCfg = Release
-		{2B3E3BE4-4F3C-4455-9CDC-136D6764785D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
