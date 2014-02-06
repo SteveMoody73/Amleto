@@ -16,7 +16,7 @@ namespace Amleto
 {
     public partial class ServerWin : Form
     {
-        private const bool IsBeta = true;
+        private const bool IsBeta = false;
 
         private MasterServer _masterServer;
         private bool _isMaster;

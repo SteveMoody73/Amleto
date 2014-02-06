@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("AmletoServerService")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Code originally by Alain Bretrand (nodalideas.com)\nFurther changes and improvements by Stephen Moody\n\nA distributed rendering solution for Lightwave which needs only limited setup / maintenance.\n\nIcons from http://www.famfamfam.com/lab/icons/silk/\n\nNetwork drive map code from: Adam ej Woods")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Paul Scherrer Institut")]
-[assembly: AssemblyProduct("AmletoServerService")]
-[assembly: AssemblyCopyright("Copyright © Paul Scherrer Institut 2007")]
+[assembly: AssemblyCompany("virtualcoder.co.uk")]
+[assembly: AssemblyProduct("Amleto Distributed rendering solution")]
+[assembly: AssemblyCopyright("Copyright © 2003-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.2.0.*")]
+[assembly: AssemblyVersion("3.3.0.*")]
 [assembly: AssemblyFileVersion("3.0.0.0")]

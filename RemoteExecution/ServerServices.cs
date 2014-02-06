@@ -519,17 +519,34 @@ namespace RemoteExecution
             DirectoryInfo dir = new DirectoryInfo(Configs[_currConnection.Config].ProgramPath);
             try
             {
+                Queue<string> dirs = new Queue<string>();
+                dirs.Enqueue(Configs[_currConnection.Config].ProgramPath);
+                int prefixLength = (Configs[_currConnection.Config].ProgramPath + "\\").Length;
+
+                while (dirs.Count > 0)
+                {
+                    string currentDir = dirs.Dequeue();
+                    dir = new DirectoryInfo(currentDir);
+
+                    foreach (var i in dir.GetDirectories())
+                        dirs.Enqueue(Path.Combine(currentDir, i.Name));
+
+                    foreach (var f in dir.GetFiles())
+                    {
+                        string file = Path.Combine(currentDir, f.Name).Substring(prefixLength);
+                        if (f.Name.ToLower() == "hub.exe" ||
+                            f.Name.ToLower() == "license.key" ||
+                            f.Name.ToLower() == "lsed.exe" ||
+                            f.Name.ToLower() == "lsid.exe" ||
+                            f.Name.ToLower() == "modeler.exe" ||
+                            f.Name.ToLower() == "startlwsn_node.bat" ||
+                            f.Name.ToLower() == "stoplwsn_node.bat")
+                            continue;
+                        res.Add(file);
+                    }
+                }
                 foreach (FileInfo f in dir.GetFiles())
                 {
-                    if (f.Name.ToLower() == "hub.exe" ||
-                        f.Name.ToLower() == "license.key" ||
-                        f.Name.ToLower() == "lsed.exe" ||
-                        f.Name.ToLower() == "lsid.exe" ||
-                        f.Name.ToLower() == "modeler.exe" ||
-                        f.Name.ToLower() == "startlwsn_node.bat" ||
-                        f.Name.ToLower() == "stoplwsn_node.bat")
-                        continue;
-                    res.Add(f.Name);
                 }
             }
 			catch (Exception ex)

@@ -7,7 +7,7 @@ namespace AmletoClient
 {
     public partial class ClientWin : Form
     {
-        private const bool IsBeta = true;
+        private const bool IsBeta = false;
 
         private delegate void VoidStringParamFunction(string msg);
 
