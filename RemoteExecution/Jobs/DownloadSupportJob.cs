@@ -53,7 +53,6 @@ namespace RemoteExecution.Jobs
                     local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
                     messageBack(0, "Saved at " + _file);
                 }
-
             }
             catch (Exception e)
             {

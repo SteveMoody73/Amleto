@@ -545,9 +545,6 @@ namespace RemoteExecution
                         res.Add(file);
                     }
                 }
-                foreach (FileInfo f in dir.GetFiles())
-                {
-                }
             }
 			catch (Exception ex)
 			{

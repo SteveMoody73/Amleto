@@ -22,10 +22,14 @@ namespace RemoteExecution.Jobs
             string localFolder = Path.Combine(ClientServices.GetClientDir(), ClientServices.ConfigName);
             localFolder = Path.Combine(localFolder, "Program");
             string localFile = Path.Combine(localFolder, _file);
+            string destinationFolder = Path.GetDirectoryName(localFile);
 
             try
             {
                 Directory.CreateDirectory(localFolder);
+                if (destinationFolder != null)
+                    Directory.CreateDirectory(destinationFolder);
+
                 FileInfo remote = Server.GetFileInfo(FileType.Program, _file);
 
                 bool needToDownload = false;
