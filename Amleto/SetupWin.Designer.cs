@@ -84,6 +84,10 @@ namespace Amleto
             this.btnDelDrive = new System.Windows.Forms.Button();
             this.lblMappedDrives = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.tabDefaults = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
+            this.renderBlock = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
             this.tabs.SuspendLayout();
             this.tabConfigs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ConfigList)).BeginInit();
@@ -94,12 +98,13 @@ namespace Amleto
             this.tabDrives.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listMapDrives)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
+            this.tabDefaults.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(373, 311);
+            this.btnCancel.Location = new System.Drawing.Point(499, 311);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 3;
@@ -109,7 +114,7 @@ namespace Amleto
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(292, 311);
+            this.btnOk.Location = new System.Drawing.Point(418, 311);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 2;
@@ -169,7 +174,7 @@ namespace Amleto
             this.label7.ForeColor = System.Drawing.Color.Green;
             this.label7.Location = new System.Drawing.Point(6, 3);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(401, 47);
+            this.label7.Size = new System.Drawing.Size(550, 47);
             this.label7.TabIndex = 0;
             this.label7.Text = resources.GetString("label7.Text");
             // 
@@ -206,10 +211,11 @@ namespace Amleto
             this.tabs.Controls.Add(this.tabEmail);
             this.tabs.Controls.Add(this.tabWeb);
             this.tabs.Controls.Add(this.tabDrives);
+            this.tabs.Controls.Add(this.tabDefaults);
             this.tabs.Location = new System.Drawing.Point(8, 60);
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(450, 245);
+            this.tabs.Size = new System.Drawing.Size(570, 245);
             this.tabs.TabIndex = 1;
             // 
             // tabConfigs
@@ -222,7 +228,7 @@ namespace Amleto
             this.tabConfigs.Location = new System.Drawing.Point(4, 22);
             this.tabConfigs.Name = "tabConfigs";
             this.tabConfigs.Padding = new System.Windows.Forms.Padding(3);
-            this.tabConfigs.Size = new System.Drawing.Size(442, 219);
+            this.tabConfigs.Size = new System.Drawing.Size(562, 219);
             this.tabConfigs.TabIndex = 2;
             this.tabConfigs.Text = "LW Configs";
             this.tabConfigs.UseVisualStyleBackColor = true;
@@ -282,7 +288,7 @@ namespace Amleto
             this.ConfigList.Name = "ConfigList";
             this.ConfigList.RowHeadersVisible = false;
             this.ConfigList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ConfigList.Size = new System.Drawing.Size(430, 161);
+            this.ConfigList.Size = new System.Drawing.Size(550, 161);
             this.ConfigList.TabIndex = 1;
             // 
             // ConfigDefault
@@ -321,7 +327,7 @@ namespace Amleto
             this.tabLogging.Location = new System.Drawing.Point(4, 22);
             this.tabLogging.Name = "tabLogging";
             this.tabLogging.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLogging.Size = new System.Drawing.Size(442, 219);
+            this.tabLogging.Size = new System.Drawing.Size(562, 219);
             this.tabLogging.TabIndex = 0;
             this.tabLogging.Text = "Logging";
             this.tabLogging.UseVisualStyleBackColor = true;
@@ -358,7 +364,7 @@ namespace Amleto
             this.tabNetwork.Location = new System.Drawing.Point(4, 22);
             this.tabNetwork.Name = "tabNetwork";
             this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
-            this.tabNetwork.Size = new System.Drawing.Size(442, 219);
+            this.tabNetwork.Size = new System.Drawing.Size(562, 219);
             this.tabNetwork.TabIndex = 1;
             this.tabNetwork.Text = "Network";
             this.tabNetwork.UseVisualStyleBackColor = true;
@@ -376,7 +382,7 @@ namespace Amleto
             this.tabEmail.Controls.Add(this.label17);
             this.tabEmail.Location = new System.Drawing.Point(4, 22);
             this.tabEmail.Name = "tabEmail";
-            this.tabEmail.Size = new System.Drawing.Size(442, 219);
+            this.tabEmail.Size = new System.Drawing.Size(562, 219);
             this.tabEmail.TabIndex = 3;
             this.tabEmail.Text = "Email Setup";
             this.tabEmail.UseVisualStyleBackColor = true;
@@ -386,10 +392,10 @@ namespace Amleto
             this.label21.ForeColor = System.Drawing.Color.Green;
             this.label21.Location = new System.Drawing.Point(12, 12);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(413, 33);
+            this.label21.Size = new System.Drawing.Size(531, 33);
             this.label21.TabIndex = 0;
             this.label21.Text = "Settings to use if you want to use the email notification feature of Amleto. Inco" +
-                "rrect settings may prevent emails notifications.";
+    "rrect settings may prevent emails notifications.";
             // 
             // textSMTPPassword
             // 
@@ -469,7 +475,7 @@ namespace Amleto
             this.tabWeb.Controls.Add(this.offerWebInterface);
             this.tabWeb.Location = new System.Drawing.Point(4, 22);
             this.tabWeb.Name = "tabWeb";
-            this.tabWeb.Size = new System.Drawing.Size(442, 219);
+            this.tabWeb.Size = new System.Drawing.Size(562, 219);
             this.tabWeb.TabIndex = 4;
             this.tabWeb.Text = "Web Interface";
             this.tabWeb.UseVisualStyleBackColor = true;
@@ -479,10 +485,10 @@ namespace Amleto
             this.label23.ForeColor = System.Drawing.Color.Green;
             this.label23.Location = new System.Drawing.Point(9, 13);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(413, 33);
+            this.label23.Size = new System.Drawing.Size(537, 33);
             this.label23.TabIndex = 5;
             this.label23.Text = "If you change these settings you will need to restart Amleto in order to make the" +
-                "m active.";
+    "m active.";
             // 
             // testUrl
             // 
@@ -554,7 +560,7 @@ namespace Amleto
             this.tabDrives.Location = new System.Drawing.Point(4, 22);
             this.tabDrives.Name = "tabDrives";
             this.tabDrives.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDrives.Size = new System.Drawing.Size(442, 219);
+            this.tabDrives.Size = new System.Drawing.Size(562, 219);
             this.tabDrives.TabIndex = 5;
             this.tabDrives.Text = "Network drives";
             this.tabDrives.UseVisualStyleBackColor = true;
@@ -575,7 +581,7 @@ namespace Amleto
             this.listMapDrives.Name = "listMapDrives";
             this.listMapDrives.RowHeadersVisible = false;
             this.listMapDrives.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.listMapDrives.Size = new System.Drawing.Size(430, 164);
+            this.listMapDrives.Size = new System.Drawing.Size(550, 164);
             this.listMapDrives.TabIndex = 0;
             // 
             // driveLetter
@@ -602,7 +608,7 @@ namespace Amleto
             // 
             // btnAddDrive
             // 
-            this.btnAddDrive.Location = new System.Drawing.Point(280, 190);
+            this.btnAddDrive.Location = new System.Drawing.Point(400, 190);
             this.btnAddDrive.Name = "btnAddDrive";
             this.btnAddDrive.Size = new System.Drawing.Size(75, 23);
             this.btnAddDrive.TabIndex = 2;
@@ -612,7 +618,7 @@ namespace Amleto
             // 
             // btnDelDrive
             // 
-            this.btnDelDrive.Location = new System.Drawing.Point(361, 189);
+            this.btnDelDrive.Location = new System.Drawing.Point(481, 189);
             this.btnDelDrive.Name = "btnDelDrive";
             this.btnDelDrive.Size = new System.Drawing.Size(75, 23);
             this.btnDelDrive.TabIndex = 2;
@@ -632,11 +638,52 @@ namespace Amleto
             // 
             this.errorProvider.ContainerControl = this;
             // 
+            // tabDefaults
+            // 
+            this.tabDefaults.Controls.Add(this.renderBlock);
+            this.tabDefaults.Controls.Add(this.label22);
+            this.tabDefaults.Controls.Add(this.label5);
+            this.tabDefaults.Location = new System.Drawing.Point(4, 22);
+            this.tabDefaults.Name = "tabDefaults";
+            this.tabDefaults.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDefaults.Size = new System.Drawing.Size(562, 219);
+            this.tabDefaults.TabIndex = 6;
+            this.tabDefaults.Text = "Project Defaults";
+            this.tabDefaults.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.ForeColor = System.Drawing.Color.Green;
+            this.label5.Location = new System.Drawing.Point(6, 12);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(537, 33);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Default settings for adding a new project. Default image formats only apply if th" +
+    "ey are not specified in the scene file";
+            // 
+            // renderBlock
+            // 
+            this.renderBlock.Location = new System.Drawing.Point(88, 48);
+            this.renderBlock.Name = "renderBlock";
+            this.renderBlock.Size = new System.Drawing.Size(50, 20);
+            this.renderBlock.TabIndex = 27;
+            this.renderBlock.Text = "5";
+            this.renderBlock.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(11, 51);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(71, 13);
+            this.label22.TabIndex = 28;
+            this.label22.Text = "Render block";
+            // 
             // SetupWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(465, 346);
+            this.ClientSize = new System.Drawing.Size(590, 348);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnOk);
@@ -665,6 +712,8 @@ namespace Amleto
             this.tabDrives.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.listMapDrives)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+            this.tabDefaults.ResumeLayout(false);
+            this.tabDefaults.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -725,5 +774,9 @@ namespace Amleto
         private System.Windows.Forms.DataGridViewTextBoxColumn ConfigName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ConfigBits;
         private System.Windows.Forms.DataGridViewTextBoxColumn ConfigDir;
+        private System.Windows.Forms.TabPage tabDefaults;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox renderBlock;
+        private System.Windows.Forms.Label label22;
     }
 }

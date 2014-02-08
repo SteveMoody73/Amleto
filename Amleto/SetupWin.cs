@@ -20,6 +20,7 @@ namespace Amleto
         public string SmtpPassword = "";
         public bool OfferWeb = true;
         public int OfferWebPort = 9080;
+        public int RenderBlocks = 5;
 
         public List<MapDrive> MappedDrives = new List<MapDrive>();
         public List<ConfigSet> Configs = new List<ConfigSet>();
@@ -51,6 +52,7 @@ namespace Amleto
             SmtpPassword = textSMTPPassword.Text;
             OfferWeb = offerWebInterface.Checked;
             OfferWebPort = Convert.ToInt32(webPort.Text);
+            RenderBlocks = Convert.ToInt32(renderBlock.Text);
 
             MappedDrives.Clear();
             foreach (DataGridViewRow row in listMapDrives.Rows)
@@ -153,6 +155,7 @@ namespace Amleto
             offerWebInterface.Checked = OfferWeb;
             webPort.Text = "" + OfferWebPort;
             cbEnableLogging.Checked = LogEnabled;
+            renderBlock.Text = RenderBlocks.ToString();
 
             // If log file name is empty, generate a default log path
             if (textLogFile.Text == "")
@@ -450,6 +453,26 @@ namespace Amleto
             
             Configs.RemoveAt(ConfigList.SelectedCells[0].RowIndex);
             DisplayConfigs();
+        }
+
+        private void textStartFrame_Validating(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void textEndFrame_Validating(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void positiveNumber_Validating(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void positiveZeroDouble_Validating(object sender, CancelEventArgs e)
+        {
+
         }
     }
 }

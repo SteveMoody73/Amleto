@@ -87,6 +87,7 @@ namespace Amleto
             emailTo.Text = _settings.ToEmail;
             emailSubjectOk.Text = _settings.SubjectOk;
             emailSubjectNotOk.Text = _settings.SubjectNotOk;
+            renderBlock.Text = server.RenderBlocks.ToString();
 
             renderSetupTabs.TabPages.Remove(logTab);
 			renderSetupTabs.TabPages.Remove(qualityTab);

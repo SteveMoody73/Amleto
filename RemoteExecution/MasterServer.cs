@@ -31,7 +31,8 @@ namespace RemoteExecution
 		public string SmtpPassword { get; set; }
 		public bool OfferWeb { get; set; }
 		public int OfferWebPort { get; set; }
-		public TcpChannel Channel { get; set; }
+        public int RenderBlocks { get; set; }
+        public TcpChannel Channel { get; set; }
 		public BroadcastListener AutoSetupServer { get; set; }
 		public string User { get; set; }
 		public Thread CheckTimeoutThread { get; set; }
@@ -49,6 +50,7 @@ namespace RemoteExecution
         	Port = 2080;
         	AutoOfferPort = true;
         	User = user;
+            RenderBlocks = 5;
         }
 
     	public void Startup()
@@ -444,6 +446,11 @@ namespace RemoteExecution
             else
                 OfferWebPort = 9080;
 
+            if (key.GetValue("RenderBlocks") != null)
+                RenderBlocks = (int) key.GetValue("RenderBlocks");
+            else
+                RenderBlocks = 5;
+
             return true;
         }
 
@@ -469,6 +476,7 @@ namespace RemoteExecution
 
         			key.SetValue("OfferWeb", OfferWeb);
         			key.SetValue("OfferWebPort", OfferWebPort);
+                    key.SetValue("RenderBlocks", RenderBlocks);
 
         			// Remove all sub keys
         			RegistryKey configKey = key.CreateSubKey("Configs");
@@ -792,5 +800,6 @@ namespace RemoteExecution
         {
             ServerServices.FinishedProjects.Clear();
         }
+
     }
 }

@@ -723,7 +723,8 @@ namespace Amleto
             dlg.SmtpPassword = _masterServer.SmtpPassword;
             dlg.OfferWeb = _masterServer.OfferWeb;
             dlg.OfferWebPort = _masterServer.OfferWebPort;
-            dlg.MappedDrives = _masterServer.GetMappedDrives();
+            dlg.RenderBlocks = _masterServer.RenderBlocks;
+            dlg.MappedDrives = _masterServer.GetMappedDrives();       
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 if (_masterServer.Port != dlg.Port && dlg.AutoPort == false)
@@ -739,6 +740,7 @@ namespace Amleto
                 _masterServer.SmtpPassword = dlg.SmtpPassword;
                 _masterServer.OfferWeb = dlg.OfferWeb;
                 _masterServer.OfferWebPort = dlg.OfferWebPort;
+                _masterServer.RenderBlocks = dlg.RenderBlocks;
                 string res = _masterServer.SetMappedDrives(dlg.MappedDrives);
                 if (res != "")
                     MessageBox.Show(res);
@@ -1458,6 +1460,7 @@ namespace Amleto
                     _masterServer.SmtpPassword = dlg.SmtpPassword;
                     _masterServer.OfferWeb = dlg.OfferWeb;
                     _masterServer.OfferWebPort = dlg.OfferWebPort;
+                    _masterServer.RenderBlocks = dlg.RenderBlocks;
                     string res = _masterServer.SetMappedDrives(dlg.MappedDrives);
                     if (res != "")
                         MessageBox.Show(res);
