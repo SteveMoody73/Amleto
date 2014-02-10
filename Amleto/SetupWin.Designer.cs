@@ -54,7 +54,6 @@ namespace Amleto
             this.ConfigDir = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabLogging = new System.Windows.Forms.TabPage();
             this.cbEnableLogging = new System.Windows.Forms.CheckBox();
-            this.SelectLogFile = new System.Windows.Forms.Button();
             this.tabNetwork = new System.Windows.Forms.TabPage();
             this.tabEmail = new System.Windows.Forms.TabPage();
             this.label21 = new System.Windows.Forms.Label();
@@ -83,11 +82,13 @@ namespace Amleto
             this.btnAddDrive = new System.Windows.Forms.Button();
             this.btnDelDrive = new System.Windows.Forms.Button();
             this.lblMappedDrives = new System.Windows.Forms.Label();
-            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.tabDefaults = new System.Windows.Forms.TabPage();
-            this.label5 = new System.Windows.Forms.Label();
             this.renderBlock = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.RenameConfig = new System.Windows.Forms.Button();
+            this.SelectLogFile = new System.Windows.Forms.Button();
             this.tabs.SuspendLayout();
             this.tabConfigs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ConfigList)).BeginInit();
@@ -97,8 +98,8 @@ namespace Amleto
             this.tabWeb.SuspendLayout();
             this.tabDrives.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listMapDrives)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.tabDefaults.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // btnCancel
@@ -220,6 +221,7 @@ namespace Amleto
             // 
             // tabConfigs
             // 
+            this.tabConfigs.Controls.Add(this.RenameConfig);
             this.tabConfigs.Controls.Add(this.SetDefault);
             this.tabConfigs.Controls.Add(this.AddConfig);
             this.tabConfigs.Controls.Add(this.DeleteConfig);
@@ -235,7 +237,7 @@ namespace Amleto
             // 
             // SetDefault
             // 
-            this.SetDefault.Location = new System.Drawing.Point(199, 190);
+            this.SetDefault.Location = new System.Drawing.Point(319, 190);
             this.SetDefault.Name = "SetDefault";
             this.SetDefault.Size = new System.Drawing.Size(75, 23);
             this.SetDefault.TabIndex = 5;
@@ -245,7 +247,7 @@ namespace Amleto
             // 
             // AddConfig
             // 
-            this.AddConfig.Location = new System.Drawing.Point(280, 190);
+            this.AddConfig.Location = new System.Drawing.Point(400, 190);
             this.AddConfig.Name = "AddConfig";
             this.AddConfig.Size = new System.Drawing.Size(75, 23);
             this.AddConfig.TabIndex = 4;
@@ -255,7 +257,7 @@ namespace Amleto
             // 
             // DeleteConfig
             // 
-            this.DeleteConfig.Location = new System.Drawing.Point(361, 190);
+            this.DeleteConfig.Location = new System.Drawing.Point(481, 190);
             this.DeleteConfig.Name = "DeleteConfig";
             this.DeleteConfig.Size = new System.Drawing.Size(75, 23);
             this.DeleteConfig.TabIndex = 3;
@@ -321,9 +323,9 @@ namespace Amleto
             // tabLogging
             // 
             this.tabLogging.Controls.Add(this.cbEnableLogging);
-            this.tabLogging.Controls.Add(this.SelectLogFile);
             this.tabLogging.Controls.Add(this.textLogFile);
             this.tabLogging.Controls.Add(this.label14);
+            this.tabLogging.Controls.Add(this.SelectLogFile);
             this.tabLogging.Location = new System.Drawing.Point(4, 22);
             this.tabLogging.Name = "tabLogging";
             this.tabLogging.Padding = new System.Windows.Forms.Padding(3);
@@ -342,16 +344,6 @@ namespace Amleto
             this.cbEnableLogging.Text = "Enable Logging";
             this.cbEnableLogging.UseVisualStyleBackColor = true;
             this.cbEnableLogging.CheckedChanged += new System.EventHandler(this.cbEnableLogging_CheckedChanged);
-            // 
-            // SelectLogFile
-            // 
-            this.SelectLogFile.Image = global::Amleto.Properties.Resources.folder_explore;
-            this.SelectLogFile.Location = new System.Drawing.Point(374, 63);
-            this.SelectLogFile.Name = "SelectLogFile";
-            this.SelectLogFile.Size = new System.Drawing.Size(31, 23);
-            this.SelectLogFile.TabIndex = 7;
-            this.SelectLogFile.UseVisualStyleBackColor = true;
-            this.SelectLogFile.Click += new System.EventHandler(this.SelectLogFile_Click);
             // 
             // tabNetwork
             // 
@@ -395,7 +387,7 @@ namespace Amleto
             this.label21.Size = new System.Drawing.Size(531, 33);
             this.label21.TabIndex = 0;
             this.label21.Text = "Settings to use if you want to use the email notification feature of Amleto. Inco" +
-    "rrect settings may prevent emails notifications.";
+                "rrect settings may prevent emails notifications.";
             // 
             // textSMTPPassword
             // 
@@ -488,7 +480,7 @@ namespace Amleto
             this.label23.Size = new System.Drawing.Size(537, 33);
             this.label23.TabIndex = 5;
             this.label23.Text = "If you change these settings you will need to restart Amleto in order to make the" +
-    "m active.";
+                "m active.";
             // 
             // testUrl
             // 
@@ -634,10 +626,6 @@ namespace Amleto
             this.lblMappedDrives.TabIndex = 3;
             this.lblMappedDrives.Text = "Defines the drives which amleto needs to map at startup.";
             // 
-            // errorProvider
-            // 
-            this.errorProvider.ContainerControl = this;
-            // 
             // tabDefaults
             // 
             this.tabDefaults.Controls.Add(this.renderBlock);
@@ -650,16 +638,6 @@ namespace Amleto
             this.tabDefaults.TabIndex = 6;
             this.tabDefaults.Text = "Project Defaults";
             this.tabDefaults.UseVisualStyleBackColor = true;
-            // 
-            // label5
-            // 
-            this.label5.ForeColor = System.Drawing.Color.Green;
-            this.label5.Location = new System.Drawing.Point(6, 12);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(537, 33);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Default settings for adding a new project. Default image formats only apply if th" +
-    "ey are not specified in the scene file";
             // 
             // renderBlock
             // 
@@ -678,6 +656,40 @@ namespace Amleto
             this.label22.Size = new System.Drawing.Size(71, 13);
             this.label22.TabIndex = 28;
             this.label22.Text = "Render block";
+            // 
+            // label5
+            // 
+            this.label5.ForeColor = System.Drawing.Color.Green;
+            this.label5.Location = new System.Drawing.Point(6, 12);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(537, 33);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Default settings for adding a new project. Default image formats only apply if th" +
+                "ey are not specified in the scene file";
+            // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
+            // 
+            // RenameConfig
+            // 
+            this.RenameConfig.Location = new System.Drawing.Point(238, 190);
+            this.RenameConfig.Name = "RenameConfig";
+            this.RenameConfig.Size = new System.Drawing.Size(75, 23);
+            this.RenameConfig.TabIndex = 6;
+            this.RenameConfig.Text = "Rename";
+            this.RenameConfig.UseVisualStyleBackColor = true;
+            this.RenameConfig.Click += new System.EventHandler(this.OnRenameConfig);
+            // 
+            // SelectLogFile
+            // 
+            this.SelectLogFile.Image = global::Amleto.Properties.Resources.folder_explore;
+            this.SelectLogFile.Location = new System.Drawing.Point(374, 63);
+            this.SelectLogFile.Name = "SelectLogFile";
+            this.SelectLogFile.Size = new System.Drawing.Size(31, 23);
+            this.SelectLogFile.TabIndex = 7;
+            this.SelectLogFile.UseVisualStyleBackColor = true;
+            this.SelectLogFile.Click += new System.EventHandler(this.SelectLogFile_Click);
             // 
             // SetupWin
             // 
@@ -711,9 +723,9 @@ namespace Amleto
             this.tabWeb.PerformLayout();
             this.tabDrives.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.listMapDrives)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.tabDefaults.ResumeLayout(false);
             this.tabDefaults.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -778,5 +790,6 @@ namespace Amleto
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox renderBlock;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Button RenameConfig;
     }
 }

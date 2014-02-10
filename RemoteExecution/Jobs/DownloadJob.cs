@@ -63,9 +63,9 @@ namespace RemoteExecution.Jobs
                     f.LastWriteTimeUtc = _modDate;
                     messageBack(0, "Saved at " + _localFile);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    messageBack(0, "Error Transferring file: " + e.ToString());
+                    Tracer.Exception(ex);
                 }
             }
         }

@@ -127,7 +127,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-						Debug.WriteLine("Setting up service: " + ex);
+						Tracer.Exception(ex);
                     }
                 }
             }
@@ -146,7 +146,7 @@ namespace RemoteExecution
                 catch (Exception ex)
                 {
                     ServerServices.AddMessage(1, "Cannot use port " + Port);
-					Debug.WriteLine("Cannot use port: " + ex);
+                    Tracer.Exception(ex);
 					return;
                 }
             }
@@ -290,11 +290,6 @@ namespace RemoteExecution
         {
             return ServerServices.GetProjects();
         }
-
-        /*public List<ConfigSet> Configs
-        {
-            get { return ServerServices.configs; }
-        }*/
 
         public int NbConfigs
         {
@@ -572,7 +567,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine("Listing logical drives: " + ex);
+					Tracer.Exception(ex);
                 }
             }
             return res;
@@ -594,8 +589,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Listing drives: " + ex);
-                return res;
+				Tracer.Exception(ex);
             }
 
             return res;
@@ -615,8 +609,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Listing files: " + ex);
-				return res;
+                Tracer.Exception(ex);
             }
             return res;
         }
@@ -716,7 +709,7 @@ namespace RemoteExecution
         }
 
         public string LogFile
-        {
+        {           
             get
             {
                 return ServerServices.LogFile;
@@ -747,8 +740,6 @@ namespace RemoteExecution
                 ServerServices.LogEnabled = value;
             }
         }
-
-
 
     	public void SetClientConfig(int id, int newConfig)
         {

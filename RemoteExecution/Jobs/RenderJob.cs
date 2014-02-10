@@ -117,7 +117,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error executing render job: " + ex);
+                Tracer.Exception(ex);
             }
 
             try
@@ -455,7 +455,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error executing render job: " + ex);
+				Tracer.Exception(ex);
 			}
 
             Server.SetCurrentJob("Uploading back images");
@@ -485,11 +485,11 @@ namespace RemoteExecution.Jobs
                                     Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
                                     messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(file.FullName) + " rendered successfully");
                                 }
-                                catch (Exception e)
+                                catch (Exception ex)
                                 {
                                     messageBack(1, "Error while uploading frame " + i);
-                                    Debug.WriteLine("Error sending file :" + e);
                                     uploadError = true;
+                                    Tracer.Exception(ex);
                                 }
                             }
                         }
@@ -503,11 +503,11 @@ namespace RemoteExecution.Jobs
                         messageBack(0,"Frame " + i + " rendered successfully");
                         Server.SendImage(i, SliceNumber, File.ReadAllBytes(fname));
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
                         messageBack(1, "Error while uploading frame " + i);
-                        Debug.WriteLine("Error sending file :" + e);
                         uploadError = true;
+                        Tracer.Exception(ex);
                     }
                 }
                 else
@@ -523,11 +523,11 @@ namespace RemoteExecution.Jobs
                         messageBack(0, "Frame " + i + " alpha rendered successfully");
                         Server.SendImageAlpha(i, SliceNumber, File.ReadAllBytes(afname));
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
                         messageBack(1, "Error while uploading frame " + i + " Alpha");
-                        Debug.WriteLine("Error sending file :" + e);
                         uploadError = true;
+                        Tracer.Exception(ex);
                     }
                 }
                 if (uploadError)

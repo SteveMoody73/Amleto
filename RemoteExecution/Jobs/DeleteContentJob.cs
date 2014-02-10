@@ -18,7 +18,7 @@ namespace RemoteExecution.Jobs
 			}
             catch (Exception ex)
 			{
-				Debug.WriteLine("Deleting Directory: " + ex.ToString());
+				Tracer.Exception(ex);
 			}
 
             try
@@ -27,9 +27,8 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Creating Directory: " + ex.ToString());
+                Tracer.Exception(ex);
             }
-
         }
     }
 }

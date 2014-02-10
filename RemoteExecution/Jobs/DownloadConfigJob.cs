@@ -40,10 +40,22 @@ namespace RemoteExecution.Jobs
                     messageBack(0, "Downloading config " + _file);
 
                     byte[] res = Server.GetFile(FileType.Config, _file);
-                    FileStream stream = File.Create(localFile, res.Length);
-                    stream.Write(res, 0, res.Length);
-                    stream.Close();
-                    stream.Dispose();
+                    Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+                    if (res.Length > 0)
+                    {
+                        FileStream stream = File.Create(localFile, res.Length);
+                        stream.Write(res, 0, res.Length);
+                        stream.Close();
+                        stream.Dispose();
+                    }
+                    else
+                    {
+                        // Create empty file
+                        FileStream stream = File.Create(localFile);
+                        stream.Write(res, 0, res.Length);
+                        stream.Close();
+                        stream.Dispose();
+                    }
 
 				    if (ClientServices.IsMainConfig(localFile))
                     {
@@ -88,9 +100,9 @@ namespace RemoteExecution.Jobs
                     local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
                     messageBack(0, "Saved at " + _file);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("DownloadConfigJob: " + e);
+                    Tracer.Exception(ex);
                 }
             }
         }

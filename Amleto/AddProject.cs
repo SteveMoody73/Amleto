@@ -40,7 +40,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error selecting the image file format" + ex);
+				Tracer.Exception(ex);
                 MessageBox.Show("Error while selecting the image file format.");
             }
 
@@ -52,7 +52,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error selecting output name format: " + ex);
+				Tracer.Exception(ex);
                 MessageBox.Show("Error while selecting the file output name format.");
             }
 
@@ -65,7 +65,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error selecting config: " + ex);
+				Tracer.Exception(ex);
                 MessageBox.Show("Error while selecting the config.");
             }
 
@@ -79,7 +79,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error selecting defaults: " + ex);
+                Tracer.Exception(ex);
                 MessageBox.Show("Error while selecting some defaults.");
             }
 
@@ -526,7 +526,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine("Error splitting FrameSize: " + ex);
+                            Tracer.Exception(ex);
                         }
                     }
                     else if (l.StartsWith("UseGlobalResolution "))
@@ -546,7 +546,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine("Error PixelAspect: " + ex);
+                            Tracer.Exception(ex);
                         }
                     }
                     else if (l.StartsWith("Plugin CameraHandler"))
@@ -564,7 +564,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine("Error CurrentCamera: " + ex);
+                            Tracer.Exception(ex);
                         }
                     }
                     else if (l.StartsWith("AASamples "))
@@ -703,9 +703,9 @@ namespace Amleto
                         reconFilter.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("Error processing line: " + l + "\n" + e);
+                    Tracer.Exception(ex);
                 }
             }
 
@@ -764,7 +764,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error UseGlobalResolution: " + ex);
+                Tracer.Exception(ex);
             }
         }
 
@@ -818,11 +818,11 @@ namespace Amleto
 			}
             catch (Exception ex)
             {
-				Debug.WriteLine("Error EndFrameText: " + ex);
+                Tracer.Exception(ex);
             }
             
 			checkValues.SetError(textStartFrame, "");
-            //btnAdd.Enabled = true;
+
             if (CheckHasErrors() == false && textScene.Text != "")
                 btnAdd.Enabled = true;
             try
@@ -831,8 +831,8 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error Start frame should contain a number:" + ex);
-				checkValues.SetError(textStartFrame, "Should contain a number");
+                Tracer.Exception(ex);
+                checkValues.SetError(textStartFrame, "Should contain a number");
                 btnAdd.Enabled = false;
                 return;
             }
@@ -877,7 +877,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error: " + ex);
+                Tracer.Exception(ex);
             }
 
             checkValues.SetError(textEndFrame, "");
@@ -889,11 +889,12 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("error should contain a number: " + ex);
+                Tracer.Exception(ex);
                 checkValues.SetError(textEndFrame, "Should contain a number");
                 btnAdd.Enabled = false;
                 return;
             }
+
             if (b > a)
             {
                 checkValues.SetError(textEndFrame, "Should be greater or equal of the start frame");
@@ -946,11 +947,14 @@ namespace Amleto
         private void listConfig_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selected = listImageFormat.SelectedItem.ToString();
+            
             if (selected.Contains("_"))
                 selected = selected.Split('_')[1];
             listImageFormat.Items.Clear();
+            
             int p = 0;
             listImageFormat.SelectedIndex = -1;
+            
             foreach (string s in _server.ImageFormats(listConfig.SelectedIndex))
             {
                 listImageFormat.Items.Add(s);
@@ -961,17 +965,9 @@ namespace Amleto
                     listImageFormat.SelectedIndex = p;
                 p++;
             }
+
             if (listImageFormat.SelectedIndex == -1)
                 listImageFormat.SelectedIndex = 0;
-
-            /*int n = listImageFormat.SelectedIndex;
-            listImageFormat.Items.Clear();
-            foreach (string s in server.ImageFormats(0))
-                listImageFormat.Items.Add(s);
-            if (n < listImageFormat.Items.Count)
-                listImageFormat.SelectedIndex = n;
-            else
-                listImageFormat.SelectedIndex = 0;*/
         }
 
         private void adaptiveSampling_CheckedChanged(object sender, EventArgs e)
@@ -1187,11 +1183,13 @@ namespace Amleto
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.DefaultExt = "xprj";
             dlg.Filter = "Amleto project file (*.xprj)|*.xprj";
+            
             if (dlg.ShowDialog() != DialogResult.OK || dlg.FileName == "")
             {
                 _shouldClose = false;
                 return;
             }
+
             try
             {
                 RenderProject project = new RenderProject();
@@ -1201,12 +1199,12 @@ namespace Amleto
                 btnAdd.Enabled = true;
 
                 FileInfo f = new FileInfo(dlg.FileName);
-                this.Text = "Add project to the queue - " + f.Name;
+                Text = "Add project to the queue - " + f.Name;
                 _currentFileName = f.Name;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error while restoring", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Tracer.Exception(ex);
             }
             dlg.Dispose();
             _shouldClose = false;

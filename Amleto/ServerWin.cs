@@ -123,7 +123,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine("Error updating preview panel:" + ex);
+                            Tracer.Exception(ex);
                         }
                     });
                 mem.Close();
@@ -132,7 +132,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Error updating preview panel: " + ex);
+                Tracer.Exception(ex);
             }
         }
 
@@ -256,10 +256,10 @@ namespace Amleto
                 row.Selected = true;
                 messageList.FirstDisplayedScrollingRowIndex = messageList.Rows.Count - 1;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 MessageBox.Show("Invalid message: " + msg);
-                Debug.WriteLine("Invalid message: " + e);
+                Tracer.Exception(ex);
             }
         }
 
@@ -299,7 +299,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error clearing grid row" + ex);
+                    Tracer.Exception(ex);
                 }
 
                 List<string> configsName = _masterServer.ConfigNames;
@@ -333,7 +333,7 @@ namespace Amleto
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine("Error adding config item: " + ex);
+                                Tracer.Exception(ex);
                             }
                         }
                         configList.Value = configsName[client.Config];
@@ -374,7 +374,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Error adding client status row: " + ex);
+                        Tracer.Exception(ex);
                     }
 
                     try
@@ -389,16 +389,17 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Error selecting row: " + ex);
+                        Tracer.Exception(ex);
                     }
                 }
                 try
                 {
-                    ClientStatusGrid.FirstDisplayedScrollingRowIndex = pos;
+                    if (pos != -1)
+                        ClientStatusGrid.FirstDisplayedScrollingRowIndex = pos;
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error setting client status grid row index:" + ex);
+                    Tracer.Exception(ex);
                 }
             }
         }
@@ -445,7 +446,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error clearing project status rows: " + ex);
+                    Tracer.Exception(ex);
                 }
 
                 foreach (RenderProject project in _projects)
@@ -533,7 +534,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Error adding project status row: " + ex);
+                        Tracer.Exception(ex);
                     }
 
                     if ((string) row.Cells[0].Value.ToString() == oldSelected)
@@ -542,11 +543,12 @@ namespace Amleto
 
                 try
                 {
-                    ActiveProjectGrid.FirstDisplayedScrollingRowIndex = pos;
+                    if (pos != -1)
+                        ActiveProjectGrid.FirstDisplayedScrollingRowIndex = pos;
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error adding project status: " + ex);
+                    Tracer.Exception(ex);
                 }
             }
         }
@@ -567,7 +569,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error clearing finished project status rows: " + ex);
+                    Tracer.Exception(ex);
                 }
 
                 foreach (RenderProject project in _finishedProjects)
@@ -615,7 +617,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Error adding finished project status row: " + ex);
+                        Tracer.Exception(ex);
                     }
 
                     if ((string)row.Cells[0].Value.ToString() == oldSelected)
@@ -624,11 +626,12 @@ namespace Amleto
 
                 try
                 {
-                    FinishedProjectGrid.FirstDisplayedScrollingRowIndex = pos;
+                    if (pos != -1)
+                        FinishedProjectGrid.FirstDisplayedScrollingRowIndex = pos;
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error adding finsihed project status: " + ex);
+                    Tracer.Exception(ex);
                 }
             }
         }
@@ -677,7 +680,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error shutting down server: " + ex);
+                    Tracer.Exception(ex);
                 }
             }
         }
@@ -818,7 +821,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Error setting text preview speed: " + ex);
+                Tracer.Exception(ex);
                 speed = 10;
             }
 
@@ -1410,7 +1413,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine("Error creating TCPChannel" + ex);
+                            Tracer.Exception(ex);
                         }
                     }
 
@@ -1438,7 +1441,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error showing server window: " + ex);
+                    Tracer.Exception(ex);
                 }
             }
             else // We should be master

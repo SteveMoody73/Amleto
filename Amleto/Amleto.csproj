@@ -100,6 +100,12 @@
     <Compile Include="PromptNewConfigWin.Designer.cs">
       <DependentUpon>PromptNewConfigWin.cs</DependentUpon>
     </Compile>
+    <Compile Include="RenameConfigWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RenameConfigWin.Designer.cs">
+      <DependentUpon>RenameConfigWin.cs</DependentUpon>
+    </Compile>
     <Compile Include="ServerWin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,6 +138,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenameConfigWin.resx">
+      <DependentUpon>RenameConfigWin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ServerWin.resx">
       <SubType>Designer</SubType>

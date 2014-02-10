@@ -347,9 +347,9 @@ namespace RemoteExecution
                     ReturnClient(id).Priority = priority;
                     ReturnClient(id).PriorityJobs.Add(new SetPriorityJob(priority));
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("SetClientPriority: " + e);
+                    Tracer.Exception(ex);
                 }
             }
         }
@@ -367,27 +367,28 @@ namespace RemoteExecution
                     node.Config = newConfig;
                     node.Jobs.Add(new ChangeConfigJob(Configs[newConfig].Name));
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("SetClientConfig: " + e);
+                    Tracer.Exception(ex);
                 }
             }
         }
 
         public static ProcessPriorityClass GetClientPriority(int id)
         {
+            ProcessPriorityClass pri = ProcessPriorityClass.Normal;
             lock (_clients)
             {
                 try
                 {
-                    return ReturnClient(id).Priority;
+                    pri = ReturnClient(id).Priority;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("GetClientPriority: " + e);
-                    return ProcessPriorityClass.Normal;
+                    Tracer.Exception(ex);                    
                 }
             }
+            return pri;
         }
 
         public void ChangeClientPriority(ProcessPriorityClass priority)
@@ -411,9 +412,8 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-					Debug.WriteLine("Adding Priority Job: " + ex);
+					Tracer.Exception(ex);
 				}
-
             }
         }
 
@@ -427,7 +427,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-					Debug.WriteLine("Adding Job: " + ex);
+					Tracer.Exception(ex);
 				}
 			}
         }
@@ -548,7 +548,7 @@ namespace RemoteExecution
             }
 			catch (Exception ex)
 			{
-				Debug.WriteLine("Getting setup files: " + ex);
+				Tracer.Exception(ex);
 			}
 
             return res;
@@ -615,9 +615,8 @@ namespace RemoteExecution
             }
 			catch (Exception ex)
 			{
-				Debug.WriteLine("Getting plugin file list: " + ex);
+				Tracer.Exception(ex);
 			}
-
 
             return res;
         }
@@ -648,7 +647,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Getting additional plugin file list: " + ex);
+                Tracer.Exception(ex);
             }
 
             return res;
@@ -701,9 +700,9 @@ namespace RemoteExecution
                         d.DynamicInvoke(new object[] { GetConnectedHosts() });
                         i++;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Debug.WriteLine("CallUpdateClientList: " + e);
+                        Tracer.Exception(ex);
                         ClientStatus -= (StatusClientChange)d;
                     }
                 }
@@ -932,9 +931,9 @@ namespace RemoteExecution
                         d.DynamicInvoke(new object[] { new FinishedFrame(sceneId, fname) });
                         i++;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Debug.WriteLine("CallUpdateImagesPreview: " + e);
+                        Tracer.Exception(ex);
                         ImagePreviewStatus -= (StatusFinishedFrameChange)d;
                     }
                 }
@@ -952,7 +951,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-					Debug.WriteLine("Adding Message: " + ex);
+					Tracer.Exception(ex);
 				}
 
             }
@@ -973,9 +972,9 @@ namespace RemoteExecution
                     d.DynamicInvoke(new object[] { fullMsg });
                     i++;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("AddMessage: " + e);
+                    Tracer.Exception(ex);
                     MessageConsumer -= (StatusStringChange)d;
                 }
             }
@@ -998,9 +997,9 @@ namespace RemoteExecution
                         d.DynamicInvoke(new object[] { GetProjects() });
                         i++;
                     }
-                    catch(Exception e)
+                    catch(Exception ex)
                     {
-                        Debug.WriteLine("CallUpdateProjectList: " + e);
+                        Tracer.Exception(ex);
                         ProjectStatus -= (StatusProjectChange)d;
                     }
                 }
@@ -1019,9 +1018,9 @@ namespace RemoteExecution
                         d.DynamicInvoke(new object[] { GetFinishedProjects() });
                         i++;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Debug.WriteLine("CallUpdateFinshedList: " + e);
+                        Tracer.Exception(ex);
                         FinishedStatus -= (StatusFinishedChange)d;
                     }
                 }
@@ -1124,9 +1123,9 @@ namespace RemoteExecution
                 {
                     ReturnClient(id).Paused = true;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("PauseClient: " + e);
+                    Tracer.Exception(ex);
                 }
             }
             CallUpdateClientList();
@@ -1140,9 +1139,9 @@ namespace RemoteExecution
                 {
                     ReturnClient(id).Paused = false;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("ResumeClient: " + e);
+                    Tracer.Exception(ex);
                 }
             }
             CallUpdateClientList();
@@ -1150,18 +1149,20 @@ namespace RemoteExecution
 
         public static bool IsClientPaused(int id)
         {
+            bool isPaused = false;
+
             lock (_clients)
             {
                 try
                 {
-                    return ReturnClient(id).Paused;
+                    isPaused = ReturnClient(id).Paused;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("IsClientPaused: " + e);                    
+                    Tracer.Exception(ex);
                 }
             }
-            return false;
+            return isPaused;
         }
 
         public static void SaveAllNodeConfig()

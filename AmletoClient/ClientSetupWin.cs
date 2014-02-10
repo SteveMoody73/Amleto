@@ -42,6 +42,7 @@ namespace AmletoClient
             ClientServices.Settings.ServerPort = Convert.ToInt32(serverPort.Text);
             ClientServices.Settings.ClientDir = localScratch.Text;
             ClientServices.Settings.RenderPriority = (ProcessPriorityClass)Enum.Parse(typeof(ProcessPriorityClass), (string)renderPriority.SelectedItem);
+            
             try
             {
                 if (logFile.Text != "" && !Directory.GetParent(logFile.Text).Exists)
@@ -49,16 +50,18 @@ namespace AmletoClient
             }
 			catch (Exception ex)
 			{
-				Debug.WriteLine("Error creating log file " + ex);
-			}
+                Tracer.Exception(ex);
+            }
 
 
             ClientServices.Settings.LogFile = logFile.Text;
             ClientServices.Settings.SaveToLog = SaveLog.Checked;
-            if (nbThreads.SelectedItem == "Automatic")
+            
+            if ((string) nbThreads.SelectedItem == "Automatic")
                 ClientServices.Settings.NumThreads = 0;
             else
                 ClientServices.Settings.NumThreads = Convert.ToInt32((string)nbThreads.SelectedItem);
+            
             ClientServices.Settings.MemorySegment = Convert.ToInt32(memorySegment.Text);
             ClientServices.ChangePriority();
             ClientServices.SaveSettings();

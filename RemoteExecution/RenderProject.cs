@@ -507,8 +507,7 @@ namespace RemoteExecution
                                             d[2] = (uint)(s[2] * srcWeight + d[2] * destWeight);
                                             d[3] = (uint)(s[3] * srcWeight + d[3] * destWeight);
 
-                                            ptrDst[destY * Width + destX] = (d[0] << 24) | (d[1] << 16) | (d[2] << 8) |
-                                                                          d[3];
+                                            ptrDst[destY * Width + destX] = (d[0] << 24) | (d[1] << 16) | (d[2] << 8) | d[3];
                                         }
                                         else
                                             ptrDst[destY * Width + destX] = ptrSrc[y * part.Width + x];
@@ -520,7 +519,7 @@ namespace RemoteExecution
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine("Error joining the split images: " + ex);
+                            Tracer.Exception(ex);
                             mergeFailed = true;
                         }
                     }
@@ -548,7 +547,6 @@ namespace RemoteExecution
 
                 return fname;
             }
-            
             return null;
         }
 
@@ -690,7 +688,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Error while saving: " + ex);
+                Tracer.Exception(ex);
                 success = false;
             }
             return success;
@@ -709,7 +707,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-				Debug.WriteLine("Error while loading: " + ex);
+				Tracer.Exception(ex);
 			}
             return project;
         }

@@ -58,7 +58,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-					Debug.WriteLine(ex.ToString());
+                    Tracer.Exception(ex);
                 }
             }
         }

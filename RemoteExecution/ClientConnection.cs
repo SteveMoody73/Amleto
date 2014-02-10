@@ -65,56 +65,70 @@ namespace RemoteExecution
 
         public void StoreSettings()
         {
-        	var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
-        	if (openSubKey != null)
-        	{
-        		var registryKey = openSubKey.CreateSubKey("Amleto");
-        		if (registryKey != null)
-        		{
-        			var subKey = registryKey.CreateSubKey("ClientsConfig");
-        			if (subKey != null)
-        			{
-        				RegistryKey key =
-        					subKey.
-        						CreateSubKey(HostName + "_" + Instance);
-        				if (key != null)
-        				{
-        					key.SetValue("Config", Config);
-        					key.SetValue("ActiveHours", ActiveHours);
-        					key.Close();
-        				}
-        			}
-        		}
-        	}
+            try
+            {
+                var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
+                if (openSubKey != null)
+                {
+                    var registryKey = openSubKey.CreateSubKey("Amleto");
+                    if (registryKey != null)
+                    {
+                        var subKey = registryKey.CreateSubKey("ClientsConfig");
+                        if (subKey != null)
+                        {
+                            RegistryKey key = subKey.CreateSubKey(HostName + "_" + Instance);
+                            if (key != null)
+                            {
+                                key.SetValue("Config", Config);
+                                key.SetValue("ActiveHours", ActiveHours);
+                                key.Close();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Tracer.Exception(ex);
+            }
         }
 
     	public void RestoreSettings()
         {
-			var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
-			if (openSubKey != null)
-			{
-				var registryKey = openSubKey.CreateSubKey("Amleto");
-				if (registryKey != null)
-				{
-					var subKey = registryKey.CreateSubKey("ClientsConfig");
-					if (subKey != null)
-					{
-						RegistryKey key =
-							subKey.
-								CreateSubKey(HostName + "_" + Instance);
-						Config = 0;
-						if (key != null && key.GetValue("Config") != null)
-							Config = (int) key.GetValue("Config");
-						if (Config >= ServerServices.Configs.Count)
-							Config = 0;
-						if (key != null && key.GetValue("ActiveHours") != null)
-							ActiveHours = (string) key.GetValue("ActiveHours");
-						else
-							ActiveHours = "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY";
-						if (key != null) key.Close();
-					}
-				}
-			}
+            try
+            {
+                var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
+                if (openSubKey != null)
+                {
+                    var registryKey = openSubKey.CreateSubKey("Amleto");
+                    if (registryKey != null)
+                    {
+                        var subKey = registryKey.CreateSubKey("ClientsConfig");
+                        if (subKey != null)
+                        {
+                            RegistryKey key = subKey.CreateSubKey(HostName + "_" + Instance);
+                            Config = 0;
+                            if (key != null && key.GetValue("Config") != null)
+                                Config = (int)key.GetValue("Config");
+
+                            if (Config >= ServerServices.Configs.Count)
+                                Config = 0;
+
+                            if (key != null && key.GetValue("ActiveHours") != null)
+                                ActiveHours = (string)key.GetValue("ActiveHours");
+                            else
+                                ActiveHours = "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY";
+
+                            if (key != null)
+                                key.Close();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Tracer.Exception(ex);
+            }
         }
 
         public bool CanBeUsed
@@ -123,9 +137,12 @@ namespace RemoteExecution
             {
                 if (Paused)
                     return false;
+
                 int t = DateTime.Now.Hour * 2 + (DateTime.Now.Minute < 30 ? 0 : 1);
+                
                 if (ActiveHours[t] == 'N')
                     return false;
+                
                 return true;
             }
         }

@@ -40,27 +40,41 @@ namespace RemoteExecution
             settingsFile = Path.Combine(settingsFile, "ClientSettings.xml");
             ClientSettings settings = new ClientSettings();
 
-            if (File.Exists(settingsFile))
+            try
             {
-                XmlSerializer serializer = new XmlSerializer(settings.GetType());
-                TextReader reader = new StreamReader(settingsFile);
-                object deserialised = serializer.Deserialize(reader);
-                reader.Close();
+                if (File.Exists(settingsFile))
+                {
+                    XmlSerializer serializer = new XmlSerializer(settings.GetType());
+                    TextReader reader = new StreamReader(settingsFile);
+                    object deserialised = serializer.Deserialize(reader);
+                    reader.Close();
 
-                settings = (ClientSettings) deserialised;
+                    settings = (ClientSettings) deserialised;
+                }
+            }
+            catch (Exception ex)
+            {
+                Tracer.Exception(ex);
             }
             return settings;
         }
 
         static public void SaveSettings(ClientSettings settings)
         {
-            string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-            settingsFile = Path.Combine(settingsFile, "ClientSettings.xml");
+            try
+            {
+                string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+                settingsFile = Path.Combine(settingsFile, "ClientSettings.xml");
 
-            XmlSerializer seriaizer = new XmlSerializer(settings.GetType());
-            TextWriter writer = new StreamWriter(settingsFile);
-            seriaizer.Serialize(writer, settings);
-            writer.Close();
+                XmlSerializer seriaizer = new XmlSerializer(settings.GetType());
+                TextWriter writer = new StreamWriter(settingsFile);
+                seriaizer.Serialize(writer, settings);
+                writer.Close();
+            }
+            catch (Exception ex)
+            {
+                Tracer.Exception(ex);
+            }
         }
     }
 }

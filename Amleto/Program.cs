@@ -1,5 +1,8 @@
 using System;
+using System.IO;
+using System.Threading;
 using System.Windows.Forms;
+using RemoteExecution;
 
 namespace Amleto
 {
@@ -13,15 +16,20 @@ namespace Amleto
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            String logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+            logPath = Path.Combine(logPath, "Logs");
+            Tracer.Initialize("AmletoServer", logPath);
+
             if (!System.Diagnostics.Debugger.IsAttached)
             {
-                Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
+                Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             }
 
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en");
-            System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
-            System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator = "'";
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en");
+            Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
+            Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator = "'";
             
             Application.Run(new ServerWin());
         }

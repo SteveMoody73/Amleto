@@ -50,6 +50,7 @@ namespace RemoteExecution
             catch (Exception ex)
             {
                 res=ex.Message;
+                Tracer.Exception(ex);
             }
             return res;
         }
@@ -65,7 +66,7 @@ namespace RemoteExecution
             }
             catch(Exception ex)
             {
-				Debug.WriteLine("Error Unmounting drive: " + ex);
+				Tracer.Exception(ex);
             }
             return false;
         }

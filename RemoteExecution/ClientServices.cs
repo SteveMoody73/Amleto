@@ -117,8 +117,7 @@ namespace RemoteExecution
 
         public static void AddMessage(int icon, string msg)
         {
-            string fullMsg = icon + "|" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() +
-                             "|" + msg;
+            string fullMsg = icon + "|" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "|" + msg;
             if (Settings.SaveToLog && Settings.LogFile != "")
             {
                 try
@@ -127,7 +126,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Unable to write to log file: " + ex);
+                    Tracer.Exception(ex);
                 }
             }
 
@@ -146,7 +145,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Delegate error: " + ex);
+                        Tracer.Exception(ex);
                     }
                 }
             }
@@ -166,7 +165,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Error Killing render process: " + ex);
+                Tracer.Exception(ex);
             }
 
             try
@@ -175,7 +174,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Error setting null render process: " + ex);
+                Tracer.Exception(ex);
             }
         }
 
@@ -260,9 +259,7 @@ namespace RemoteExecution
             {
                 try
                 {
-                    _server =
-                        (ServerServices)
-                        Activator.CreateInstance(typeof (ServerServices), null,
+                    _server = (ServerServices) Activator.CreateInstance(typeof (ServerServices), null,
                                                  new object[]
                                                      {
                                                          new UrlAttribute("tcp://" + Settings.ServerHost + ":" +
@@ -275,7 +272,7 @@ namespace RemoteExecution
                 catch (Exception ex)
                 {
                     _server = null;
-                    Debug.WriteLine("Could not connect to server: " + ex);
+                    Tracer.Exception(ex);
                 }
             }
 
@@ -296,13 +293,14 @@ namespace RemoteExecution
                     if (_setupToDo)
                         _server.SetCurrentJob("Starting up");
                 }
-                catch
+                catch (Exception ex)
                 {
                     _server = null;
                     if (_setupToDo)
                         AddMessage(1, "Cannot connect to the server. Will retry in 5 seconds.");
                     Thread.Sleep(5000);
                     ThreadPool.QueueUserWorkItem(ConnectToServer);
+                    Tracer.Exception(ex);
                 }
             }
         }
@@ -335,7 +333,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Error Unregistering server: " + ex);
+                        Tracer.Exception(ex);
                     }
 
                     _server = null;
@@ -385,7 +383,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Retrieving Jobs: " + ex);
+                Tracer.Exception(ex);
                 try
                 {
                     if (_server != null) _server.KeepAlive();
@@ -422,6 +420,7 @@ namespace RemoteExecution
                     else
                         needToSleep = true;
                 }
+
                 if (jobToDo != null)
                 {
                     IsWorking = true;
@@ -445,9 +444,9 @@ namespace RemoteExecution
                                 IsWorking = false;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Debug.WriteLine("JobsExecuter: " + e);
+                        Tracer.Exception(ex);
                         IsWorking = false;
                     }
                 }
@@ -466,6 +465,7 @@ namespace RemoteExecution
         {
             ConfigName = _server.GetConfigName();
             _setupToDo = false;
+
             if (_server.IsFirstClient())
                 _jobs.Enqueue(new SetupJob());
             else // Wait the first client...
@@ -478,13 +478,14 @@ namespace RemoteExecution
             KillRenderProcess();
             Thread.Sleep(600);
             SaveSettings();
+            
             try
             {
                 CurrentInstance._server.Unregister();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Error Unregistering server: " + ex);
+                Tracer.Exception(ex);
             }
         }
 

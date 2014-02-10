@@ -29,7 +29,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 Source: "Amleto\bin\Release\Amleto.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AmletoClient\bin\Release\AmletoClient.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "RemoteExecution\Release\RemoteExecution.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "RemoteExecution\bin\Release\RemoteExecution.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Amleto Server"; Filename: "{app}\Amleto.exe"

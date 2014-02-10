@@ -80,8 +80,6 @@ namespace Amleto
 
         private void SetupWin_Load(object sender, EventArgs e)
         {
-
-
             string account = _server.GetUser();
             if (account == "SYSTEM")
             {
@@ -113,8 +111,8 @@ namespace Amleto
                     }
 					catch (Exception ex)
 					{
-						Debug.WriteLine("Error removing list of available drives: " + ex);
-					}
+                        Tracer.Exception(ex);
+                    }
                 }
 
                 // Build map drives list
@@ -163,7 +161,6 @@ namespace Amleto
                 string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
                 textLogFile.Text = Path.Combine(path, "AmletoServer.log");
             }
-
 
             DisplayConfigs();
         }
@@ -298,17 +295,16 @@ namespace Amleto
 
         private void webPort_TextChanged(object sender, EventArgs e)
         {
-            int wport=9080;
+            int wport = 9080;
             try
             {
                 wport = Convert.ToInt32(webPort.Text);
             }
 			catch (Exception ex)
 			{
-				Debug.WriteLine("Error converting webport to number: " + ex);
-			}
+                Tracer.Exception(ex);
+            }
 			
-
             webPort.Text = "" + wport;
             testUrl.Text = "http://localhost:" + webPort + "/";
         }
@@ -322,6 +318,7 @@ namespace Amleto
                 e.Cancel = true;
                 return;
             }
+
             if (a < 1 || a > 62000)
             {
                 errorProvider.SetError((TextBox)sender, "Must be a number between 1 and 62000");
@@ -473,6 +470,29 @@ namespace Amleto
         private void positiveZeroDouble_Validating(object sender, CancelEventArgs e)
         {
 
+        }
+
+        private void OnRenameConfig(object sender, EventArgs e)
+        {
+            if (ConfigList.SelectedCells.Count == 0)
+                return;
+
+            int index = ConfigList.SelectedCells[0].RowIndex;
+
+            RenameConfigWin ren = new RenameConfigWin();
+            ren.ConfigName = Configs[index].Name;
+
+            if (ren.ShowDialog() == DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(ren.ConfigName))
+                {
+                    MessageBox.Show("Config name can not be empty", "Error", MessageBoxButtons.OK);
+                    return;
+                }
+
+                Configs[index].Name = ren.ConfigName;
+                DisplayConfigs();
+            }
         }
     }
 }

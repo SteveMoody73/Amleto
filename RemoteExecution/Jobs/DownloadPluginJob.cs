@@ -41,19 +41,32 @@ namespace RemoteExecution.Jobs
                 {
                     messageBack(0, "Downloading plugin " + _file);
                     byte[] res = Server.GetFile(FileType.Plugin, _file);
-                    FileStream stream = File.Create(localFile, res.Length);
-                    stream.Write(res, 0, res.Length);
-                    stream.Close();
-                    stream.Dispose();
+                    Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+                    if (res.Length > 0)
+                    {
+                        FileStream stream = File.Create(localFile, res.Length);
+                        stream.Write(res, 0, res.Length);
+                        stream.Close();
+                        stream.Dispose();
+                    }
+                    else
+                    {
+                        // Create empty file
+                        FileStream stream = File.Create(localFile);
+                        stream.Write(res, 0, res.Length);
+                        stream.Close();
+                        stream.Dispose();
+                    }
+
                     FileInfo local = new FileInfo(localFile);
                     local.LastWriteTimeUtc = remote.LastWriteTimeUtc;
                     messageBack(0, "Saved at " + _file);
                 }
             }
-            catch(Exception e)
+            catch(Exception ex)
             {
-                Debug.WriteLine("DownloadPluginJob: " + e);
-            }
+                Tracer.Exception(ex);
+            }            
         }
     }
 }
