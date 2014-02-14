@@ -2,16 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.Diagnostics;
+using NLog;
 using RemoteExecution;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
 
 namespace Amleto
 {
     public partial class AddProject : Form
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         MasterServer _server;
         RenderProject _project;
 
@@ -40,7 +41,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Tracer.Exception(ex);
+                logger.ErrorException("Error selecting image file format", ex);
                 MessageBox.Show("Error while selecting the image file format.");
             }
 
@@ -52,7 +53,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Tracer.Exception(ex);
+                logger.ErrorException("Error selecting output name format", ex);
                 MessageBox.Show("Error while selecting the file output name format.");
             }
 
@@ -65,7 +66,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-				Tracer.Exception(ex);
+                logger.ErrorException("Error selecting the config", ex);
                 MessageBox.Show("Error while selecting the config.");
             }
 
@@ -79,7 +80,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error selcting defaults", ex);
                 MessageBox.Show("Error while selecting some defaults.");
             }
 
@@ -526,7 +527,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Tracer.Exception(ex);
+                            logger.ErrorException("Error setting frame size", ex);
                         }
                     }
                     else if (l.StartsWith("UseGlobalResolution "))
@@ -546,7 +547,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Tracer.Exception(ex);
+                            logger.ErrorException("Error setting aspect", ex);
                         }
                     }
                     else if (l.StartsWith("Plugin CameraHandler"))
@@ -564,7 +565,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Tracer.Exception(ex);
+                            logger.ErrorException("Error setting camera", ex);
                         }
                     }
                     else if (l.StartsWith("AASamples "))
@@ -705,7 +706,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error killing render process", ex);
                 }
             }
 
@@ -764,7 +765,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error processing scene file", ex);
             }
         }
 
@@ -818,7 +819,7 @@ namespace Amleto
 			}
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error validating start frame", ex);
             }
             
 			checkValues.SetError(textStartFrame, "");
@@ -831,7 +832,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error start frame should contain a number", ex);
                 checkValues.SetError(textStartFrame, "Should contain a number");
                 btnAdd.Enabled = false;
                 return;
@@ -877,7 +878,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error validating end frame", ex);
             }
 
             checkValues.SetError(textEndFrame, "");
@@ -889,7 +890,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error end frame should contain a number", ex);
                 checkValues.SetError(textEndFrame, "Should contain a number");
                 btnAdd.Enabled = false;
                 return;
@@ -1204,7 +1205,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error loading project", ex);
             }
             dlg.Dispose();
             _shouldClose = false;

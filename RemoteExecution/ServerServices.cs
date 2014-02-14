@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
+using NLog;
 using RemoteExecution.Jobs;
 
 namespace RemoteExecution
@@ -18,6 +19,8 @@ namespace RemoteExecution
 
     public class ServerServices : MarshalByRefObject
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
 		public delegate void StatusClientChange(List<ClientConnection> clients);
 		public delegate void StatusProjectChange(List<RenderProject> projects);
         public delegate void StatusFinishedChange(List<RenderProject> finished);
@@ -42,6 +45,8 @@ namespace RemoteExecution
         public static List<RenderProject> FinishedProjects = new List<RenderProject>();
 		public static List<ConfigSet> Configs = new List<ConfigSet>();
 
+        private static object _lock = new object();
+
         public void RegisterClient(string hostName, string ipAddress, ProcessPriorityClass priority, int bitSize)
         {
             lock (_clients)
@@ -64,9 +69,12 @@ namespace RemoteExecution
 
                 _currConnection = new ClientConnection(hostName, ipAddress, nextInstance, priority, bitSize);
                 _clients.Add(_currConnection);
+                CallUpdateClientList();
             }
-            AddMessage(0, "Node " + _currConnection.HostName + " (" + ipAddress + ")" + ":" + _currConnection.Instance + " connected (" + bitSize + "-bit).");
-            CallUpdateClientList();
+            string msg = "Node " + _currConnection.HostName + " (" + ipAddress + ")" + ":" + _currConnection.Instance +
+                         " connected (" + bitSize + "-bit).";
+            AddMessage(0, msg);
+            logger.Log(LogLevel.Info, msg);
         }
 
         public static void CheckTimedOutClients()
@@ -261,12 +269,16 @@ namespace RemoteExecution
 
         public static List<ClientConnection> GetConnectedHosts()
         {
-        	MemoryStream stream = new MemoryStream();
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _clients);
-            stream.Position = 0;
-            List<ClientConnection> res = (List<ClientConnection>)formatter.Deserialize(stream);
-            stream.Dispose();
+            List<ClientConnection> res = new List<ClientConnection>();
+            lock (_lock)
+            {
+                MemoryStream stream = new MemoryStream();
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, _clients);
+                stream.Position = 0;
+                res = (List<ClientConnection>) formatter.Deserialize(stream);
+                stream.Dispose();
+            }
             return res;
         }
 
@@ -349,7 +361,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error setting client priority", ex);
                 }
             }
         }
@@ -369,7 +381,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error setting client config", ex);
                 }
             }
         }
@@ -385,7 +397,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);                    
+                    logger.ErrorException("Error getting priority", ex);                    
                 }
             }
             return pri;
@@ -412,7 +424,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-					Tracer.Exception(ex);
+                    logger.ErrorException("Error adding priority job", ex);
 				}
             }
         }
@@ -427,7 +439,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-					Tracer.Exception(ex);
+                    logger.ErrorException("Error adding job", ex);
 				}
 			}
         }
@@ -548,7 +560,7 @@ namespace RemoteExecution
             }
 			catch (Exception ex)
 			{
-				Tracer.Exception(ex);
+                logger.ErrorException("Error getting setup file list", ex); ;
 			}
 
             return res;
@@ -615,7 +627,7 @@ namespace RemoteExecution
             }
 			catch (Exception ex)
 			{
-				Tracer.Exception(ex);
+                logger.ErrorException("Error getting plugin file list", ex);
 			}
 
             return res;
@@ -647,7 +659,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error getting external plugin file list", ex);
             }
 
             return res;
@@ -690,22 +702,32 @@ namespace RemoteExecution
 
         private static void CallUpdateClientList()
         {
-            if (ClientStatus != null)
+            try
             {
-                for (int i = 0; i < ClientStatus.GetInvocationList().Length; )
+                lock (_lock)
                 {
-                    Delegate d = ClientStatus.GetInvocationList()[i];
-                    try
+                    if (ClientStatus != null)
                     {
-                        d.DynamicInvoke(new object[] { GetConnectedHosts() });
-                        i++;
-                    }
-                    catch (Exception ex)
-                    {
-                        Tracer.Exception(ex);
-                        ClientStatus -= (StatusClientChange)d;
+                        for (int i = 0; i < ClientStatus.GetInvocationList().Length;)
+                        {
+                            Delegate d = ClientStatus.GetInvocationList()[i];
+                            try
+                            {
+                                d.DynamicInvoke(new object[] {GetConnectedHosts()});
+                                i++;
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.ErrorException("Error updating client list", ex);
+                                ClientStatus -= (StatusClientChange) d;
+                            }
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorException("Error updating client list", ex);
             }
         }
 
@@ -933,7 +955,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error updating image previews", ex);
                         ImagePreviewStatus -= (StatusFinishedFrameChange)d;
                     }
                 }
@@ -951,7 +973,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-					Tracer.Exception(ex);
+                    logger.ErrorException("Error adding process", ex);
 				}
 
             }
@@ -974,7 +996,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error adding message", ex);
                     MessageConsumer -= (StatusStringChange)d;
                 }
             }
@@ -999,7 +1021,7 @@ namespace RemoteExecution
                     }
                     catch(Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error updating project list", ex);
                         ProjectStatus -= (StatusProjectChange)d;
                     }
                 }
@@ -1020,7 +1042,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error updating finished list", ex); ;
                         FinishedStatus -= (StatusFinishedChange)d;
                     }
                 }
@@ -1125,7 +1147,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error pausing client", ex);
                 }
             }
             CallUpdateClientList();
@@ -1141,7 +1163,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error resuming client", ex);
                 }
             }
             CallUpdateClientList();
@@ -1159,7 +1181,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error checking client paused", ex);
                 }
             }
             return isPaused;

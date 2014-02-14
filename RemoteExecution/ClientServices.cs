@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Runtime.Remoting.Channels.Tcp;
 using Microsoft.Win32;
+using NLog;
 using RemoteExecution.Jobs;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Activation;
@@ -15,6 +16,8 @@ namespace RemoteExecution
 {
     public class ClientServices
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public delegate void StatusStringChange(string msg);
 
         public static event StatusStringChange MessageConsumer;
@@ -37,8 +40,8 @@ namespace RemoteExecution
         private bool _readyToStart;
         private Stopwatch _setupTime = new Stopwatch();
         private TcpChannel _channel;
-        private object _lockCheckWorking = new object();
-
+        private object _lock = new object();
+       
 
         public ClientServices()
         {
@@ -126,7 +129,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error sending message: " + msg, ex);
                 }
             }
 
@@ -145,7 +148,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error sending message: " + fullMsg, ex);
                     }
                 }
             }
@@ -165,7 +168,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error killing render process", ex);
             }
 
             try
@@ -174,7 +177,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error killing render process", ex);
             }
         }
 
@@ -200,7 +203,9 @@ namespace RemoteExecution
                 AddMessage(1, "and the server is currently running");
             }
             else
+            {
                 AddMessage(0, "Found Amleto server at " + Settings.ServerHost + " on port " + Settings.ServerPort);
+            }
 
             AddMessage(0, "Attempting to connect to the Server.");
             ThreadPool.QueueUserWorkItem(ConnectToServer);
@@ -210,7 +215,7 @@ namespace RemoteExecution
         {
             get
             {
-                lock (_lockCheckWorking)
+                lock (_lock)
                 {
                     return _isWorking;
                 }
@@ -218,7 +223,7 @@ namespace RemoteExecution
 
             set
             {
-                lock (_lockCheckWorking)
+                lock (_lock)
                 {
                     _isWorking = value;
                 }
@@ -272,7 +277,7 @@ namespace RemoteExecution
                 catch (Exception ex)
                 {
                     _server = null;
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error connecting to the server", ex); ;
                 }
             }
 
@@ -286,7 +291,10 @@ namespace RemoteExecution
             }
             else
             {
-                _server.RegisterClient(Environment.MachineName, GetIP(), Settings.RenderPriority, IntPtr.Size*8);
+                lock (_lock)
+                {
+                    _server.RegisterClient(Environment.MachineName, GetIP(), Settings.RenderPriority, IntPtr.Size*8);
+                }
                 AddMessage(0, "Connected to the server " + Settings.ServerHost + " on port " + Settings.ServerPort + ".");
                 try
                 {
@@ -300,7 +308,7 @@ namespace RemoteExecution
                         AddMessage(1, "Cannot connect to the server. Will retry in 5 seconds.");
                     Thread.Sleep(5000);
                     ThreadPool.QueueUserWorkItem(ConnectToServer);
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error connecting to the server", ex); ;
                 }
             }
         }
@@ -333,7 +341,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error server.Unregister", ex); ;
                     }
 
                     _server = null;
@@ -383,7 +391,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error retrieving jobs", ex);
                 try
                 {
                     if (_server != null) _server.KeepAlive();
@@ -446,7 +454,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error executing job", ex);
                         IsWorking = false;
                     }
                 }
@@ -485,7 +493,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error shutting down", ex);
             }
         }
 

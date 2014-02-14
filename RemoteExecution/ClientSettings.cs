@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
+using NLog;
 
 namespace RemoteExecution
 {
@@ -17,6 +18,8 @@ namespace RemoteExecution
         public bool SaveToLog { get; set; }
         public int NumThreads { get; set; }
         public int MemorySegment { get; set; }
+
+        [NonSerialized] private static Logger logger = LogManager.GetCurrentClassLogger();
 
         public ClientSettings()
         {
@@ -54,7 +57,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to load ClientSettings.xml", ex);
             }
             return settings;
         }
@@ -73,7 +76,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to save ClientSettings.xml", ex);
             }
         }
     }

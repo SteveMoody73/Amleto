@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using NLog;
 
 namespace RemoteExecution.Jobs
 {
     [Serializable]
     public class DownloadConfigJob : Job
     {
-        string _file;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        readonly string _file;
 
         public DownloadConfigJob(string file)
         {
@@ -102,7 +105,7 @@ namespace RemoteExecution.Jobs
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Unable to save config file: " + _file, ex);
                 }
             }
         }

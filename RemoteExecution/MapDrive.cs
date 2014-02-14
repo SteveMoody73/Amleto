@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Win32;
+using NLog;
 
 namespace RemoteExecution
 {
     [Serializable]
     public class MapDrive
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
     	public string Password { get; set; }
     	public string Username { get; set; }
     	public string Share { get; set; }
@@ -49,8 +52,8 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                res=ex.Message;
-                Tracer.Exception(ex);
+                res = ex.Message;
+                logger.ErrorException("Unable to mount the network drive", ex);
             }
             return res;
         }
@@ -66,7 +69,7 @@ namespace RemoteExecution
             }
             catch(Exception ex)
             {
-				Tracer.Exception(ex);
+                logger.ErrorException("Unable to unmount the network drive", ex);
             }
             return false;
         }

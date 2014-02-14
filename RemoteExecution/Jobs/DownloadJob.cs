@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using NLog;
 
 namespace RemoteExecution.Jobs
 {
     [Serializable]
     public class DownloadJob : Job
     {
-        string _remoteFile;
-        string _localFile;
-        long _size;
-        DateTime _modDate;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        readonly string _remoteFile;
+        readonly string _localFile;
+        readonly long _size;
+        readonly DateTime _modDate;
 
         public DownloadJob(string remoteFile, string localFile, long size, DateTime modDate)
         {
@@ -65,7 +68,7 @@ namespace RemoteExecution.Jobs
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Unable to download job: " + _remoteFile, ex);
                 }
             }
         }

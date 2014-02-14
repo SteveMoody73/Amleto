@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using NLog;
 
 namespace RemoteExecution.Jobs
 {
     [Serializable]
     public class DownloadPluginJob : Job
     {
-        string _file;
-        bool _force;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        readonly string _file;
+        readonly bool _force;
 
         public DownloadPluginJob(string file,bool force)
         {
@@ -65,7 +68,7 @@ namespace RemoteExecution.Jobs
             }
             catch(Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to download plugin: " + _file, ex);
             }            
         }
     }

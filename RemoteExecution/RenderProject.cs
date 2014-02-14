@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NLog;
 using RemoteExecution.Jobs;
 using System.IO;
 using System.Windows.Forms;
@@ -172,6 +173,7 @@ namespace RemoteExecution
         [XmlIgnore] public DateTime UpdateTime;
         [XmlIgnore] public bool StartTimeSet;
         [XmlIgnore] public bool UpdateTimeSet;
+        [XmlIgnore] private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private void CopyJobParams(RenderJob job)
         {
@@ -519,7 +521,7 @@ namespace RemoteExecution
                         }
                         catch (Exception ex)
                         {
-                            Tracer.Exception(ex);
+                            logger.ErrorException("Error merging image", ex);
                             mergeFailed = true;
                         }
                     }
@@ -681,14 +683,14 @@ namespace RemoteExecution
                 TextWriter w = new StreamWriter(filename);
                 s.Serialize(w, this);
                 w.WriteLine("");
-                w.WriteLine("<!-- Project Definition - Amleto 3.2 -->");
-                w.WriteLine("<!-- (c) 2013 - Virtualcoder.co.uk -->");
+                w.WriteLine("<!-- Project Definition - Amleto 3.3 -->");
+                w.WriteLine("<!-- (c) 2014 - Virtualcoder.co.uk -->");
                 w.Close();
                 success = true;
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error saving file: " + filename, ex);
                 success = false;
             }
             return success;
@@ -707,7 +709,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-				Tracer.Exception(ex);
+                logger.ErrorException("Error loading file: " + filename, ex);
 			}
             return project;
         }

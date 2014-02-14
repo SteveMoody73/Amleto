@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Diagnostics;
+using NLog;
 using RemoteExecution;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
@@ -17,6 +18,8 @@ namespace Amleto
     public partial class ServerWin : Form
     {
         private const bool IsBeta = false;
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private MasterServer _masterServer;
         private bool _isMaster;
@@ -123,7 +126,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Tracer.Exception(ex);
+                            logger.ErrorException("Error updating preview panel", ex);
                         }
                     });
                 mem.Close();
@@ -132,7 +135,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error UpdatePreviewPanel", ex);
             }
         }
 
@@ -258,8 +261,8 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Invalid message: " + msg);
-                Tracer.Exception(ex);
+                logger.ErrorException("Error invalid message: " + msg, ex);
+                MessageBox.Show("Invalid message: " + msg);                
             }
         }
 
@@ -299,7 +302,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error clearing client status list", ex);
                 }
 
                 List<string> configsName = _masterServer.ConfigNames;
@@ -333,7 +336,7 @@ namespace Amleto
                             }
                             catch (Exception ex)
                             {
-                                Tracer.Exception(ex);
+                                logger.ErrorException("Error adding config item", ex);
                             }
                         }
                         configList.Value = configsName[client.Config];
@@ -374,7 +377,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error adding cells", ex);
                     }
 
                     try
@@ -389,7 +392,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error selecting cell", ex);
                     }
                 }
                 try
@@ -399,7 +402,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error repainting client list", ex);
                 }
             }
         }
@@ -446,7 +449,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error clearing project grid", ex);
                 }
 
                 foreach (RenderProject project in _projects)
@@ -534,7 +537,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error adding project row", ex);
                     }
 
                     if ((string) row.Cells[0].Value.ToString() == oldSelected)
@@ -548,7 +551,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error repainting project list", ex);
                 }
             }
         }
@@ -569,7 +572,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error clearing finished list", ex);
                 }
 
                 foreach (RenderProject project in _finishedProjects)
@@ -617,7 +620,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error error adding finished row", ex);
                     }
 
                     if ((string)row.Cells[0].Value.ToString() == oldSelected)
@@ -631,7 +634,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error repainting finished list", ex);
                 }
             }
         }
@@ -680,7 +683,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error saving render jobs", ex);
                 }
             }
         }
@@ -821,7 +824,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error changing preview speed", ex);
                 speed = 10;
             }
 
@@ -1413,7 +1416,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            Tracer.Exception(ex);
+                            logger.ErrorException("Error creating TCP channel", ex);
                         }
                     }
 
@@ -1441,7 +1444,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error initialising server", ex);
                 }
             }
             else // We should be master

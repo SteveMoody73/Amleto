@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using NLog;
 
 namespace RemoteExecution.Jobs
 {
 	[Serializable]
     public class DeleteContentJob : Job
 	{
+	    private static Logger logger = LogManager.GetCurrentClassLogger();
+
 		public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
             string baseDir = Path.Combine(ClientServices.GetClientDir(), "Content");
@@ -18,7 +20,7 @@ namespace RemoteExecution.Jobs
 			}
             catch (Exception ex)
 			{
-				Tracer.Exception(ex);
+				logger.ErrorException("Unable to delete content directory", ex);
 			}
 
             try
@@ -27,7 +29,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to create content directory", ex);
             }
         }
     }

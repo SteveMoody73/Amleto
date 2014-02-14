@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
-using System.Diagnostics;
+using NLog;
 using RemoteExecution;
 
 namespace Amleto
 {
     public partial class SetupWin : Form
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public int Port = 2080;
         public bool AutoPort = true;
         public string LogFile = "";
@@ -111,7 +113,7 @@ namespace Amleto
                     }
 					catch (Exception ex)
 					{
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error removing used drives", ex);
                     }
                 }
 
@@ -302,7 +304,7 @@ namespace Amleto
             }
 			catch (Exception ex)
 			{
-                Tracer.Exception(ex);
+                logger.ErrorException("Error webport changed", ex);
             }
 			
             webPort.Text = "" + wport;

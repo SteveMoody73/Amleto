@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using NLog;
 
 namespace RemoteExecution.Jobs
 {
     [Serializable]
     public class DeleteOutputJob : Job
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
     	public override void ExecuteJob(MessageBack messageBack, Queue<Job> jobs)
         {
             string baseDir = Path.Combine(ClientServices.GetClientDir(), "Output");
@@ -18,7 +21,7 @@ namespace RemoteExecution.Jobs
             } 
 			catch (Exception ex)
 			{
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to delete output directory", ex);
             }
             
 			try
@@ -27,7 +30,7 @@ namespace RemoteExecution.Jobs
 			} 
 			catch (Exception ex)
 			{
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to create output directory", ex);
             }
         }
     }

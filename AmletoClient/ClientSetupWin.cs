@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
+using NLog;
 using RemoteExecution;
 using System.IO;
 
@@ -9,6 +10,8 @@ namespace AmletoClient
 {
     public partial class ClientSetupWin : Form
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public ClientSetupWin()
         {
             InitializeComponent();
@@ -50,7 +53,7 @@ namespace AmletoClient
             }
 			catch (Exception ex)
 			{
-                Tracer.Exception(ex);
+                logger.ErrorException("Error setting log file", ex);
             }
 
 

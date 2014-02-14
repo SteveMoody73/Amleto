@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Win32;
+using NLog;
 using RemoteExecution.Jobs;
 
 namespace RemoteExecution
 {
     [Serializable]
     public class ClientConnection
-    {
+    {        
         private static int _nextClientId = 1;
 
-    	[NonSerialized]
+        [NonSerialized] 
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+        [NonSerialized]
         private Stopwatch _lastCall = new Stopwatch();
 
 		public bool IsOnline { get; set; }
@@ -89,7 +92,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to store settings", ex);
             }
         }
 
@@ -127,7 +130,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error unable to restore settings", ex);
             }
         }
 

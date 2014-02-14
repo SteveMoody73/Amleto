@@ -3,11 +3,14 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
+using NLog;
 
 namespace RemoteExecution
 {
     public class BroadcastFinder
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
 		public string Server { get; set; }
 		public int Port { get; set; }
 		
@@ -58,7 +61,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Error connecting", ex); 
                 }
             }
         }

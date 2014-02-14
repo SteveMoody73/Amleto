@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections;
 using System.Diagnostics;
 using Microsoft.Win32;
+using NLog;
 using RemoteExecution.Jobs;
 using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -15,6 +16,8 @@ namespace RemoteExecution
 {
     public class MasterServer : MarshalByRefObject
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
     	private ServerServices.StatusClientChange _clientStatus;
         private ServerServices.StatusProjectChange _projectStatus;
         private ServerServices.StatusFinishedChange _finishedStatus;
@@ -127,7 +130,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-						Tracer.Exception(ex);
+                        logger.ErrorException("Error finding free port", ex);
                     }
                 }
             }
@@ -145,9 +148,9 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
+                    logger.ErrorException("Error opening TCP channel", ex);
                     ServerServices.AddMessage(1, "Cannot use port " + Port);
-                    Tracer.Exception(ex);
-					return;
+                    return;
                 }
             }
 
@@ -567,7 +570,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-					Tracer.Exception(ex);
+                    logger.ErrorException("Error getting drive list", ex);
                 }
             }
             return res;
@@ -589,7 +592,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-				Tracer.Exception(ex);
+                logger.ErrorException("Error listing directories", ex);
             }
 
             return res;
@@ -609,7 +612,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error listing files", ex);
             }
             return res;
         }

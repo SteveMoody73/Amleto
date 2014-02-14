@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using NLog;
 
 namespace RemoteExecution.Jobs
 {
     class DownloadSupportJob : Job
     {
-        string _file;
-        bool _force;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        readonly string _file;
+        readonly bool _force;
 
         public DownloadSupportJob(string file, bool force)
         {
@@ -69,7 +71,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Unable to download file: " + _file, ex);
             }
         }        
     }

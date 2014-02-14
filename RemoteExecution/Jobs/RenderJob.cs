@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using NLog;
 
 namespace RemoteExecution.Jobs
 {
@@ -17,7 +18,7 @@ namespace RemoteExecution.Jobs
     [Serializable]
     public class RenderJob : Job
     {
-        string _file;
+        readonly string _file;
 		MessageBack _messageBack;
 		
 		public int StartFrame;
@@ -73,6 +74,8 @@ namespace RemoteExecution.Jobs
 
         [NonSerialized]
         public Stopwatch TimeSpent;
+        [NonSerialized]
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
 		public RenderJob(string file, int startFrame, int endFrame, int step, int instance, string imageFormat, bool saveAlpha, string alphaFormat)
         {
@@ -117,7 +120,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-                Tracer.Exception(ex);
+                logger.ErrorException("Error deleting existing images", ex);
             }
 
             try
@@ -455,7 +458,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-				Tracer.Exception(ex);
+                logger.ErrorException("Error rendering scene file", ex);
 			}
 
             Server.SetCurrentJob("Uploading back images");
@@ -489,7 +492,7 @@ namespace RemoteExecution.Jobs
                                 {
                                     messageBack(1, "Error while uploading frame " + i);
                                     uploadError = true;
-                                    Tracer.Exception(ex);
+                                    logger.ErrorException("Error uploading image file: " + file.FullName, ex);
                                 }
                             }
                         }
@@ -507,13 +510,14 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(1, "Error while uploading frame " + i);
                         uploadError = true;
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error sending file: " + fname, ex);
                     }
                 }
                 else
                 {
                     messageBack(1, "Frame " + i + " failed to render");
                     Server.FrameLost(i, SliceNumber);
+                    logger.Log(LogLevel.Info, "Image file not found: " + fname);
                 }
                 
                 if (SaveAlpha && File.Exists(afname))
@@ -527,8 +531,12 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(1, "Error while uploading frame " + i + " Alpha");
                         uploadError = true;
-                        Tracer.Exception(ex);
+                        logger.ErrorException("Error sending file: " + fname, ex);
                     }
+                }
+                else if (!File.Exists(fname))
+                {
+                    logger.Log(LogLevel.Info, "Image file not found: " + fname);
                 }
                 if (uploadError)
                     Server.FrameLost(i, SliceNumber);
