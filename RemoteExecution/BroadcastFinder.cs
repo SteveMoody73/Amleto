@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
@@ -11,12 +12,16 @@ namespace RemoteExecution
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-		public string Server { get; set; }
+		private List<string> _servers = new List<string>();
+
+        public List<string> Servers
+        {
+            get { return _servers; }          
+        }
 		public int Port { get; set; }
 		
 		public BroadcastFinder()
         {
-        	Server = "";
         	IPAddress[] a = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
             string broadcastAddress="";
             foreach (IPAddress t in a)
@@ -50,18 +55,25 @@ namespace RemoteExecution
 					byte[] data = new byte[1024];
                     int res = sock.ReceiveFrom(data, ref ep);
                     string sres = Encoding.ASCII.GetString(data, 0, res);
-                    string[] parts = sres.Split(' ');
 
-                    if (parts[0] == "Amleto" && parts[1] == "server")
+                    string[] hosts = sres.Split('\n');
+
+                    foreach (string host in hosts)
                     {
-                        Server = parts[3];
-                        Port = Convert.ToInt32(parts[4]);
-                        break;
+
+                        string[] parts = host.Split(' ');
+
+                        if (parts[0] == "Amleto" && parts[1] == "server")
+                        {
+                            Servers.Add(parts[3]);
+                            Port = Convert.ToInt32(parts[4]);
+                            break;
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error connecting", ex); 
+                    logger.ErrorException("Error connecting to server", ex); 
                 }
             }
         }

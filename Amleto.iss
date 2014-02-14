@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{3C37B532-D178-4B8D-9169-08AB76E045B1}
 AppName=Amleto
-AppVerName=Amleto 3.3.2
+AppVerName=Amleto 3.3.3
 AppPublisher=Virtualcoder
 AppPublisherURL=http://virtualcoder.co.uk/
 AppSupportURL=http://virtualcoder.co.uk/

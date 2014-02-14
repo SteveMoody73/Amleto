@@ -1,33 +1,44 @@
 using System;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Diagnostics;
+using NLog;
 
 namespace RemoteExecution
 {
     public class BroadcastListener
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         Thread _backgroundJob;
-        string _hostAddress;
-    	EndPoint _endPoint;
-        Socket _socket;
+        private List<string> _hostAddressList = new List<string>();
+    	private EndPoint _endPoint;
+        private Socket _socket;
 		
 		public int Port { get; set; }
 
         public BroadcastListener(int port)
         {
-            IPAddress[] a = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
-            foreach (IPAddress t in a)
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
             {
-            	if (!t.ToString().Contains(":"))
-            	{
-            		_hostAddress = t.ToString();
-            		break;
-            	}
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                {
+                    Console.WriteLine(ni.Name);
+                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            _hostAddressList.Add(ip.Address.ToString());
+                            logger.Log(LogLevel.Info, "Detected network card " + ni.Description + " with IP address " + ip.Address);
+                        }
+                    }
+                }
             }
-        	Port = port;
+
+            Port = port;
          
             _backgroundJob = new Thread(Listen);
             _backgroundJob.IsBackground = true;
@@ -36,8 +47,7 @@ namespace RemoteExecution
 
     	private void Listen()
         {
-            _socket = new Socket(AddressFamily.InterNetwork,
-                            SocketType.Dgram, ProtocolType.Udp);
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPEndPoint iep = new IPEndPoint(IPAddress.Any, 61111);
             _socket.Bind(iep);
             _endPoint = (EndPoint)iep;
@@ -48,17 +58,23 @@ namespace RemoteExecution
                 try
                 {
                     int recv = _socket.ReceiveFrom(data, ref _endPoint);
-                    string s = Encoding.ASCII.GetString(data, 0, recv);
+                    string s = Encoding.ASCII.GetString(data, 0, recv);                    
                     if (s == "Amleto client search")
                     {
-                        string res = "Amleto server at " + _hostAddress + " " + Port;
+                        string res = "";
+                        foreach (string host in _hostAddressList)
+                        {
+                            res = "Amleto server at " + host + " " + Port + "\n";
+                        }
                         byte[] bres = Encoding.ASCII.GetBytes(res);
                         _socket.SendTo(bres, _endPoint);
+                        logger.Log(LogLevel.Info, res);
                     }
+                    
                 }
                 catch (Exception ex)
                 {
-                    Tracer.Exception(ex);
+                    logger.ErrorException("Unable to start Listener", ex);
                 }
             }
         }
