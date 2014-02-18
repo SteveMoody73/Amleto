@@ -160,8 +160,7 @@ namespace Amleto
             // If log file name is empty, generate a default log path
             if (textLogFile.Text == "")
             {
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-                textLogFile.Text = Path.Combine(path, "AmletoServer.log");
+                textLogFile.Text = Path.Combine(Paths.GetLocalPath(), "AmletoServer.log");
             }
 
             DisplayConfigs();

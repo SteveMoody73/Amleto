@@ -20,8 +20,8 @@ namespace Amleto
             Application.SetCompatibleTextRenderingDefault(false);
 
             string logFile = String.Format("AmletoServer_{0:yyyy_MM_dd}.log", DateTime.Now);
-            String logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-            logPath = Path.Combine(logPath, "Logs");
+            string logPath = Path.Combine(Paths.GetLocalPath(), "Logs");
+            Directory.CreateDirectory(logPath);
             logPath = Path.Combine(logPath, logFile);
             FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
             if (target != null)

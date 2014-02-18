@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using NLog;
 using NLog.Targets;
@@ -19,17 +20,17 @@ namespace AmletoClient
             Application.SetCompatibleTextRenderingDefault(false);
 
             string logFile = String.Format("AmletoClient_{0:yyyy_MM_dd}.log", DateTime.Now);
-            String logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-            logPath = Path.Combine(logPath, "Logs");
+            string logPath = Path.Combine(Paths.GetLocalPath(), "Logs");
+            Directory.CreateDirectory(logPath);
             logPath = Path.Combine(logPath, logFile);
             FileTarget target = LogManager.Configuration.FindTargetByName("logFile") as FileTarget;
             if (target != null)
                 target.FileName = logPath;
 
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en");
-            System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
-            System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator = "'";
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en");
+            Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
+            Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator = "'";
 
             Application.Run(new ClientWin());
         }

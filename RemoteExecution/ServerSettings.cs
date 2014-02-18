@@ -31,7 +31,7 @@ namespace RemoteExecution
 
         static public ServerSettings LoadSettings()
         {
-            string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+            string settingsFile = Paths.GetLocalPath();
             Directory.CreateDirectory(settingsFile);
             settingsFile = Path.Combine(settingsFile, "ServerSettings.xml");
             ServerSettings settings = new ServerSettings();
@@ -50,7 +50,7 @@ namespace RemoteExecution
 
         static public void SaveSettings(ServerSettings settings)
         {
-            string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+            string settingsFile = Paths.GetLocalPath();
             settingsFile = Path.Combine(settingsFile, "ServerSettings.xml");
 
             XmlSerializer seriaizer = new XmlSerializer(settings.GetType());

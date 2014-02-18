@@ -662,8 +662,7 @@ namespace Amleto
                 try
                 {
                     // Save currently rendering jobs
-                    string savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-                    savePath = Path.Combine(savePath, "RenderJobs");
+                    string savePath = Path.Combine(Paths.GetLocalPath(), "RenderJobs");
                     if (Directory.Exists(savePath))
                     {
                         // Delete any existing saved files
@@ -1494,8 +1493,7 @@ namespace Amleto
                 _masterServer.Startup();
 
                 // Restore previously saved jobs
-                string loadPath =
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+                string loadPath = Paths.GetLocalPath();
                 loadPath = Path.Combine(loadPath, "RenderJobs");
                 if (Directory.Exists(loadPath))
                 {
@@ -1508,6 +1506,8 @@ namespace Amleto
                     }
                 }
             }
+
+            refreshTimer.Enabled = true;
         }
 
         private void FinishedProjectGridMouseClick(object sender, MouseEventArgs e)

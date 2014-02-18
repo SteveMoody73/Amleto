@@ -80,6 +80,7 @@
     <Compile Include="LW10.cs" />
     <Compile Include="MapDrive.cs" />
     <Compile Include="MasterServer.cs" />
+    <Compile Include="Paths.cs" />
     <Compile Include="RenderProject.cs" />
     <Compile Include="ServerServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -29,8 +29,8 @@ namespace Amleto
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServerWin));
             this.status = new System.Windows.Forms.StatusStrip();
             this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -39,6 +39,13 @@ namespace Amleto
             this.clientStatus = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.ClientStatusGrid = new System.Windows.Forms.DataGridView();
+            this.HostId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HostInstance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCurConfig = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.hostStatus = new System.Windows.Forms.DataGridViewImageColumn();
+            this.LastRender = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostJob = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.ActiveProjectGrid = new System.Windows.Forms.DataGridView();
             this.projId = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -128,13 +135,6 @@ namespace Amleto
             this.FinishedMenuEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedMenuClear = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedMenuClearAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.HostId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hostName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.HostInstance = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCurConfig = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.hostStatus = new System.Windows.Forms.DataGridViewImageColumn();
-            this.LastRender = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hostJob = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.status.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -286,11 +286,57 @@ namespace Amleto
             this.ClientStatusGrid.Size = new System.Drawing.Size(870, 208);
             this.ClientStatusGrid.TabIndex = 1;
             this.ClientStatusGrid.Tag = "Shows the nodes which are currently usable to render projects. Ctrl+Click to mult" +
-    "i select.";
+                "i select.";
             this.ClientStatusGrid.CurrentCellDirtyStateChanged += new System.EventHandler(this.clientStatusGrid_CurrentCellDirtyStateChanged);
             this.ClientStatusGrid.MouseClick += new System.Windows.Forms.MouseEventHandler(this.clientStatusGrid_MouseClick);
             this.ClientStatusGrid.MouseEnter += new System.EventHandler(this.tool_MouseHover);
             this.ClientStatusGrid.MouseLeave += new System.EventHandler(this.tool_MouseLeave);
+            // 
+            // HostId
+            // 
+            this.HostId.HeaderText = "ID";
+            this.HostId.Name = "HostId";
+            this.HostId.ReadOnly = true;
+            this.HostId.Width = 50;
+            // 
+            // hostName
+            // 
+            this.hostName.HeaderText = "Host Name";
+            this.hostName.Name = "hostName";
+            this.hostName.ReadOnly = true;
+            this.hostName.Width = 200;
+            // 
+            // HostInstance
+            // 
+            this.HostInstance.FillWeight = 95F;
+            this.HostInstance.HeaderText = "Instance";
+            this.HostInstance.Name = "HostInstance";
+            this.HostInstance.ReadOnly = true;
+            this.HostInstance.Width = 55;
+            // 
+            // colCurConfig
+            // 
+            this.colCurConfig.HeaderText = "Config";
+            this.colCurConfig.Name = "colCurConfig";
+            this.colCurConfig.Width = 135;
+            // 
+            // hostStatus
+            // 
+            this.hostStatus.HeaderText = "Status";
+            this.hostStatus.Name = "hostStatus";
+            this.hostStatus.Width = 50;
+            // 
+            // LastRender
+            // 
+            this.LastRender.HeaderText = "Render Time";
+            this.LastRender.Name = "LastRender";
+            // 
+            // hostJob
+            // 
+            this.hostJob.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.hostJob.HeaderText = "Current Job";
+            this.hostJob.Name = "hostJob";
+            this.hostJob.ReadOnly = true;
             // 
             // splitContainer4
             // 
@@ -489,11 +535,11 @@ namespace Amleto
             this.messageList.AllowUserToAddRows = false;
             this.messageList.AllowUserToDeleteRows = false;
             this.messageList.AllowUserToResizeRows = false;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Black;
-            this.messageList.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            this.messageList.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.messageList.BackgroundColor = System.Drawing.Color.White;
             this.messageList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.messageList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -506,11 +552,11 @@ namespace Amleto
             this.messageList.Name = "messageList";
             this.messageList.ReadOnly = true;
             this.messageList.RowHeadersVisible = false;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.Black;
-            this.messageList.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
+            this.messageList.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.messageList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.messageList.Size = new System.Drawing.Size(870, 611);
             this.messageList.TabIndex = 0;
@@ -1114,7 +1160,6 @@ namespace Amleto
             // 
             // refreshTimer
             // 
-            this.refreshTimer.Enabled = true;
             this.refreshTimer.Tick += new System.EventHandler(this.refreshTimer_Tick);
             // 
             // iconList
@@ -1159,52 +1204,6 @@ namespace Amleto
             this.FinishedMenuClearAll.Size = new System.Drawing.Size(163, 22);
             this.FinishedMenuClearAll.Text = "Clear All Projects";
             this.FinishedMenuClearAll.Click += new System.EventHandler(this.FinishedMenuClearAllClick);
-            // 
-            // HostId
-            // 
-            this.HostId.HeaderText = "ID";
-            this.HostId.Name = "HostId";
-            this.HostId.ReadOnly = true;
-            this.HostId.Width = 50;
-            // 
-            // hostName
-            // 
-            this.hostName.HeaderText = "Host Name";
-            this.hostName.Name = "hostName";
-            this.hostName.ReadOnly = true;
-            this.hostName.Width = 200;
-            // 
-            // HostInstance
-            // 
-            this.HostInstance.FillWeight = 95F;
-            this.HostInstance.HeaderText = "Instance";
-            this.HostInstance.Name = "HostInstance";
-            this.HostInstance.ReadOnly = true;
-            this.HostInstance.Width = 55;
-            // 
-            // colCurConfig
-            // 
-            this.colCurConfig.HeaderText = "Config";
-            this.colCurConfig.Name = "colCurConfig";
-            this.colCurConfig.Width = 135;
-            // 
-            // hostStatus
-            // 
-            this.hostStatus.HeaderText = "Status";
-            this.hostStatus.Name = "hostStatus";
-            this.hostStatus.Width = 50;
-            // 
-            // LastRender
-            // 
-            this.LastRender.HeaderText = "Render Time";
-            this.LastRender.Name = "LastRender";
-            // 
-            // hostJob
-            // 
-            this.hostJob.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.hostJob.HeaderText = "Current Job";
-            this.hostJob.Name = "hostJob";
-            this.hostJob.ReadOnly = true;
             // 
             // ServerWin
             // 

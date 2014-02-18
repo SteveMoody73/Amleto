@@ -31,16 +31,14 @@ namespace RemoteExecution
     		ServerPort = 2080;
             NumThreads = Environment.ProcessorCount;
     		MemorySegment = 128;
-            ClientDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-            ClientDir = Path.Combine(ClientDir, "Cache");
+            ClientDir = Path.Combine(Paths.GetLocalPath(), "Cache");
 
         }
 
         static public ClientSettings LoadSettings()
         {
-            string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-            Directory.CreateDirectory(settingsFile);
-            settingsFile = Path.Combine(settingsFile, "ClientSettings.xml");
+            Directory.CreateDirectory(Paths.GetLocalPath());
+            string settingsFile = Path.Combine(Paths.GetLocalPath(), "ClientSettings.xml");
             ClientSettings settings = new ClientSettings();
 
             try
@@ -66,8 +64,7 @@ namespace RemoteExecution
         {
             try
             {
-                string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-                settingsFile = Path.Combine(settingsFile, "ClientSettings.xml");
+                string settingsFile = Path.Combine(Paths.GetLocalPath(), "ClientSettings.xml");
 
                 XmlSerializer seriaizer = new XmlSerializer(settings.GetType());
                 TextWriter writer = new StreamWriter(settingsFile);
