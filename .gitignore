@@ -77,3 +77,4 @@ UpgradeLog.XML
 
 # Inno Installer Output
 Output/
+*.userprefs
