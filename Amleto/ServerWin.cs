@@ -1395,7 +1395,7 @@ namespace Amleto
                 Text = Text + " (Beta)";
 
             BroadcastFinder findMaster = new BroadcastFinder();
-            if (findMaster.Servers.Count != 0) // Let's connect to the master
+            if (findMaster.Server != "") // Let's connect to the master
             {
                 _isMaster = false;
                 try
@@ -1421,19 +1421,15 @@ namespace Amleto
                     }
 
                     ChannelServices.RegisterChannel(_channel, false);
-                    foreach (string server in findMaster.Servers)
-                    {
-                        try
-                        {
-                            _masterServer = (MasterServer) Activator.CreateInstance(typeof (MasterServer),
-                                new object[] {Environment.UserName},
-                                new object[] {new UrlAttribute("tcp://" + server + ":" + findMaster.Port)});
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.ErrorException("Unable to connect to master on " + server, ex);
-                        }
-                    }
+                    _masterServer = (MasterServer)Activator.CreateInstance(typeof(MasterServer),
+                                                                            new object[] { Environment.UserName },
+                                                                            new object[]
+                                                                                {
+                                                                                    new UrlAttribute("tcp://" +
+                                                                                                     findMaster.Server +
+                                                                                                     ":" +
+                                                                                                     findMaster.Port)
+                                                                                });
 
                     List<string> oldMessages = _masterServer.GetOldMessages();
                     foreach (string s in oldMessages)

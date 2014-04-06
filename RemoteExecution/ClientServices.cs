@@ -195,7 +195,8 @@ namespace RemoteExecution
         {
             BroadcastFinder finder = new BroadcastFinder();
             Settings.ServerPort = finder.Port;
-            if (finder.Servers.Count == 0)
+            Settings.ServerHost = finder.Server;
+            if (Settings.ServerHost == "")
             {
                 AddMessage(1, "Amleto server has not been found.");
                 AddMessage(1, "Check that your firewall allows access to port 61111 on the server");
@@ -250,28 +251,34 @@ namespace RemoteExecution
             {
                 BroadcastFinder finder = new BroadcastFinder();
                 Settings.ServerPort = finder.Port;
-
-                foreach (string ip in finder.Servers)
-                {
-                    if (AttemptServerConnect(ip, finder.Port) == true)
-                        Settings.ServerHost = ip;
-                }
+                Settings.ServerHost = finder.Server;
             }
-            else
-                AttemptServerConnect(Settings.ServerHost, Settings.ServerPort);
 
             if (_channel == null)
             {
                 _channel = new TcpChannel();
+                ChannelServices.RegisterChannel(_channel, false);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
                 try
                 {
-                    ChannelServices.RegisterChannel(_channel, false);
+                    _server = (ServerServices)Activator.CreateInstance(typeof(ServerServices), null,
+                                                 new object[]
+                                                     {
+                                                         new UrlAttribute("tcp://" + Settings.ServerHost + ":" +
+                                                                          Settings.ServerPort)
+                                                     });
+                    if (_server.IsWorking())
+                        break;
+                    Thread.Sleep(100);
                 }
                 catch (Exception ex)
                 {
-                    logger.InfoException("Channel has already been used before", ex);                        
+                    _server = null;
+                    logger.ErrorException("Error connecting to the server", ex); ;
                 }
-                
             }
 
             if (_server == null)
@@ -286,7 +293,7 @@ namespace RemoteExecution
             {
                 lock (_lock)
                 {
-                    _server.RegisterClient(Environment.MachineName, GetIP(), Settings.RenderPriority, IntPtr.Size*8);
+                    _server.RegisterClient(Environment.MachineName, GetIP(), Settings.RenderPriority, IntPtr.Size * 8);
                 }
                 AddMessage(0, "Connected to the server " + Settings.ServerHost + " on port " + Settings.ServerPort + ".");
                 try

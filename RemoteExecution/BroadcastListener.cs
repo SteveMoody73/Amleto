@@ -14,7 +14,7 @@ namespace RemoteExecution
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         Thread _backgroundJob;
-        private List<string> _hostAddressList = new List<string>();
+        private string _hostAddress;
     	private EndPoint _endPoint;
         private Socket _socket;
 		
@@ -22,23 +22,16 @@ namespace RemoteExecution
 
         public BroadcastListener(int port)
         {
-            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            IPAddress[] a = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+            foreach (IPAddress t in a)
             {
-                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                {
-                    Console.WriteLine(ni.Name);
-                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
-                    {
-                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
-                        {
-                            _hostAddressList.Add(ip.Address.ToString());
-                            logger.Log(LogLevel.Info, "Detected network card " + ni.Description + " with IP address " + ip.Address);
-                        }
-                    }
-                }
+            	if (!t.ToString().Contains(":"))
+            	{
+            		_hostAddress = t.ToString();
+            		break;
+            	}
             }
-
-            Port = port;
+        	Port = port;
          
             _backgroundJob = new Thread(Listen);
             _backgroundJob.IsBackground = true;
@@ -58,19 +51,13 @@ namespace RemoteExecution
                 try
                 {
                     int recv = _socket.ReceiveFrom(data, ref _endPoint);
-                    string s = Encoding.ASCII.GetString(data, 0, recv);                    
+                    string s = Encoding.ASCII.GetString(data, 0, recv);
                     if (s == "Amleto client search")
                     {
-                        string res = "";
-                        foreach (string host in _hostAddressList)
-                        {
-                            res = "Amleto server at " + host + " " + Port + "\n";
-                        }
+                        string res = "Amleto server at " + _hostAddress + " " + Port;
                         byte[] bres = Encoding.ASCII.GetBytes(res);
                         _socket.SendTo(bres, _endPoint);
-                        logger.Log(LogLevel.Info, res);
                     }
-                    
                 }
                 catch (Exception ex)
                 {

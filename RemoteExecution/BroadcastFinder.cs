@@ -12,27 +12,23 @@ namespace RemoteExecution
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-		private List<string> _servers = new List<string>();
-
-        public List<string> Servers
-        {
-            get { return _servers; }          
-        }
+        public string Server { get; set; }
 		public int Port { get; set; }
 		
 		public BroadcastFinder()
         {
-        	IPAddress[] a = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
-            string broadcastAddress="";
+            Server = "";
+            IPAddress[] a = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+            string broadcastAddress = "";
             foreach (IPAddress t in a)
             {
-            	if (!t.ToString().Contains(":"))
-            	{
-            		broadcastAddress = t.ToString();
-            		break;
-            	}
+                if (!t.ToString().Contains(":"))
+                {
+                    broadcastAddress = t.ToString();
+                    break;
+                }
             }
-			Port = 2080;
+            Port = 2080;
             broadcastAddress = broadcastAddress.Substring(0, broadcastAddress.LastIndexOf('.')) + ".255";
 
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -51,24 +47,17 @@ namespace RemoteExecution
                 {
                     sock.SendTo(bs, iep);
                     sock.SendTo(bs, iep2);
-                    
-					byte[] data = new byte[1024];
+
+                    byte[] data = new byte[1024];
                     int res = sock.ReceiveFrom(data, ref ep);
                     string sres = Encoding.ASCII.GetString(data, 0, res);
+                    string[] parts = sres.Split(' ');
 
-                    string[] hosts = sres.Split('\n');
-
-                    foreach (string host in hosts)
+                    if (parts[0] == "Amleto" && parts[1] == "server")
                     {
-
-                        string[] parts = host.Split(' ');
-
-                        if (parts[0] == "Amleto" && parts[1] == "server")
-                        {
-                            Servers.Add(parts[3]);
-                            Port = Convert.ToInt32(parts[4]);
-                            break;
-                        }
+                        Server = parts[3];
+                        Port = Convert.ToInt32(parts[4]);
+                        break;
                     }
                 }
                 catch (Exception ex)

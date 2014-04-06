@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{3C37B532-D178-4B8D-9169-08AB76E045B1}
 AppName=Amleto
-AppVerName=Amleto 3.3.3
+AppVerName=Amleto 3.3.4
 AppPublisher=Virtualcoder
 AppPublisherURL=http://virtualcoder.co.uk/
 AppSupportURL=http://virtualcoder.co.uk/
@@ -30,6 +30,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "Amleto\bin\Release\Amleto.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AmletoClient\bin\Release\AmletoClient.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "RemoteExecution\bin\Release\RemoteExecution.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Amleto\bin\Release\NLog.*"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Amleto Server"; Filename: "{app}\Amleto.exe"
