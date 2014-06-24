@@ -471,40 +471,13 @@ namespace RemoteExecution.Jobs
                 string fname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_{1:0000}{2}", Instance, i, ext);
                 string afname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_a{1:0000}{2}", Instance, i, ext);
 
-                // Process any files from image saver plugins
-                foreach (OutputPlugins plugin in Plugins)
-                {
-                    if (plugin.PluginType == "BufferExport")
-                    {
-                        DirectoryInfo bufferPath = new DirectoryInfo(outputPath);
-                        foreach (FileInfo file in bufferPath.GetFiles(plugin.BaseFilename + "*"))
-                        {
-                            string nameFormat = FilenameFormat.Substring(FilenameFormat.IndexOf("\\") + 1);
-                            string fileNumber = string.Format(nameFormat, "", "", i, plugin.FileExtension);
-                            if (file.FullName.Contains(fileNumber))
-                            {
-                                try
-                                {
-                                    Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
-                                    messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(file.FullName) + " rendered successfully");
-                                }
-                                catch (Exception ex)
-                                {
-                                    messageBack(1, "Error while uploading frame " + i);
-                                    uploadError = true;
-                                    logger.ErrorException("Error uploading image file: " + file.FullName, ex);
-                                }
-                            }
-                        }
-                    }
-                }
-
                 if (File.Exists(fname))
                 {
                     try
                     {
                         messageBack(0,"Frame " + i + " rendered successfully");
                         Server.SendImage(i, SliceNumber, File.ReadAllBytes(fname));
+                        //File.Delete(fname);
                     }
                     catch (Exception ex)
                     {
@@ -526,6 +499,7 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(0, "Frame " + i + " alpha rendered successfully");
                         Server.SendImageAlpha(i, SliceNumber, File.ReadAllBytes(afname));
+                        //File.Delete(afname);
                     }
                     catch (Exception ex)
                     {
@@ -538,6 +512,69 @@ namespace RemoteExecution.Jobs
                 {
                     logger.Log(LogLevel.Info, "Image file not found: " + fname);
                 }
+
+
+                // Process any files from image saver plugins
+                foreach (OutputPlugins plugin in Plugins)
+                {
+                    if (plugin.PluginType == "BufferExport")
+                    {
+                        DirectoryInfo bufferPath = new DirectoryInfo(outputPath);
+                        foreach (FileInfo file in bufferPath.GetFiles(plugin.BaseFilename + "*"))
+                        {
+                            string nameFormat = FilenameFormat.Substring(FilenameFormat.IndexOf("\\") + 1);
+                            string fileNumber = string.Format(nameFormat, "", "", i, plugin.FileExtension);
+                            if (file.FullName.Contains(fileNumber))
+                            {
+                                try
+                                {
+                                    // rename the file instance name to the basename
+                                    Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
+                                    messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(file.FullName) + " rendered successfully");
+                                    //File.Delete(file.FullName);
+                                }
+                                catch (Exception ex)
+                                {
+                                    messageBack(1, "Error while uploading frame " + i);
+                                    uploadError = true;
+                                    logger.ErrorException("Error uploading image file: " + file.FullName, ex);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Process any files from image saver plugins (LW11+)
+                foreach (OutputPlugins plugin in Plugins)
+                {
+                    if (plugin.PluginType == "BufferExport")
+                    {
+                        DirectoryInfo bufferPath = new DirectoryInfo(outputPath);
+                        foreach (FileInfo file in bufferPath.GetFiles(Instance + "_*"))
+                        {
+                            string fileNumber = i.ToString("D3");
+                            if (file.FullName.Contains(fileNumber))
+                            {
+                                try
+                                {
+                                    int strPos = file.FullName.IndexOf('_');
+                                    string newName = Path.Combine(outputPath, plugin.BaseFilename + file.FullName.Substring(strPos));
+                                    File.Move(file.FullName, newName);
+                                    Server.SendFile(plugin.BasePath, Path.GetFileName(newName), File.ReadAllBytes(newName));
+                                    messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(newName) + " rendered successfully");
+                                    //File.Delete(newName);
+                                }
+                                catch (Exception ex)
+                                {
+                                    messageBack(1, "Error while uploading frame " + i);
+                                    uploadError = true;
+                                    logger.ErrorException("Error uploading image file: " + file.FullName, ex);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (uploadError)
                     Server.FrameLost(i, SliceNumber);
                 else
