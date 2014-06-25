@@ -596,6 +596,7 @@ namespace RemoteExecution
             if (basePath == "")
                 basePath = OutputDir;
 
+            Directory.CreateDirectory(basePath);
             string outFilename = Path.Combine(basePath, filename);
             File.WriteAllBytes(outFilename, file);
         }

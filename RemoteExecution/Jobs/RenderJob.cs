@@ -477,7 +477,7 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(0,"Frame " + i + " rendered successfully");
                         Server.SendImage(i, SliceNumber, File.ReadAllBytes(fname));
-                        //File.Delete(fname);
+                        File.Delete(fname);
                     }
                     catch (Exception ex)
                     {
@@ -499,7 +499,7 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(0, "Frame " + i + " alpha rendered successfully");
                         Server.SendImageAlpha(i, SliceNumber, File.ReadAllBytes(afname));
-                        //File.Delete(afname);
+                        File.Delete(afname);
                     }
                     catch (Exception ex)
                     {
@@ -524,14 +524,15 @@ namespace RemoteExecution.Jobs
                         {
                             string nameFormat = FilenameFormat.Substring(FilenameFormat.IndexOf("\\") + 1);
                             string fileNumber = string.Format(nameFormat, "", "", i, plugin.FileExtension);
-                            if (file.FullName.Contains(fileNumber))
+                            string fileNumberAlt = i.ToString("D3");
+                            if (file.FullName.Contains(fileNumber) || file.FullName.Contains(fileNumberAlt))
                             {
                                 try
                                 {
                                     // rename the file instance name to the basename
                                     Server.SendFile(plugin.BasePath, Path.GetFileName(file.FullName), File.ReadAllBytes(file.FullName));
                                     messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(file.FullName) + " rendered successfully");
-                                    //File.Delete(file.FullName);
+                                    File.Delete(file.FullName);
                                 }
                                 catch (Exception ex)
                                 {
@@ -544,7 +545,7 @@ namespace RemoteExecution.Jobs
                     }
                 }
 
-                // Process any files from image saver plugins (LW11+)
+                // Process any files from image saver plugins (LW11.6.3 with "User RGB Render Path" selected)
                 foreach (OutputPlugins plugin in Plugins)
                 {
                     if (plugin.PluginType == "BufferExport")
@@ -559,10 +560,12 @@ namespace RemoteExecution.Jobs
                                 {
                                     int strPos = file.FullName.IndexOf('_');
                                     string newName = Path.Combine(outputPath, plugin.BaseFilename + file.FullName.Substring(strPos));
+                                    if (File.Exists(newName))
+                                        File.Delete(newName);
                                     File.Move(file.FullName, newName);
                                     Server.SendFile(plugin.BasePath, Path.GetFileName(newName), File.ReadAllBytes(newName));
                                     messageBack(0, "Frame " + i + " buffer " + Path.GetFileName(newName) + " rendered successfully");
-                                    //File.Delete(newName);
+                                    File.Delete(newName);
                                 }
                                 catch (Exception ex)
                                 {
