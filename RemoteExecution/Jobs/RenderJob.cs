@@ -42,7 +42,7 @@ namespace RemoteExecution.Jobs
         public int RecursionLimit = 16;
         public int RenderLine = 1;
         public int AdaptiveSampling;
-        public double AdaptiveThreshold = 0.1;
+        public string AdaptiveThreshold = "0.1";
         public int FilterType;
         public int EnhanceAA;
         public int AntialiasLevel = -1;

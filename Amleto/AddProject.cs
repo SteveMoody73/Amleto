@@ -366,7 +366,7 @@ namespace Amleto
             project.RenderMode = renderMode.SelectedIndex;
             project.RecursionLimit = (int)recusionLimit.Value;
             project.RenderLine = (renderLine.Checked ? 1 : 0);
-            project.AdaptiveThreshold = Convert.ToDouble(adaptiveThreshold.Text);
+            project.AdaptiveThreshold = adaptiveThreshold.Text;
 
             project.Camera = cameraName.SelectedIndex;
             project.SamplingPattern = samplingPattern.SelectedIndex;

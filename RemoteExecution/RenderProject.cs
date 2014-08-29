@@ -86,7 +86,7 @@ namespace RemoteExecution
         [XmlElement("AdaptiveSampling")]
         public int AdaptiveSampling;
         [XmlElement("AdaptiveThreashold")]
-        public double AdaptiveThreshold = 0.1;
+        public string AdaptiveThreshold = "0.1";
         [XmlElement("FilterType")]
         public int FilterType;
         [XmlElement("EnhanceAA")]
