@@ -468,8 +468,19 @@ namespace RemoteExecution.Jobs
                 bool uploadError = false;
 
                 string outputPath = Path.Combine(ClientServices.GetClientDir(), "Output");
-                string fname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_{1:0000}{2}", Instance, i, ext);
-                string afname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_a{1:0000}{2}", Instance, i, ext);
+                string fname;
+                string afname;
+
+                if (i < 0)
+                {
+                    fname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_{1:000}{2}", Instance, i, ext);
+                    afname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_a{1:000}{2}", Instance, i, ext);
+                }
+                else
+                {
+                    fname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_{1:0000}{2}", Instance, i, ext);
+                    afname = string.Format(outputPath + Path.DirectorySeparatorChar + "{0}_a{1:0000}{2}", Instance, i, ext);
+                }
 
                 if (File.Exists(fname))
                 {
