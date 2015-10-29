@@ -216,7 +216,7 @@ namespace Amleto
                         string pluginPath = "";
                         string supportPath = "";
                         bool bit64;
-                        int lwVersion;
+                        int lwVersion = 0;
 
                         string fileName = Path.GetFileName(configFile.FullName).ToUpper();
                         bit64 = fileName.Contains("-64");
@@ -224,12 +224,20 @@ namespace Amleto
                         if (bit64)
                         {
                             fileName = fileName.Substring(0, fileName.IndexOf("-64"));
-                            lwVersion = int.Parse(fileName.Substring(2));
+                            if (fileName.Contains("."))
+                            {
+                                fileName = fileName.Substring(0, fileName.IndexOf("."));
+                                lwVersion = int.Parse(fileName.Substring(2));
+                            }
                         }
                         else
                         {
                             fileName = fileName.Substring(0, fileName.IndexOf("."));
-                            lwVersion = int.Parse(fileName.Substring(2));
+                            if (fileName.Contains("."))
+                            {
+                                fileName = fileName.Substring(0, fileName.IndexOf("."));
+                                lwVersion = int.Parse(fileName.Substring(2));
+                            }
                         }
 
                         if (progPath != "")

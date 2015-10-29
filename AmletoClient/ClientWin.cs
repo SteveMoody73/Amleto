@@ -7,8 +7,6 @@ namespace AmletoClient
 {
     public partial class ClientWin : Form
     {
-        private const bool IsBeta = false;
-
         private delegate void VoidStringParamFunction(string msg);
 
         private VoidStringParamFunction _messageAdder;
@@ -96,8 +94,6 @@ namespace AmletoClient
         private void ClientWin_Load(object sender, EventArgs e)
         {
             Text = "Amleto Client " + Assembly.GetExecutingAssembly().GetName().Version;
-            if (IsBeta)
-                Text = Text + " (Beta)";
 
             _messageAdder = DoAddMessage;
             ClientServices.MessageConsumer += AddMessage;

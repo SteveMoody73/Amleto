@@ -17,8 +17,6 @@ namespace Amleto
 {
     public partial class ServerWin : Form
     {
-        private const bool IsBeta = false;
-
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private MasterServer _masterServer;
@@ -1391,8 +1389,6 @@ namespace Amleto
         private void ServerWin_Shown(object sender, EventArgs e)
         {
             Text = "Amleto Server " + Assembly.GetExecutingAssembly().GetName().Version;
-            if (IsBeta)
-                Text = Text + " (Beta)";
 
             BroadcastFinder findMaster = new BroadcastFinder();
             if (findMaster.Server != "") // Let's connect to the master
