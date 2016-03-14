@@ -274,10 +274,10 @@ namespace RemoteExecution
                         break;
                     Thread.Sleep(100);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     _server = null;
-                    logger.ErrorException("Error connecting to the server", ex); ;
+                    // Don't log this error as this is expected if the server isn't runningB
                 }
             }
 

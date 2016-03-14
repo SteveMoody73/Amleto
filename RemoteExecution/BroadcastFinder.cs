@@ -60,9 +60,9 @@ namespace RemoteExecution
                         break;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    logger.ErrorException("Error connecting to server", ex); 
+                    // Don't log exception here as this is expected to fail if server isn't running
                 }
             }
         }
