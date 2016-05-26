@@ -55,6 +55,8 @@ namespace RemoteExecution.Jobs
         public int Camera;
         public int SamplingPattern;
         public int CameraAntialias = 1;
+        public int MinSamples = 1;
+        public int MaxSamples = 9;
         public int Radiosity;
         public int RadiosityType;
         public int InterpolatedGI;
@@ -415,6 +417,10 @@ namespace RemoteExecution.Jobs
                                 continue;
                             else if (line.StartsWith("Sampler "))
                                 continue;
+                            else if (line.StartsWith("MinimumSamples "))
+                                writer.WriteLine("MinimumSamples " + MinSamples);
+                            else if (line.StartsWith("MaximumSamples "))
+                                writer.WriteLine("MaximumSamples " + MaxSamples);
                             else
                                 writer.WriteLine(line);
                         }

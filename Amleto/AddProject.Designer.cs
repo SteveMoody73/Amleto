@@ -151,6 +151,11 @@ namespace Amleto
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.btnSaveProject = new System.Windows.Forms.Button();
             this.btnLoadProject = new System.Windows.Forms.Button();
+            this.lblSamples = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.cameraMinSamples = new System.Windows.Forms.NumericUpDown();
+            this.cameraMaxSamples = new System.Windows.Forms.NumericUpDown();
             this.renderSetupTabs.SuspendLayout();
             this.sceneTab.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -167,6 +172,8 @@ namespace Amleto
             ((System.ComponentModel.ISupportInitialize)(this.rayGI)).BeginInit();
             this.logTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checkValues)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMinSamples)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMaxSamples)).BeginInit();
             this.SuspendLayout();
             // 
             // btnAdd
@@ -291,7 +298,7 @@ namespace Amleto
             this.OverwriteFrames.TabIndex = 23;
             this.OverwriteFrames.Text = "Overwrite existing frames";
             this.toolTips.SetToolTip(this.OverwriteFrames, "If checked any frames that already exist in the output path are going to be overw" +
-                    "ritten");
+        "ritten");
             this.OverwriteFrames.UseVisualStyleBackColor = true;
             // 
             // OverrideSettings
@@ -521,7 +528,7 @@ namespace Amleto
             this.deleteSplitFrames.TabIndex = 30;
             this.deleteSplitFrames.Text = "Delete Split Images";
             this.toolTips.SetToolTip(this.deleteSplitFrames, "This will remove the split image files once they have been joined into final imag" +
-                    "e");
+        "e");
             this.deleteSplitFrames.UseVisualStyleBackColor = true;
             // 
             // label27
@@ -531,7 +538,7 @@ namespace Amleto
             this.label27.Size = new System.Drawing.Size(392, 32);
             this.label27.TabIndex = 29;
             this.label27.Text = "If using the split rendering option, make sure that your image format is PNG, BMP" +
-                " or JPG otherwise combining image segments at the end of rendering will fail.";
+    " or JPG otherwise combining image segments at the end of rendering will fail.";
             // 
             // label26
             // 
@@ -551,7 +558,7 @@ namespace Amleto
             this.slicesAcross.Text = "1";
             this.slicesAcross.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.slicesAcross, "Number of slices used to\r\nrender this image.\r\nThis is used to render a\r\nsingle im" +
-                    "age on multiple\r\nnodes.");
+        "age on multiple\r\nnodes.");
             // 
             // textStartFrame
             // 
@@ -584,7 +591,7 @@ namespace Amleto
             this.textFrameStep.Text = "1";
             this.textFrameStep.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.textFrameStep, "Define how many frames need to be\r\nskiped bettween one frame an\r\nthe other (1 mea" +
-                    "ns each frames\r\nwill be rendered).");
+        "ns each frames\r\nwill be rendered).");
             this.textFrameStep.Validating += new System.ComponentModel.CancelEventHandler(this.positiveNumber_Validating);
             // 
             // label6
@@ -605,8 +612,8 @@ namespace Amleto
             this.renderBlock.Text = "5";
             this.renderBlock.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.renderBlock, "Defines how many frames\r\nwill be rendered before\r\nbeeing sent back to the\r\nserver" +
-                    ". A bigger number\r\nincrease performance but\r\ndecrease the distribution\r\ncapabili" +
-                    "ties.");
+        ". A bigger number\r\nincrease performance but\r\ndecrease the distribution\r\ncapabili" +
+        "ties.");
             this.renderBlock.Validating += new System.ComponentModel.CancelEventHandler(this.positiveNumber_Validating);
             // 
             // label4
@@ -663,7 +670,7 @@ namespace Amleto
             this.slicesDown.Text = "1";
             this.slicesDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTips.SetToolTip(this.slicesDown, "Number of slices used to\r\nrender this image.\r\nThis is used to render a\r\nsingle im" +
-                    "age on multiple\r\nnodes.");
+        "age on multiple\r\nnodes.");
             this.slicesDown.Validating += new System.ComponentModel.CancelEventHandler(this.positiveNumber_Validating);
             // 
             // slicesOverlap
@@ -936,6 +943,11 @@ namespace Amleto
             // 
             // cameraTab
             // 
+            this.cameraTab.Controls.Add(this.cameraMaxSamples);
+            this.cameraTab.Controls.Add(this.cameraMinSamples);
+            this.cameraTab.Controls.Add(this.label30);
+            this.cameraTab.Controls.Add(this.label29);
+            this.cameraTab.Controls.Add(this.lblSamples);
             this.cameraTab.Controls.Add(this.imageAspect);
             this.cameraTab.Controls.Add(this.label14);
             this.cameraTab.Controls.Add(this.imageHeight);
@@ -967,7 +979,7 @@ namespace Amleto
             // 
             // imageAspect
             // 
-            this.imageAspect.Location = new System.Drawing.Point(151, 247);
+            this.imageAspect.Location = new System.Drawing.Point(151, 281);
             this.imageAspect.Name = "imageAspect";
             this.imageAspect.Size = new System.Drawing.Size(79, 20);
             this.imageAspect.TabIndex = 31;
@@ -979,7 +991,7 @@ namespace Amleto
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(7, 250);
+            this.label14.Location = new System.Drawing.Point(7, 284);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(43, 13);
             this.label14.TabIndex = 30;
@@ -987,7 +999,7 @@ namespace Amleto
             // 
             // imageHeight
             // 
-            this.imageHeight.Location = new System.Drawing.Point(151, 221);
+            this.imageHeight.Location = new System.Drawing.Point(151, 255);
             this.imageHeight.Name = "imageHeight";
             this.imageHeight.Size = new System.Drawing.Size(79, 20);
             this.imageHeight.TabIndex = 29;
@@ -998,7 +1010,7 @@ namespace Amleto
             // 
             // imageWidth
             // 
-            this.imageWidth.Location = new System.Drawing.Point(151, 195);
+            this.imageWidth.Location = new System.Drawing.Point(151, 229);
             this.imageWidth.Name = "imageWidth";
             this.imageWidth.Size = new System.Drawing.Size(79, 20);
             this.imageWidth.TabIndex = 27;
@@ -1010,7 +1022,7 @@ namespace Amleto
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(7, 224);
+            this.label13.Location = new System.Drawing.Point(7, 258);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(41, 13);
             this.label13.TabIndex = 28;
@@ -1019,7 +1031,7 @@ namespace Amleto
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(7, 195);
+            this.label12.Location = new System.Drawing.Point(7, 229);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(38, 13);
             this.label12.TabIndex = 26;
@@ -1027,7 +1039,7 @@ namespace Amleto
             // 
             // adaptiveThreshold
             // 
-            this.adaptiveThreshold.Location = new System.Drawing.Point(382, 170);
+            this.adaptiveThreshold.Location = new System.Drawing.Point(382, 204);
             this.adaptiveThreshold.Name = "adaptiveThreshold";
             this.adaptiveThreshold.Size = new System.Drawing.Size(52, 20);
             this.adaptiveThreshold.TabIndex = 25;
@@ -1037,7 +1049,7 @@ namespace Amleto
             // lblAdaptiveThreshold
             // 
             this.lblAdaptiveThreshold.AutoSize = true;
-            this.lblAdaptiveThreshold.Location = new System.Drawing.Point(303, 174);
+            this.lblAdaptiveThreshold.Location = new System.Drawing.Point(303, 208);
             this.lblAdaptiveThreshold.Name = "lblAdaptiveThreshold";
             this.lblAdaptiveThreshold.Size = new System.Drawing.Size(57, 13);
             this.lblAdaptiveThreshold.TabIndex = 24;
@@ -1046,7 +1058,7 @@ namespace Amleto
             // adaptiveSampling
             // 
             this.adaptiveSampling.AutoSize = true;
-            this.adaptiveSampling.Location = new System.Drawing.Point(151, 172);
+            this.adaptiveSampling.Location = new System.Drawing.Point(151, 206);
             this.adaptiveSampling.Name = "adaptiveSampling";
             this.adaptiveSampling.Size = new System.Drawing.Size(114, 17);
             this.adaptiveSampling.TabIndex = 23;
@@ -1057,7 +1069,7 @@ namespace Amleto
             // softFilter
             // 
             this.softFilter.AutoSize = true;
-            this.softFilter.Location = new System.Drawing.Point(10, 172);
+            this.softFilter.Location = new System.Drawing.Point(10, 206);
             this.softFilter.Name = "softFilter";
             this.softFilter.Size = new System.Drawing.Size(70, 17);
             this.softFilter.TabIndex = 22;
@@ -1067,7 +1079,7 @@ namespace Amleto
             // lblReconFilter
             // 
             this.lblReconFilter.AutoSize = true;
-            this.lblReconFilter.Location = new System.Drawing.Point(7, 148);
+            this.lblReconFilter.Location = new System.Drawing.Point(7, 182);
             this.lblReconFilter.Name = "lblReconFilter";
             this.lblReconFilter.Size = new System.Drawing.Size(82, 13);
             this.lblReconFilter.TabIndex = 20;
@@ -1076,7 +1088,7 @@ namespace Amleto
             // lblAntialias
             // 
             this.lblAntialias.AutoSize = true;
-            this.lblAntialias.Location = new System.Drawing.Point(7, 121);
+            this.lblAntialias.Location = new System.Drawing.Point(7, 155);
             this.lblAntialias.Name = "lblAntialias";
             this.lblAntialias.Size = new System.Drawing.Size(138, 13);
             this.lblAntialias.TabIndex = 18;
@@ -1100,7 +1112,7 @@ namespace Amleto
             "Lanczos",
             "Lanczos (Sharp)",
             "Lanczos (Soft)"});
-            this.reconFilter.Location = new System.Drawing.Point(151, 145);
+            this.reconFilter.Location = new System.Drawing.Point(151, 179);
             this.reconFilter.Name = "reconFilter";
             this.reconFilter.Size = new System.Drawing.Size(283, 21);
             this.reconFilter.TabIndex = 21;
@@ -1134,7 +1146,7 @@ namespace Amleto
             "Classic, Enhanced High",
             "Classic, Extreme",
             "Classic, Enhanced Extreme"});
-            this.classicAntialias.Location = new System.Drawing.Point(151, 118);
+            this.classicAntialias.Location = new System.Drawing.Point(151, 152);
             this.classicAntialias.Name = "classicAntialias";
             this.classicAntialias.Size = new System.Drawing.Size(283, 21);
             this.classicAntialias.TabIndex = 19;
@@ -1145,10 +1157,10 @@ namespace Amleto
             this.samplingPattern.Enabled = false;
             this.samplingPattern.FormattingEnabled = true;
             this.samplingPattern.Items.AddRange(new object[] {
-            "Blue Noise",
+            "Low-Discrepancy",
             "Fixed",
             "Classic"});
-            this.samplingPattern.Location = new System.Drawing.Point(151, 91);
+            this.samplingPattern.Location = new System.Drawing.Point(151, 125);
             this.samplingPattern.Name = "samplingPattern";
             this.samplingPattern.Size = new System.Drawing.Size(283, 21);
             this.samplingPattern.TabIndex = 7;
@@ -1157,7 +1169,7 @@ namespace Amleto
             // 
             this.lblSamplingPattern.AutoSize = true;
             this.lblSamplingPattern.Enabled = false;
-            this.lblSamplingPattern.Location = new System.Drawing.Point(7, 94);
+            this.lblSamplingPattern.Location = new System.Drawing.Point(7, 128);
             this.lblSamplingPattern.Name = "lblSamplingPattern";
             this.lblSamplingPattern.Size = new System.Drawing.Size(89, 13);
             this.lblSamplingPattern.TabIndex = 6;
@@ -1556,6 +1568,79 @@ namespace Amleto
             this.btnLoadProject.UseVisualStyleBackColor = true;
             this.btnLoadProject.Click += new System.EventHandler(this.btnLoadProject_Click);
             // 
+            // lblSamples
+            // 
+            this.lblSamples.AutoSize = true;
+            this.lblSamples.Location = new System.Drawing.Point(7, 101);
+            this.lblSamples.Name = "lblSamples";
+            this.lblSamples.Size = new System.Drawing.Size(50, 13);
+            this.lblSamples.TabIndex = 32;
+            this.lblSamples.Text = "Samples:";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(246, 101);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(24, 13);
+            this.label29.TabIndex = 33;
+            this.label29.Text = "Min";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(404, 101);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(27, 13);
+            this.label30.TabIndex = 34;
+            this.label30.Text = "Max";
+            // 
+            // cameraMinSamples
+            // 
+            this.cameraMinSamples.Enabled = false;
+            this.cameraMinSamples.Location = new System.Drawing.Point(151, 99);
+            this.cameraMinSamples.Maximum = new decimal(new int[] {
+            10000000,
+            0,
+            0,
+            0});
+            this.cameraMinSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.cameraMinSamples.Name = "cameraMinSamples";
+            this.cameraMinSamples.Size = new System.Drawing.Size(89, 20);
+            this.cameraMinSamples.TabIndex = 35;
+            this.cameraMinSamples.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // cameraMaxSamples
+            // 
+            this.cameraMaxSamples.Enabled = false;
+            this.cameraMaxSamples.Location = new System.Drawing.Point(309, 99);
+            this.cameraMaxSamples.Maximum = new decimal(new int[] {
+            10000000,
+            0,
+            0,
+            0});
+            this.cameraMaxSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.cameraMaxSamples.Name = "cameraMaxSamples";
+            this.cameraMaxSamples.Size = new System.Drawing.Size(89, 20);
+            this.cameraMaxSamples.TabIndex = 36;
+            this.cameraMaxSamples.Value = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            // 
             // AddProject
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1601,6 +1686,8 @@ namespace Amleto
             this.logTab.ResumeLayout(false);
             this.logTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checkValues)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMinSamples)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMaxSamples)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1728,5 +1815,10 @@ namespace Amleto
         private System.Windows.Forms.TextBox slicesAcross;
         private System.Windows.Forms.CheckBox deleteSplitFrames;
         private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.NumericUpDown cameraMaxSamples;
+        private System.Windows.Forms.NumericUpDown cameraMinSamples;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label lblSamples;
     }
 }

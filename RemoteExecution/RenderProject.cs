@@ -118,6 +118,10 @@ namespace RemoteExecution
         public int SamplingPattern;
         [XmlElement("CameraAntialias")]
         public int CameraAntialias;
+        [XmlElement("MinSamples")]
+        public int MinSamples;
+        [XmlElement ("MaxSamples")]
+        public int MaxSamples;
         [XmlElement("Radiosity")]
         public int Radiosity;
         [XmlElement("RadiosityType")]
@@ -198,6 +202,8 @@ namespace RemoteExecution
             job.Camera = Camera;
             job.SamplingPattern = SamplingPattern;
             job.CameraAntialias = CameraAntialias;
+            job.MinSamples = MinSamples;
+            job.MaxSamples = MaxSamples;
             job.Radiosity = Radiosity;
             job.RadiosityType = RadiosityType;
             job.InterpolatedGI = InterpolatedGI;

@@ -204,6 +204,8 @@ namespace Amleto
             }
             cameraName.SelectedIndex = project.Camera;
             cameraAntialias.Value = project.CameraAntialias;
+            cameraMinSamples.Value = project.MinSamples;
+            cameraMaxSamples.Value = project.MaxSamples;
             samplingPattern.SelectedIndex = project.SamplingPattern;
 
             if (cameraType.Text == "Classic")
@@ -371,6 +373,8 @@ namespace Amleto
             project.Camera = cameraName.SelectedIndex;
             project.SamplingPattern = samplingPattern.SelectedIndex;
             project.CameraAntialias = (int)cameraAntialias.Value;
+            project.MinSamples = (int)cameraMinSamples.Value;
+            project.MaxSamples = (int)cameraMaxSamples.Value;
 
             if (radiosityType.SelectedIndex == 0)
             {
@@ -470,6 +474,8 @@ namespace Amleto
             masterList.Items.Clear();
             cameraName.Items.Clear();
             cameraAntialias.Value = 1;
+            cameraMinSamples.Value = 1;
+            cameraMaxSamples.Value = 9;
             samplingPattern.SelectedIndex = 0;
             cameraType.Text = "Classic";
             _cameraTypes.Clear();
@@ -570,6 +576,10 @@ namespace Amleto
                     }
                     else if (l.StartsWith("AASamples "))
                         cameraAntialias.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("MinimumSamples"))
+                        cameraMinSamples.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
+                    else if (l.StartsWith("MaximumSamples"))
+                        cameraMaxSamples.Value = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
                     else if (l.StartsWith("Sampler "))
                         samplingPattern.SelectedIndex = Convert.ToInt32(l.Substring(l.LastIndexOf(' ') + 1));
                     else if (l.StartsWith("EnableRadiosity"))
@@ -1007,7 +1017,10 @@ namespace Amleto
             if (cameraType.Text == "Classic")
             {
                 lblCameraAntialias.Enabled = false;
+                lblSamples.Enabled = false;
                 cameraAntialias.Enabled = false;
+                cameraMinSamples.Enabled = false;
+                cameraMaxSamples.Enabled = false;
                 lblSamplingPattern.Enabled = false;
                 samplingPattern.Enabled = false;
 
@@ -1019,6 +1032,9 @@ namespace Amleto
             {
                 lblCameraAntialias.Enabled = true;
                 cameraAntialias.Enabled = true;
+                lblSamples.Enabled = true;
+                cameraMinSamples.Enabled = true;
+                cameraMaxSamples.Enabled = true;
                 lblSamplingPattern.Enabled = true;
                 samplingPattern.Enabled = true;
 
