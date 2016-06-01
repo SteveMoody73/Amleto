@@ -113,7 +113,7 @@ namespace Amleto
                     }
 					catch (Exception ex)
 					{
-                        logger.ErrorException("Error removing used drives", ex);
+                        logger.Error(ex, "Error removing used drives");
                     }
                 }
 
@@ -312,7 +312,7 @@ namespace Amleto
             }
 			catch (Exception ex)
 			{
-                logger.ErrorException("Error webport changed", ex);
+                logger.Error(ex, "Error webport changed");
             }
 			
             webPort.Text = "" + wport;
@@ -379,7 +379,7 @@ namespace Amleto
             row.Cells.Add(cell);
 
             listMapDrives.Rows.Add(row);
-            row.Cells[0].Selected = true; ;
+            row.Cells[0].Selected = true;
         }
 
         private void btnDelDrive_Click(object sender, EventArgs e)

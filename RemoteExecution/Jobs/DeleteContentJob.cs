@@ -20,7 +20,7 @@ namespace RemoteExecution.Jobs
 			}
             catch (Exception ex)
 			{
-				logger.ErrorException("Unable to delete content directory", ex);
+				logger.Error(ex, "Unable to delete content directory");
 			}
 
             try
@@ -29,7 +29,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Unable to create content directory", ex);
+                logger.Error(ex, "Unable to create content directory");
             }
         }
     }

@@ -122,7 +122,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error deleting existing images", ex);
+                logger.Error(ex, "Error deleting existing images");
             }
 
             try
@@ -464,7 +464,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error rendering scene file", ex);
+                logger.Error(ex, "Error rendering scene file");
 			}
 
             Server.SetCurrentJob("Uploading back images");
@@ -500,7 +500,7 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(1, "Error while uploading frame " + i);
                         uploadError = true;
-                        logger.ErrorException("Error sending file: " + fname, ex);
+                        logger.Error(ex, "Error sending file: " + fname);
                     }
                 }
                 else
@@ -522,7 +522,7 @@ namespace RemoteExecution.Jobs
                     {
                         messageBack(1, "Error while uploading frame " + i + " Alpha");
                         uploadError = true;
-                        logger.ErrorException("Error sending file: " + fname, ex);
+                        logger.Error(ex, "Error sending file: " + fname);
                     }
                 }
                 else if (!File.Exists(fname))
@@ -555,7 +555,7 @@ namespace RemoteExecution.Jobs
                                 {
                                     messageBack(1, "Error while uploading frame " + i);
                                     uploadError = true;
-                                    logger.ErrorException("Error uploading image file: " + file.FullName, ex);
+                                    logger.Error(ex, "Error uploading image file: " + file.FullName);
                                 }
                             }
                         }
@@ -588,7 +588,7 @@ namespace RemoteExecution.Jobs
                                 {
                                     messageBack(1, "Error while uploading frame " + i);
                                     uploadError = true;
-                                    logger.ErrorException("Error uploading image file: " + file.FullName, ex);
+                                    logger.Error(ex, "Error uploading image file: " + file.FullName);
                                 }
                             }
                         }

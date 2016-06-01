@@ -129,7 +129,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error sending message: " + msg, ex);
+                    logger.Error(ex, "Error sending message: " + msg);
                 }
             }
 
@@ -148,7 +148,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error sending message: " + fullMsg, ex);
+                        logger.Error(ex, "Error sending message: " + fullMsg);
                     }
                 }
             }
@@ -168,7 +168,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error killing render process", ex);
+                logger.Error(ex, "Error killing render process");
             }
 
             try
@@ -177,7 +177,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error killing render process", ex);
+                logger.Error(ex, "Error killing render process");
             }
         }
 
@@ -308,7 +308,7 @@ namespace RemoteExecution
                         AddMessage(1, "Cannot connect to the server. Will retry in 5 seconds.");
                     Thread.Sleep(5000);
                     ThreadPool.QueueUserWorkItem(ConnectToServer);
-                    logger.ErrorException("Error connecting to the server", ex); ;
+                    logger.Error(ex, "Error connecting to the server");
                 }
             }
         }
@@ -328,7 +328,7 @@ namespace RemoteExecution
                 catch (Exception ex)
                 {
                     _server = null;
-                    logger.ErrorException("Error connecting to the server", ex);                    
+                    logger.Error(ex, "Error connecting to the server");                    
                 }
             }
             return false;
@@ -362,7 +362,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error server.Unregister", ex); ;
+                        logger.Error(ex, "Error server.Unregister");
                     }
 
                     _server = null;
@@ -412,7 +412,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error retrieving jobs", ex);
+                logger.Error(ex, "Error retrieving jobs");
                 try
                 {
                     if (_server != null) _server.KeepAlive();
@@ -475,7 +475,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error executing job", ex);
+                        logger.Error(ex, "Error executing job");
                         IsWorking = false;
                     }
                 }
@@ -514,7 +514,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error shutting down", ex);
+                logger.Error(ex, "Error shutting down");
             }
         }
 

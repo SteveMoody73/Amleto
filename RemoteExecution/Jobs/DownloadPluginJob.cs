@@ -68,7 +68,7 @@ namespace RemoteExecution.Jobs
             }
             catch(Exception ex)
             {
-                logger.ErrorException("Unable to download plugin: " + _file, ex);
+                logger.Error(ex, "Unable to download plugin: " + _file);
             }            
         }
     }

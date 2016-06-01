@@ -124,7 +124,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            logger.ErrorException("Error updating preview panel", ex);
+                            logger.Error(ex, "Error updating preview panel");
                         }
                     });
                 mem.Close();
@@ -133,7 +133,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error UpdatePreviewPanel", ex);
+                logger.Error(ex, "Error UpdatePreviewPanel");
             }
         }
 
@@ -259,7 +259,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error invalid message: " + msg, ex);
+                logger.Error(ex, "Error invalid message: " + msg);
                 MessageBox.Show("Invalid message: " + msg);                
             }
         }
@@ -300,7 +300,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error clearing client status list", ex);
+                    logger.Error(ex, "Error clearing client status list");
                 }
 
                 List<string> configsName = _masterServer.ConfigNames;
@@ -334,7 +334,7 @@ namespace Amleto
                             }
                             catch (Exception ex)
                             {
-                                logger.ErrorException("Error adding config item", ex);
+                                logger.Error(ex, "Error adding config item");
                             }
                         }
                         configList.Value = configsName[client.Config];
@@ -375,7 +375,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error adding cells", ex);
+                        logger.Error(ex, "Error adding cells");
                     }
 
                     try
@@ -390,7 +390,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error selecting cell", ex);
+                        logger.Error(ex, "Error selecting cell");
                     }
                 }
                 try
@@ -400,7 +400,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error repainting client list", ex);
+                    logger.Error(ex, "Error repainting client list");
                 }
             }
         }
@@ -447,7 +447,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error clearing project grid", ex);
+                    logger.Error(ex, "Error clearing project grid");
                 }
 
                 foreach (RenderProject project in _projects)
@@ -535,7 +535,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error adding project row", ex);
+                        logger.Error(ex, "Error adding project row");
                     }
 
                     if ((string) row.Cells[0].Value.ToString() == oldSelected)
@@ -549,7 +549,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error repainting project list", ex);
+                    logger.Error(ex, "Error repainting project list");
                 }
             }
         }
@@ -570,7 +570,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error clearing finished list", ex);
+                    logger.Error(ex, "Error clearing finished list");
                 }
 
                 foreach (RenderProject project in _finishedProjects)
@@ -618,7 +618,7 @@ namespace Amleto
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error error adding finished row", ex);
+                        logger.Error(ex, "Error error adding finished row");
                     }
 
                     if ((string)row.Cells[0].Value.ToString() == oldSelected)
@@ -632,7 +632,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error repainting finished list", ex);
+                    logger.Error(ex, "Error repainting finished list");
                 }
             }
         }
@@ -681,7 +681,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error saving render jobs", ex);
+                    logger.Error(ex, "Error saving render jobs");
                 }
             }
         }
@@ -822,7 +822,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error changing preview speed", ex);
+                logger.Error(ex, "Error changing preview speed");
                 speed = 10;
             }
 
@@ -1412,7 +1412,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            logger.ErrorException("Error creating TCP channel", ex);
+                            logger.Error(ex, "Error creating TCP channel");
                         }
                     }
 
@@ -1440,7 +1440,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error initialising server", ex);
+                    logger.Error(ex, "Error initialising server");
                 }
             }
             else // We should be master

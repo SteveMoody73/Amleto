@@ -527,7 +527,7 @@ namespace RemoteExecution
                         }
                         catch (Exception ex)
                         {
-                            logger.ErrorException("Error merging image", ex);
+                            logger.Error(ex, "Error merging image");
                             mergeFailed = true;
                         }
                     }
@@ -697,7 +697,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error saving file: " + filename, ex);
+                logger.Error(ex, "Error saving file: " + filename);
                 success = false;
             }
             return success;
@@ -716,7 +716,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error loading file: " + filename, ex);
+                logger.Error(ex, "Error loading file: " + filename);
 			}
             return project;
         }

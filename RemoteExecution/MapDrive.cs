@@ -53,7 +53,7 @@ namespace RemoteExecution
             catch (Exception ex)
             {
                 res = ex.Message;
-                logger.ErrorException("Unable to mount the network drive", ex);
+                logger.Error(ex, "Unable to mount the network drive");
             }
             return res;
         }
@@ -69,7 +69,7 @@ namespace RemoteExecution
             }
             catch(Exception ex)
             {
-                logger.ErrorException("Unable to unmount the network drive", ex);
+                logger.Error(ex, "Unable to unmount the network drive");
             }
             return false;
         }

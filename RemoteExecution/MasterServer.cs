@@ -130,7 +130,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error finding free port", ex);
+                        logger.Error(ex, "Error finding free port");
                     }
                 }
             }
@@ -148,7 +148,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error opening TCP channel", ex);
+                    logger.Error(ex, "Error opening TCP channel");
                     ServerServices.AddMessage(1, "Cannot use port " + Port);
                     return;
                 }
@@ -570,7 +570,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error getting drive list", ex);
+                    logger.Error(ex, "Error getting drive list");
                 }
             }
             return res;
@@ -592,7 +592,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error listing directories", ex);
+                logger.Error(ex, "Error listing directories");
             }
 
             return res;
@@ -612,7 +612,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error listing files", ex);
+                logger.Error(ex, "Error listing files");
             }
             return res;
         }

@@ -5,7 +5,7 @@
         public static string[] FileFormat =
             {
                 "DeluxeRLA(.rla)",
-                "LW_Jias(.als)",
+                "LW_Alias(.als)",
                 "LW_BMP24(.bmp)",
                 "LW_BMP32(.bmp)",
                 "CineonFP(.cin)",

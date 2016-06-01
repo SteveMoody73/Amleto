@@ -61,7 +61,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Unable to start Listener", ex);
+                    logger.Error(ex, "Unable to start Listener");
                 }
             }
         }

@@ -41,7 +41,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error selecting image file format", ex);
+                logger.Error(ex, "Error selecting image file format");
                 MessageBox.Show("Error while selecting the image file format.");
             }
 
@@ -53,7 +53,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error selecting output name format", ex);
+                logger.Error(ex, "Error selecting output name format");
                 MessageBox.Show("Error while selecting the file output name format.");
             }
 
@@ -66,7 +66,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error selecting the config", ex);
+                logger.Error(ex, "Error selecting the config");
                 MessageBox.Show("Error while selecting the config.");
             }
 
@@ -80,7 +80,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error selcting defaults", ex);
+                logger.Error(ex, "Error selcting defaults");
                 MessageBox.Show("Error while selecting some defaults.");
             }
 
@@ -533,7 +533,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            logger.ErrorException("Error setting frame size", ex);
+                            logger.Error(ex, "Error setting frame size");
                         }
                     }
                     else if (l.StartsWith("UseGlobalResolution "))
@@ -553,7 +553,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            logger.ErrorException("Error setting aspect", ex);
+                            logger.Error(ex, "Error setting aspect");
                         }
                     }
                     else if (l.StartsWith("Plugin CameraHandler"))
@@ -571,7 +571,7 @@ namespace Amleto
                         }
                         catch (Exception ex)
                         {
-                            logger.ErrorException("Error setting camera", ex);
+                            logger.Error(ex, "Error setting camera");
                         }
                     }
                     else if (l.StartsWith("AASamples "))
@@ -716,7 +716,7 @@ namespace Amleto
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error killing render process", ex);
+                    logger.Error(ex, "Error killing render process");
                 }
             }
 
@@ -775,7 +775,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error processing scene file", ex);
+                logger.Error(ex, "Error processing scene file");
             }
         }
 
@@ -829,7 +829,7 @@ namespace Amleto
 			}
             catch (Exception ex)
             {
-                logger.ErrorException("Error validating start frame", ex);
+                logger.Error(ex, "Error validating start frame");
             }
             
 			checkValues.SetError(textStartFrame, "");
@@ -842,7 +842,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error start frame should contain a number", ex);
+                logger.Error(ex, "Error start frame should contain a number");
                 checkValues.SetError(textStartFrame, "Should contain a number");
                 btnAdd.Enabled = false;
                 return;
@@ -888,7 +888,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error validating end frame", ex);
+                logger.Error(ex, "Error validating end frame");
             }
 
             checkValues.SetError(textEndFrame, "");
@@ -900,7 +900,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error end frame should contain a number", ex);
+                logger.Error(ex, "Error end frame should contain a number");
                 checkValues.SetError(textEndFrame, "Should contain a number");
                 btnAdd.Enabled = false;
                 return;
@@ -1221,7 +1221,7 @@ namespace Amleto
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error loading project", ex);
+                logger.Error(ex, "Error loading project");
             }
             dlg.Dispose();
             _shouldClose = false;

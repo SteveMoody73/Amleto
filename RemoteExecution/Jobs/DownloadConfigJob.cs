@@ -105,7 +105,7 @@ namespace RemoteExecution.Jobs
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Unable to save config file: " + _file, ex);
+                    logger.Error(ex, "Unable to save config file: " + _file);
                 }
             }
         }

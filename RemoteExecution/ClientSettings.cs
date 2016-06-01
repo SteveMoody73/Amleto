@@ -57,7 +57,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Unable to load ClientSettings.xml", ex);
+                logger.Error(ex, "Unable to load ClientSettings.xml");
             }
             return settings;
         }
@@ -76,7 +76,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Unable to save ClientSettings.xml", ex);
+                logger.Error(ex, "Unable to save ClientSettings.xml");
             }
         }
     }

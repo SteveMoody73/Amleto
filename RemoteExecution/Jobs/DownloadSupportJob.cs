@@ -71,7 +71,7 @@ namespace RemoteExecution.Jobs
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Unable to download file: " + _file, ex);
+                logger.Error(ex, "Unable to download file: " + _file);
             }
         }        
     }

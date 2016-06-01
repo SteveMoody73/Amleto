@@ -21,7 +21,7 @@ namespace RemoteExecution.Jobs
             } 
 			catch (Exception ex)
 			{
-                logger.ErrorException("Unable to delete output directory", ex);
+                logger.Error(ex, "Unable to delete output directory");
             }
             
 			try
@@ -30,7 +30,7 @@ namespace RemoteExecution.Jobs
 			} 
 			catch (Exception ex)
 			{
-                logger.ErrorException("Unable to create output directory", ex);
+                logger.Error(ex, "Unable to create output directory");
             }
         }
     }

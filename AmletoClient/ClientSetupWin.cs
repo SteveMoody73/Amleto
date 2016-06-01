@@ -53,7 +53,7 @@ namespace AmletoClient
             }
 			catch (Exception ex)
 			{
-                logger.ErrorException("Error setting log file", ex);
+                logger.Error(ex, "Error setting log file");
             }
 
 

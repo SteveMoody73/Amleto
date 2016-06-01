@@ -92,7 +92,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Unable to store settings", ex);
+                logger.Error(ex, "Unable to store settings");
             }
         }
 
@@ -130,7 +130,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error unable to restore settings", ex);
+                logger.Error(ex, "Error unable to restore settings");
             }
         }
 

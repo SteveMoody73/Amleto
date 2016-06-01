@@ -361,7 +361,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error setting client priority", ex);
+                    logger.Error(ex, "Error setting client priority");
                 }
             }
         }
@@ -381,7 +381,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error setting client config", ex);
+                    logger.Error(ex, "Error setting client config");
                 }
             }
         }
@@ -397,7 +397,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error getting priority", ex);                    
+                    logger.Error(ex, "Error getting priority");                    
                 }
             }
             return pri;
@@ -424,7 +424,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-                    logger.ErrorException("Error adding priority job", ex);
+                    logger.Error(ex, "Error adding priority job");
 				}
             }
         }
@@ -439,7 +439,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-                    logger.ErrorException("Error adding job", ex);
+                    logger.Error(ex, "Error adding job");
 				}
 			}
         }
@@ -560,7 +560,7 @@ namespace RemoteExecution
             }
 			catch (Exception ex)
 			{
-                logger.ErrorException("Error getting setup file list", ex); ;
+                logger.Error(ex, "Error getting setup file list");
 			}
 
             return res;
@@ -627,7 +627,7 @@ namespace RemoteExecution
             }
 			catch (Exception ex)
 			{
-                logger.ErrorException("Error getting plugin file list", ex);
+                logger.Error(ex, "Error getting plugin file list");
 			}
 
             return res;
@@ -659,7 +659,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error getting external plugin file list", ex);
+                logger.Error(ex, "Error getting external plugin file list");
             }
 
             return res;
@@ -718,7 +718,7 @@ namespace RemoteExecution
                             }
                             catch (Exception ex)
                             {
-                                logger.ErrorException("Error updating client list", ex);
+                                logger.Error(ex, "Error updating client list");
                                 ClientStatus -= (StatusClientChange) d;
                             }
                         }
@@ -727,7 +727,7 @@ namespace RemoteExecution
             }
             catch (Exception ex)
             {
-                logger.ErrorException("Error updating client list", ex);
+                logger.Error(ex, "Error updating client list");
             }
         }
 
@@ -955,7 +955,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error updating image previews", ex);
+                        logger.Error(ex, "Error updating image previews");
                         ImagePreviewStatus -= (StatusFinishedFrameChange)d;
                     }
                 }
@@ -973,7 +973,7 @@ namespace RemoteExecution
                 }
 				catch (Exception ex)
 				{
-                    logger.ErrorException("Error adding process", ex);
+                    logger.Error(ex, "Error adding process");
 				}
 
             }
@@ -996,7 +996,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error adding message", ex);
+                    logger.Error(ex, "Error adding message");
                     MessageConsumer -= (StatusStringChange)d;
                 }
             }
@@ -1021,7 +1021,7 @@ namespace RemoteExecution
                     }
                     catch(Exception ex)
                     {
-                        logger.ErrorException("Error updating project list", ex);
+                        logger.Error(ex, "Error updating project list");
                         ProjectStatus -= (StatusProjectChange)d;
                     }
                 }
@@ -1042,7 +1042,7 @@ namespace RemoteExecution
                     }
                     catch (Exception ex)
                     {
-                        logger.ErrorException("Error updating finished list", ex); ;
+                        logger.Error(ex, "Error updating finished list");
                         FinishedStatus -= (StatusFinishedChange)d;
                     }
                 }
@@ -1147,7 +1147,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error pausing client", ex);
+                    logger.Error(ex, "Error pausing client");
                 }
             }
             CallUpdateClientList();
@@ -1163,7 +1163,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error resuming client", ex);
+                    logger.Error(ex, "Error resuming client");
                 }
             }
             CallUpdateClientList();
@@ -1181,7 +1181,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.ErrorException("Error checking client paused", ex);
+                    logger.Error(ex, "Error checking client paused");
                 }
             }
             return isPaused;
