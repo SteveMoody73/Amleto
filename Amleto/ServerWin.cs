@@ -1438,7 +1438,8 @@ namespace Amleto
             thumbnailPath = Path.Combine(thumbnailPath, @"Cache\thumbnails");
             try
             {
-                Directory.Delete(thumbnailPath, true);
+                if (Directory.Exists(thumbnailPath))
+                    Directory.Delete(thumbnailPath, true);
             }
             catch (Exception ex)
             {
