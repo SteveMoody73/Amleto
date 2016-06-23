@@ -23,7 +23,7 @@
                 "LW_PShop32(.psd)",
                 "LW_RLA24(.rla)",
                 "LW_RLA32(.rla)",
-                "Radiance(.hdr)",
+                "LW_Radiance(.hdr)",
                 "LW_SGI24(rgb)",
                 "LW_SGI32(.rgb)",
                 "SGI48-bit(rgb)",

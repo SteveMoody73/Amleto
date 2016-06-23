@@ -8,9 +8,7 @@ namespace RemoteExecution
     [Serializable]
     public class ServerSettings
     {
-        public bool AutoShowLast { get; set; }
         public Size WinSize { get; set; }
-        public int PlaySpeed { get; set; }
         public string ToEmail { get; set; }
         public string SubjectOk { get; set; }
         public string SubjectNotOk { get; set; }
@@ -19,9 +17,7 @@ namespace RemoteExecution
 
         public ServerSettings()
         {
-            AutoShowLast = true;
             WinSize = new Size(900, 750);
-            PlaySpeed = 10;
             ToEmail = "your@email.com";
             SubjectOk = "Render Job was completed successfully";
             SubjectNotOk = "Render job has finished with errors";

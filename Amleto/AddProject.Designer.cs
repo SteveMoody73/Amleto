@@ -102,6 +102,11 @@ namespace Amleto
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.cameraTab = new System.Windows.Forms.TabPage();
+            this.cameraMaxSamples = new System.Windows.Forms.NumericUpDown();
+            this.cameraMinSamples = new System.Windows.Forms.NumericUpDown();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.lblSamples = new System.Windows.Forms.Label();
             this.imageAspect = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.imageHeight = new System.Windows.Forms.TextBox();
@@ -151,11 +156,6 @@ namespace Amleto
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
             this.btnSaveProject = new System.Windows.Forms.Button();
             this.btnLoadProject = new System.Windows.Forms.Button();
-            this.lblSamples = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.cameraMinSamples = new System.Windows.Forms.NumericUpDown();
-            this.cameraMaxSamples = new System.Windows.Forms.NumericUpDown();
             this.renderSetupTabs.SuspendLayout();
             this.sceneTab.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -166,14 +166,14 @@ namespace Amleto
             this.qualityTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.recusionLimit)).BeginInit();
             this.cameraTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMaxSamples)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMinSamples)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraAntialias)).BeginInit();
             this.giTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.indirectGI)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rayGI)).BeginInit();
             this.logTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checkValues)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cameraMinSamples)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cameraMaxSamples)).BeginInit();
             this.SuspendLayout();
             // 
             // btnAdd
@@ -533,12 +533,11 @@ namespace Amleto
             // 
             // label27
             // 
-            this.label27.Location = new System.Drawing.Point(27, 146);
+            this.label27.Location = new System.Drawing.Point(25, 153);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(392, 32);
+            this.label27.Size = new System.Drawing.Size(392, 21);
             this.label27.TabIndex = 29;
-            this.label27.Text = "If using the split rendering option, make sure that your image format is PNG, BMP" +
-    " or JPG otherwise combining image segments at the end of rendering will fail.";
+            this.label27.Text = "Not all image formats are supported for automatic merging after the render.";
             // 
             // label26
             // 
@@ -976,6 +975,79 @@ namespace Amleto
             this.cameraTab.TabIndex = 5;
             this.cameraTab.Text = "Camera";
             this.cameraTab.UseVisualStyleBackColor = true;
+            // 
+            // cameraMaxSamples
+            // 
+            this.cameraMaxSamples.Enabled = false;
+            this.cameraMaxSamples.Location = new System.Drawing.Point(309, 99);
+            this.cameraMaxSamples.Maximum = new decimal(new int[] {
+            10000000,
+            0,
+            0,
+            0});
+            this.cameraMaxSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.cameraMaxSamples.Name = "cameraMaxSamples";
+            this.cameraMaxSamples.Size = new System.Drawing.Size(89, 20);
+            this.cameraMaxSamples.TabIndex = 36;
+            this.cameraMaxSamples.Value = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            // 
+            // cameraMinSamples
+            // 
+            this.cameraMinSamples.Enabled = false;
+            this.cameraMinSamples.Location = new System.Drawing.Point(151, 99);
+            this.cameraMinSamples.Maximum = new decimal(new int[] {
+            10000000,
+            0,
+            0,
+            0});
+            this.cameraMinSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.cameraMinSamples.Name = "cameraMinSamples";
+            this.cameraMinSamples.Size = new System.Drawing.Size(89, 20);
+            this.cameraMinSamples.TabIndex = 35;
+            this.cameraMinSamples.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(404, 101);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(27, 13);
+            this.label30.TabIndex = 34;
+            this.label30.Text = "Max";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(246, 101);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(24, 13);
+            this.label29.TabIndex = 33;
+            this.label29.Text = "Min";
+            // 
+            // lblSamples
+            // 
+            this.lblSamples.AutoSize = true;
+            this.lblSamples.Location = new System.Drawing.Point(7, 101);
+            this.lblSamples.Name = "lblSamples";
+            this.lblSamples.Size = new System.Drawing.Size(50, 13);
+            this.lblSamples.TabIndex = 32;
+            this.lblSamples.Text = "Samples:";
             // 
             // imageAspect
             // 
@@ -1568,79 +1640,6 @@ namespace Amleto
             this.btnLoadProject.UseVisualStyleBackColor = true;
             this.btnLoadProject.Click += new System.EventHandler(this.btnLoadProject_Click);
             // 
-            // lblSamples
-            // 
-            this.lblSamples.AutoSize = true;
-            this.lblSamples.Location = new System.Drawing.Point(7, 101);
-            this.lblSamples.Name = "lblSamples";
-            this.lblSamples.Size = new System.Drawing.Size(50, 13);
-            this.lblSamples.TabIndex = 32;
-            this.lblSamples.Text = "Samples:";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(246, 101);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(24, 13);
-            this.label29.TabIndex = 33;
-            this.label29.Text = "Min";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(404, 101);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(27, 13);
-            this.label30.TabIndex = 34;
-            this.label30.Text = "Max";
-            // 
-            // cameraMinSamples
-            // 
-            this.cameraMinSamples.Enabled = false;
-            this.cameraMinSamples.Location = new System.Drawing.Point(151, 99);
-            this.cameraMinSamples.Maximum = new decimal(new int[] {
-            10000000,
-            0,
-            0,
-            0});
-            this.cameraMinSamples.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.cameraMinSamples.Name = "cameraMinSamples";
-            this.cameraMinSamples.Size = new System.Drawing.Size(89, 20);
-            this.cameraMinSamples.TabIndex = 35;
-            this.cameraMinSamples.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // cameraMaxSamples
-            // 
-            this.cameraMaxSamples.Enabled = false;
-            this.cameraMaxSamples.Location = new System.Drawing.Point(309, 99);
-            this.cameraMaxSamples.Maximum = new decimal(new int[] {
-            10000000,
-            0,
-            0,
-            0});
-            this.cameraMaxSamples.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.cameraMaxSamples.Name = "cameraMaxSamples";
-            this.cameraMaxSamples.Size = new System.Drawing.Size(89, 20);
-            this.cameraMaxSamples.TabIndex = 36;
-            this.cameraMaxSamples.Value = new decimal(new int[] {
-            9,
-            0,
-            0,
-            0});
-            // 
             // AddProject
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1678,6 +1677,8 @@ namespace Amleto
             ((System.ComponentModel.ISupportInitialize)(this.recusionLimit)).EndInit();
             this.cameraTab.ResumeLayout(false);
             this.cameraTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMaxSamples)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cameraMinSamples)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraAntialias)).EndInit();
             this.giTab.ResumeLayout(false);
             this.giTab.PerformLayout();
@@ -1686,8 +1687,6 @@ namespace Amleto
             this.logTab.ResumeLayout(false);
             this.logTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checkValues)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cameraMinSamples)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cameraMaxSamples)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -28,6 +28,7 @@ namespace Amleto
         private List<RenderProject> _finishedProjects;
         private readonly object _clientsLock = new object();
         private readonly object _projectsLock = new object();
+        private readonly object _previewLock = new object();
 
         private EventBridge _eventBridge;
 
@@ -44,6 +45,9 @@ namespace Amleto
 
         private ServerSettings _settings;
 
+        private int _thumbSize = 150;
+
+
         public ServerWin()
         {
             InitializeComponent();
@@ -53,10 +57,14 @@ namespace Amleto
 
             ClientStatusGrid.DataError += dataGrid_DataError;
             ActiveProjectGrid.DataError += dataGrid_DataError;
+            FinishedProjectGrid.DataError += dataGrid_DataError;
+            RenderedImages.DataError += dataGrid_DataError;
+
+            RenderedImages.Rows.Clear();
+
+            ImagePreviews.ThumbnailSize = new Size(_thumbSize, _thumbSize);
 
             Size = _settings.WinSize;
-            autoRenderLast.Checked = _settings.AutoShowLast;
-            textPreviewSpeed.Text = _settings.PlaySpeed.ToString();
         }
 
         private void dataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -76,70 +84,85 @@ namespace Amleto
 
         private void DoShowImages()
         {
-            while (_framesToAdd.Count > 0)
+            lock (_previewLock)
             {
-                FinishedFrame frame = _framesToAdd.Dequeue();
-                DoShowImage(frame.Nodename, frame.Filename);
-            }
-        }
-
-        private void DoShowImage(string nodename, string fname)
-        {
-            if (nodename == null)
-            {
-                BeginInvoke((MethodInvoker) delegate() { UpdatePreviewPanel(fname); });
-                return;
-            }
-
-            TreeNode baseNode = null;
-            for (int i = renderTree.Nodes.Count - 1; i >= 0; i--)
-            {
-                if (renderTree.Nodes[i].Text == nodename)
+                while (_framesToAdd.Count > 0)
                 {
-                    baseNode = renderTree.Nodes[i];
-                    break;
-                }
-            }
-            if (baseNode == null)
-            {
-                baseNode = new TreeNode(nodename);
-                renderTree.Nodes.Add(baseNode);
-            }
-            TreeNode child = AddSortSceneBranch(baseNode, fname);
+                    FinishedFrame frame = _framesToAdd.Dequeue();
 
-            if (autoRenderLast.Checked && btnPlay.Checked == false && _framesToAdd.Count == 0)
-                renderTree.SelectedNode = child;
-        }
+                    DataGridViewRow currentRow = null;
+                    bool exists = false;
 
-        private void UpdatePreviewPanel(string fname)
-        {
-            try
-            {
-                MemoryStream mem = new MemoryStream(_masterServer.FileReadAllBytes(fname));
-                Invoke((MethodInvoker) delegate
+                    foreach (DataGridViewRow row in RenderedImages.Rows)
+                    {
+                        if (row.Cells[0].Value != null)
+                        {
+                            if (row.Cells[0].Value.ToString() == frame.Nodename)
+                            {
+                                exists = true;
+                            }
+                            if (row.Selected == true)
+                            {
+                                currentRow = row;
+                            }
+                        }
+                    }
+
+                    if (exists == false)
                     {
                         try
                         {
-                            UpdatePreviewPanel(new Bitmap(mem));
+                            RenderedImages.SelectionChanged -= RenderedImagesSelectionChanged;
+
+                            currentRow = new DataGridViewRow();
+                            DataGridViewTextBoxCell project = new DataGridViewTextBoxCell();
+                            List<String> images = new List<String>();
+
+                            project.Value = frame.Nodename;
+                            currentRow.Cells.Add(project);
+                            currentRow.Tag = images;
+                            RenderedImages.Rows.Add(currentRow);
+                            currentRow.Selected = true;
+                            ImagePreviews.Items.Clear();
+
+                            RenderedImages.SelectionChanged += RenderedImagesSelectionChanged;
                         }
                         catch (Exception ex)
                         {
-                            logger.Error(ex, "Error updating preview panel");
+                            logger.Error(ex, "Error Adding rendered image");
                         }
-                    });
-                mem.Close();
-                mem.Dispose();
-                splitContainer3.Panel2.AutoScrollMinSize = pictureRender.Image.Size;
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Error UpdatePreviewPanel");
-            }
-        }
+                    }
 
-        private void UpdatePreviewPanel(Image img)
-        {
-            pictureRender.Image = img;
+                    if (currentRow != null)
+                    {
+                        // Add image to view
+                        try
+                        {
+                            List<String> fileList = null;
+                            if (currentRow.Tag != null && currentRow.Tag.GetType() == typeof(List<String>))
+                            {
+                                fileList = (List<String>)currentRow.Tag;
+                                fileList.Add(frame.Filename);
+                            }
+
+                            if (currentRow.Selected || exists == false)
+                            {
+                                bool force = File.Exists(frame.Filename);
+                                Image thumb = Thumbnail.CreateImageThumbnail(frame.Nodename, frame.Filename, _thumbSize, force);
+
+                                if (thumb != null)
+                                    ImagePreviews.Items.Add(frame.Filename, thumb);
+                                else
+                                    ImagePreviews.Items.Add(frame.Filename);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error(ex, "Error adding image to preview");
+                        }
+                    }
+                }
+            }
         }
 
         private TreeNode AddSortSceneBranch(TreeNode branch, string toAdd)
@@ -184,28 +207,10 @@ namespace Amleto
             {
                 if (prevNodeName != frame.Nodename)
                 {
-                    for (int i = renderTree.Nodes.Count - 1; i >= 0; i--)
-                    {
-                        if (renderTree.Nodes[i].Text == frame.Nodename)
-                        {
-                            baseNode = renderTree.Nodes[i];
-                            break;
-                        }
-                    }
-                    if (baseNode == null)
-                    {
-                        baseNode = new TreeNode(frame.Nodename);
-                        renderTree.Nodes.Add(baseNode);
-                    }
                     prevNodeName = frame.Nodename;
                 }
                 TreeNode child = new TreeNode(frame.Filename);
                 if (baseNode != null) baseNode.Nodes.Add(child);
-            }
-
-            for (int i = 0; i < renderTree.Nodes.Count; i++)
-            {
-                SortSceneBranch(renderTree.Nodes[i], null);
             }
         }
 
@@ -479,22 +484,34 @@ namespace Amleto
                     // Number of frames to render
                     cell = new DataGridViewTextBoxCell {Value = project.StartJobs};
                     row.Cells.Add(cell);
-                    
-                    // Percent completed
+
+                    // Status 
                     cell = new DataGridViewTextBoxCell();
                     if (project.StartJobs == 0)
-                        cell.Value = "";
+                        cell.Value = "Waiting";
                     else
                     {
-                        string projectStatus = "";
                         if (project.StartJobs > 0)
                         {
-                            projectStatus =
-                                ((project.StartJobs - project.NbRemainingJobs())*100/project.StartJobs) + "%";
                             if (project.Paused)
-                                projectStatus = "(Paused) " + projectStatus;
+                                cell.Value = "Paused";
+                            else
+                                cell.Value = "Active";
                         }
-                        cell.Value = projectStatus;
+                    }
+                    row.Cells.Add(cell);
+
+                    // Percent completed
+                    cell = new DataGridViewProgressCell();
+                    if (project.StartJobs == 0)
+                        cell.Value = 0;
+                    else
+                    {
+                        if (project.StartJobs > 0)
+                        {
+                            int progress = (project.StartJobs - project.RemainingJobs()) * 100 / project.StartJobs;
+                            cell.Value = progress;
+                        }
                     }
                     row.Cells.Add(cell);
 
@@ -503,8 +520,7 @@ namespace Amleto
                     if (project.StartTimeSet)
                     {
                         TimeSpan elapsed = DateTime.Now - project.StartTime;
-                        cell.Value = String.Format("{0:00}:{1:00}:{2:00}",
-                                                   (elapsed.Days*24) + elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
+                        cell.Value = String.Format("{0:00}:{1:00}:{2:00}", (elapsed.Days * 24) + elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
                     }
                     else
                         cell.Value = "";
@@ -645,8 +661,6 @@ namespace Amleto
         private void ServerWinFormClosing(object sender, FormClosingEventArgs e)
         {
             _settings.WinSize = Size;
-            _settings.AutoShowLast = autoRenderLast.Checked;
-            _settings.PlaySpeed = Convert.ToInt32(textPreviewSpeed.Text);
             ServerSettings.SaveSettings(_settings);
 
             if (_isMaster &&
@@ -759,82 +773,6 @@ namespace Amleto
             {
                 _masterServer.ResetPort(_masterServer.AutoOfferPort, _masterServer.Port);
             }
-        }
-
-        private void renderTree_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            if (e.Node.Level >= 1)
-                DoShowImage(null, e.Node.Text);
-        }
-
-        private void btnPlay_CheckedChanged(object sender, EventArgs e)
-        {
-            if (btnPlay.Checked)
-            {
-                if (renderTree.SelectedNode == null)
-                {
-                    btnPlay.Checked = false;
-                    MessageBox.Show("Select first either a rendered scene or an image within a rendered scene.");
-                    return;
-                }
-                textPreviewSpeed.ReadOnly = true;
-                playTimer.Interval = 1000/Convert.ToInt32(textPreviewSpeed.Text);
-                playTimer.Enabled = true;
-                playTimer.Start();
-            }
-            else
-            {
-                textPreviewSpeed.ReadOnly = false;
-                playTimer.Enabled = false;
-                playTimer.Stop();
-            }
-        }
-
-        private void playTimer_Tick(object sender, EventArgs e)
-        {
-            if (!btnPlay.Checked)
-                return;
-
-            if (renderTree.SelectedNode == null)
-                return;
-
-            if (renderTree.SelectedNode.Level == 0)
-            {
-                if (renderTree.SelectedNode.Nodes.Count == 0)
-                    return;
-                renderTree.SelectedNode = renderTree.SelectedNode.Nodes[0];
-            }
-            else
-            {
-                if (renderTree.SelectedNode.NextNode == null)
-                    renderTree.SelectedNode = renderTree.SelectedNode.Parent.Nodes[0];
-                else
-                    renderTree.SelectedNode = renderTree.SelectedNode.NextNode;
-            }
-        }
-
-        private void textPreviewSpeed_Leave(object sender, EventArgs e)
-        {
-            int speed;
-            try
-            {
-                speed = Convert.ToInt32(textPreviewSpeed.Text);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Error changing preview speed");
-                speed = 10;
-            }
-
-            if (speed < 1)
-                speed = 1;
-
-            if (speed > 60)
-            {
-                speed = 60;
-            }
-
-            textPreviewSpeed.Text = speed.ToString();
         }
 
         private void mnuSendKill_Click(object sender, EventArgs e)
@@ -1111,13 +1049,13 @@ namespace Amleto
                 RepaintProjectList();
             }
 
-            if (_finishedListRefresh.ElapsedMilliseconds > 500)
+            if (_finishedListRefresh.ElapsedMilliseconds > 1000)
             {
                 _finishedListRefresh.Reset();
                 RepaintFinishedList();
             }
 
-            if (_imageRefresh.ElapsedMilliseconds > 500)
+            if (_imageRefresh.ElapsedMilliseconds > 1000)
             {
                 _imageRefresh.Reset();
                 DoShowImages();
@@ -1311,19 +1249,13 @@ namespace Amleto
                     "Are you sure you want to clear the rendered list?\nThis affect all users and is permanent.",
                     "Clear rendered list", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
-            renderTree.Nodes.Clear();
         }
 
         private void editProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (renderTree.SelectedNode == null)
-                return;
             int projectId = -1;
             string nodeText = "";
-            if (renderTree.SelectedNode.Parent == null)
-                nodeText = renderTree.SelectedNode.Text;
-            else
-                nodeText = renderTree.SelectedNode.Parent.Text;
+
             string s = nodeText.Substring(nodeText.LastIndexOf('(') + 1);
             s = s.Substring(0, s.Length - 1);
             projectId = int.Parse(s);
@@ -1437,6 +1369,8 @@ namespace Amleto
                     RepaintProjectList();
 
                     Text = Text + " - Terminal";
+
+
                 }
                 catch (Exception ex)
                 {
@@ -1472,8 +1406,7 @@ namespace Amleto
                 Text = Text + " - Master";
             }
 
-            _eventBridge = new EventBridge(RefreshClientList, RefreshProjectList, RefreshFinishedList, ShowImage,
-                                           ConsumeMessage, ShowClientLog);
+            _eventBridge = new EventBridge(RefreshClientList, RefreshProjectList, RefreshFinishedList, ShowImage, ConsumeMessage, ShowClientLog);
 
             _masterServer.AddClientStatus(_eventBridge.ClientRefresh);
             _masterServer.AddProjectStatus(_eventBridge.ProjectRefresh);
@@ -1486,8 +1419,7 @@ namespace Amleto
                 _masterServer.Startup();
 
                 // Restore previously saved jobs
-                string loadPath =
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+                string loadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
                 loadPath = Path.Combine(loadPath, "RenderJobs");
                 if (Directory.Exists(loadPath))
                 {
@@ -1499,6 +1431,18 @@ namespace Amleto
                         _masterServer.AddProject(project);
                     }
                 }
+            }
+
+            DoConsumeMessage("Clearing thumbnail cache");
+            string thumbnailPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+            thumbnailPath = Path.Combine(thumbnailPath, @"Cache\thumbnails");
+            try
+            {
+                Directory.Delete(thumbnailPath, true);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error clearing thumbnail cache");
             }
         }
 
@@ -1558,6 +1502,43 @@ namespace Amleto
         private void FinishedMenuClearAllClick(object sender, EventArgs e)
         {
             _masterServer.RemoveAllFinished();
+        }
+
+        private void RenderedImagesSelectionChanged(object sender, EventArgs e)
+        {
+            if (RenderedImages.SelectedRows.Count > 0)
+            {
+                DataGridViewRow currentRow = RenderedImages.SelectedRows[0];
+
+                ImagePreviews.Items.Clear();
+                ImagePreviews.SuspendLayout();
+
+                List<String> fileList = null;
+                if (RenderedImages.CurrentRow.Tag.GetType() == typeof(List<String>))
+                    fileList = (List<String>)RenderedImages.CurrentRow.Tag;
+
+                Cursor.Current = Cursors.WaitCursor;
+                BeginInvoke((MethodInvoker)delegate { UpdateThumbnails(fileList, currentRow); });
+
+                ImagePreviews.ResumeLayout();
+            }
+        }
+
+        private void UpdateThumbnails(List<string> fileList, DataGridViewRow currentRow)
+        {
+            foreach (String f in fileList)
+            {
+                Image thumb = Thumbnail.CreateImageThumbnail(currentRow.Cells[0].Value.ToString(), f, _thumbSize);
+
+                if (RenderedImages.CurrentRow == currentRow)
+                {
+                    if (thumb != null)
+                        ImagePreviews.Items.Add(f, thumb);
+                    else
+                        ImagePreviews.Items.Add(f);
+                }
+            }
+            Cursor.Current = Cursors.Default;
         }
     }
 }

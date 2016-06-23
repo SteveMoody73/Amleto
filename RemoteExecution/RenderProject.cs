@@ -10,6 +10,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Diagnostics;
 using System.Xml.Serialization;
+using FreeImageAPI;
 
 namespace RemoteExecution
 {
@@ -178,6 +179,16 @@ namespace RemoteExecution
         [XmlIgnore] public bool StartTimeSet;
         [XmlIgnore] public bool UpdateTimeSet;
         [XmlIgnore] private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        private class MergePixel
+        {
+            public MergePixel(double r, double g, double b, double a) { red = r; green = g; blue = b; alpha = a; }
+            public double red;
+            public double green;
+            public double blue;
+            public double alpha;
+        }
+
 
         private void CopyJobParams(RenderJob job)
         {
@@ -372,7 +383,8 @@ namespace RemoteExecution
 
     	public string FinishFrame(int frame, int sliceNumber, string node)
     	{
-    	    bool mergeFailed = false;
+    	    bool mergeImage = false;
+            bool mergeAlpha = false;
 
             for (int i = 0; i < _jobs.Count; i++)
             {
@@ -397,152 +409,19 @@ namespace RemoteExecution
                 string ext = "";
                 string fname = "";
 
-                int imageCount = 1;
+                sImageFormat = ServerServices.Configs[Config].ImageFormats[ImageFormat];
+                ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1, (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
+                mergeImage = MergeImages(FileNameFormats[FileNameFormat], OutputDir, Prefix, ext, StartFrame);
+
                 if (SaveAlpha)
-                    imageCount = 2;
-
-                for (int img = 0; img < imageCount; img++)
                 {
-                    if (img == 0)
-                        sImageFormat = ServerServices.Configs[Config].ImageFormats[ImageFormat];
-                    else
-                        sImageFormat = ServerServices.Configs[Config].ImageFormats[AlphaImageFormat];
-
-                    ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1,
-                                                 (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
-
-                    // Allocate a bitmap to store the final image
-                    Bitmap fullFrame = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
-                    BitmapData dst = fullFrame.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadWrite,
-                                                        PixelFormat.Format32bppArgb);
-
-                    for (int i = 0; i < SlicesAcross * SlicesDown; i++)
-                    {
-                        if (img == 0)
-                            fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + Prefix, StartFrame, ext);
-                        else
-                            fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + AlphaPrefix, StartFrame, ext);
-
-                        int posX;
-                        int posY;
-
-                        if (SlicesDown > 1 && SlicesAcross > 1)
-                        {
-                            posX = i % SlicesAcross;
-                            posY = i / SlicesAcross;
-                        }
-                        else if (SlicesDown == 1)
-                        {
-                            posX = i;
-                            posY = 0;
-                        }
-                        else
-                        {
-                            posX = 0;
-                            posY = i;
-                        }
-
-                        // Calculate the image slice sizes and the row/column position
-                        double sizeV = (1.0 / SlicesDown) * Height;
-                        double sizeH = (1.0 / SlicesAcross) * Width;
-                        double overlapV = sizeV * (Overlap / 100.0);
-                        double overlapH = sizeH * (Overlap / 100.0);
-
-                        double realLeft = sizeH * posX;
-                        double left = realLeft - overlapH;
-
-                        double realTop = sizeV * posY;
-                        double top = realTop - overlapV;
-
-                        // Check the sizes are within limits and adjust
-                        left = Math.Max(0.0, left);
-                        top = Math.Max(0.0, top);
-
-                        try
-                        {
-                            Bitmap part = new Bitmap(fname);
-                            BitmapData src = part.LockBits(new Rectangle(0, 0, part.Width, part.Height),
-                                                           ImageLockMode.ReadOnly,
-                                                           PixelFormat.Format32bppArgb);
-                            unsafe
-                            {
-                                uint* ptrSrc = (uint*)(src.Scan0);
-                                uint* ptrDst = (uint*)(dst.Scan0);
-                                for (int y = 0; y <= part.Height; y++)
-                                {
-                                    for (int x = 0; x < part.Width; x++)
-                                    {
-                                        // Get the destination pixel coordinates
-                                        int destY = y + (int)top;
-                                        int destX = x + (int)left;
-
-                                        // Make sure it's not out of bounds
-                                        if (destY >= Height || destY >= Width)
-                                            continue;
-
-                                        // Is the pixel in an overlapping Area
-                                        if (destY < realTop || destX < realLeft)
-                                        {
-                                            double srcWeight;
-                                            double destWeight;
-
-                                            // Check if it's overlapping on the X or Y axis and generate weighting accordingly
-                                            if (destY < realTop)
-                                            {
-                                                srcWeight = 1.0 - Math.Abs(realTop - (y + top)) / Math.Ceiling(overlapV);
-                                                destWeight = 1.0 - srcWeight;
-                                            }
-                                            else
-                                            {
-                                                srcWeight = 1.0 - Math.Abs(realLeft - (x + left)) / Math.Ceiling(overlapH);
-                                                destWeight = 1.0 - srcWeight;
-                                            }
-
-                                            uint[] s = new uint[4];
-                                            uint[] d = new uint[4];
-                                            s[0] = (ptrSrc[y * part.Width + x] & 0xFF000000) >> 24;
-                                            s[1] = (ptrSrc[y * part.Width + x] & 0x00FF0000) >> 16;
-                                            s[2] = (ptrSrc[y * part.Width + x] & 0x0000FF00) >> 8;
-                                            s[3] = ptrSrc[y * part.Width + x] & 0x000000FF;
-
-                                            d[0] = (ptrDst[destY * Width + destX] & 0xFF000000) >> 24;
-                                            d[1] = (ptrDst[destY * Width + destX] & 0x00FF0000) >> 16;
-                                            d[2] = (ptrDst[destY * Width + destX] & 0x0000FF00) >> 8;
-                                            d[3] = ptrDst[destY * Width + destX] & 0x000000FF;
-
-                                            d[0] = (uint)(s[0] * srcWeight + d[0] * destWeight);
-                                            d[1] = (uint)(s[1] * srcWeight + d[1] * destWeight);
-                                            d[2] = (uint)(s[2] * srcWeight + d[2] * destWeight);
-                                            d[3] = (uint)(s[3] * srcWeight + d[3] * destWeight);
-
-                                            ptrDst[destY * Width + destX] = (d[0] << 24) | (d[1] << 16) | (d[2] << 8) | d[3];
-                                        }
-                                        else
-                                            ptrDst[destY * Width + destX] = ptrSrc[y * part.Width + x];
-                                    }
-                                }
-                            }
-                            part.UnlockBits(src);
-                            part.Dispose();
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.Error(ex, "Error merging image");
-                            mergeFailed = true;
-                        }
-                    }
-                    if (img == 0)
-                        fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, Prefix, StartFrame, ext, sliceNumber);
-                    else
-                        fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, StartFrame, ext, sliceNumber);
-
-                    fullFrame.UnlockBits(dst);
-                    fullFrame.Save(fname);
-                    fullFrame.Dispose();
+                    sImageFormat = ServerServices.Configs[Config].ImageFormats[AlphaImageFormat];
+                    ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1, (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
+                    mergeAlpha = MergeImages(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, ext, StartFrame);
                 }
 
                 // Delete intermediate files if needed
-                if (DeleteSplitFrames && mergeFailed == false)
+                if (DeleteSplitFrames && mergeImage)
                 {
                     for (int i = 0; i < SlicesAcross * SlicesDown; i++)
                     {
@@ -552,10 +431,401 @@ namespace RemoteExecution
                 }
                 Log += DateTime.Now.ToLongTimeString() + " Full frame " + StartFrame + " reconstructed.\n";
                 RenderedFrames.Add(new FinishedFrame(SceneId, fname));
-
                 return fname;
             }
             return null;
+        }
+
+
+        private bool MergeImages(string fileNameFormat, string outputDir, string prefix, string ext, int frameNum)
+        {
+            FreeImageBitmap combined = null;
+            string fname = "";
+            bool supported = false;
+            bool mergeSuccessful = true;
+            FREE_IMAGE_TYPE type = FREE_IMAGE_TYPE.FIT_UNKNOWN;
+            FreeImageBitmap source = null;
+
+            string mergedFile = string.Format(fileNameFormat, outputDir, prefix, frameNum, ext);
+            string tempFile = string.Format(fileNameFormat, outputDir, prefix, frameNum, "_tmp" + ext);
+
+            // Allocate a bitmap to store the final image
+            fname = string.Format(fileNameFormat, outputDir, "slice_0_" + prefix, frameNum, ext);
+
+            try
+            {
+                source = new FreeImageBitmap(fname);
+
+                if (source != null)
+                {
+                    type = source.ImageType;
+                    switch (type)
+                    {
+                        case FREE_IMAGE_TYPE.FIT_BITMAP:
+                            if (source.ColorDepth == 32 || source.ColorDepth == 24)
+                                supported = true;
+                            break;
+                        case FREE_IMAGE_TYPE.FIT_RGB16:
+                        case FREE_IMAGE_TYPE.FIT_RGBA16:
+                        case FREE_IMAGE_TYPE.FIT_RGBAF:
+                        case FREE_IMAGE_TYPE.FIT_RGBF:
+                            supported = true;
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error opening slice file");
+            }
+
+            if (supported == false)
+            {
+                Console.WriteLine("Image format not supported");
+                return false;
+            }
+
+            try
+            {
+                // Create a new image of the input file type and the correct size
+                FIBITMAP newImage = FreeImage.AllocateT(type, Width, Height, source.ColorDepth, source.RedMask, source.BlueMask, source.GreenMask);
+
+                FreeImage.SaveEx(newImage, tempFile);
+                FreeImage.UnloadEx(ref newImage);
+                source.Dispose();
+                source = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                combined = new FreeImageBitmap(tempFile);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error creating output file");
+                mergeSuccessful = false;
+            }
+
+            for (int i = 0; i < SlicesAcross * SlicesDown; i++)
+            {
+                // Load the image slice
+                fname = string.Format(fileNameFormat, outputDir, "slice_" + i + "_" + prefix, frameNum, ext);
+                FreeImageBitmap slice = new FreeImageBitmap(fname);
+
+                int posX;
+                int posY;
+
+                if (SlicesDown > 1 && SlicesAcross > 1)
+                {
+                    posX = i % SlicesAcross;
+                    posY = i / SlicesAcross;
+                }
+                else if (SlicesDown == 1)
+                {
+                    posX = i;
+                    posY = 0;
+                }
+                else
+                {
+                    posX = 0;
+                    posY = i;
+                }
+
+                // Calculate the image slice sizes and the row/column position
+                double sizeV = (1.0 / SlicesDown) * Height;
+                double sizeH = (1.0 / SlicesAcross) * Width;
+                double overlapV = sizeV * (Overlap / 100.0);
+                double overlapH = sizeH * (Overlap / 100.0);
+
+                double realLeft = sizeH * posX;
+                double left = realLeft - overlapH;
+
+                double realTop = sizeV * posY;
+                double top = realTop - overlapV;
+
+                // Check the sizes are within limits and adjust
+                left = Math.Max(0.0, left);
+                top = Math.Max(0.0, top);
+
+                try
+                {
+                    switch (type)
+                    {
+                        case FREE_IMAGE_TYPE.FIT_BITMAP:
+                            if (slice.ColorDepth == 24)
+                            {
+                                for (int y = 0; y < slice.Height; y++)
+                                {
+                                    int srcY = (slice.Height - 1) - y;
+                                    int destY = (combined.Height - 1) - (srcY + (int)top);
+                                    int topY = y + (int)top;
+                                    Scanline<RGBTRIPLE> srcLine = (Scanline<RGBTRIPLE>)slice.GetScanline(y);
+                                    Scanline<RGBTRIPLE> destLine = (Scanline<RGBTRIPLE>)combined.GetScanline(destY);
+
+                                    for (int x = 0; x < slice.Width; x++)
+                                    {
+                                        int destX = x + (int)left;
+
+                                        // Make sure it's not out of bounds
+                                        if (destY >= Height || destY >= Width)
+                                            continue;
+                                        // Is the pixel in an overlapping Area
+                                        if (topY < realTop || destX < realLeft)
+                                        {
+                                            MergePixel srcPixel = new MergePixel(srcLine[x].rgbtRed, srcLine[x].rgbtGreen, srcLine[x].rgbtBlue, 0);
+                                            MergePixel destPixel = new MergePixel(destLine[destX].rgbtRed, destLine[destX].rgbtGreen, destLine[destX].rgbtBlue, 0);
+
+                                            destPixel = CalculatePixelWeight(overlapV, overlapH, realLeft, left, realTop, top, y, topY, x, srcPixel, destPixel);
+
+                                            RGBTRIPLE dest;
+                                            dest.rgbtRed = destPixel.red > 255.0 ? (byte)255 : (byte)destPixel.red;
+                                            dest.rgbtGreen = destPixel.green > 255.0 ? (byte)255 : (byte)destPixel.green;
+                                            dest.rgbtBlue = destPixel.blue > 255.0 ? (byte)255 : (byte)destPixel.blue;
+                                            destLine[destX] = dest;
+                                        }
+                                        else
+                                            destLine[destX] = srcLine[x];
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                for (int y = 0; y < slice.Height; y++)
+                                {
+                                    int srcY = (slice.Height - 1) - y;
+                                    int destY = (combined.Height - 1) - (srcY + (int)top);
+                                    int topY = y + (int)top;
+                                    Scanline<RGBQUAD> srcLine = (Scanline<RGBQUAD>)slice.GetScanline(y);
+                                    Scanline<RGBQUAD> destLine = (Scanline<RGBQUAD>)combined.GetScanline(destY);
+
+                                    for (int x = 0; x < slice.Width; x++)
+                                    {
+                                        int destX = x + (int)left;
+
+                                        // Make sure it's not out of bounds
+                                        if (destY >= Height || destY >= Width)
+                                            continue;
+                                        // Is the pixel in an overlapping Area
+                                        if (topY < realTop || destX < realLeft)
+                                        {
+                                            MergePixel srcPixel = new MergePixel(srcLine[x].rgbRed, srcLine[x].rgbGreen, srcLine[x].rgbBlue, destLine[destX].rgbReserved);
+                                            MergePixel destPixel = new MergePixel(destLine[destX].rgbRed, destLine[destX].rgbGreen, destLine[destX].rgbBlue, destLine[destX].rgbReserved);
+
+                                            destPixel = CalculatePixelWeight(overlapV, overlapH, realLeft, left, realTop, top, y, topY, x, srcPixel, destPixel);
+
+                                            RGBQUAD dest = new RGBQUAD();
+                                            dest.rgbRed = destPixel.red > 255.0 ? (byte)255 : (byte)destPixel.red;
+                                            dest.rgbGreen = destPixel.green > 255.0 ? (byte)255 : (byte)destPixel.green;
+                                            dest.rgbBlue = destPixel.blue > 255.0 ? (byte)255 : (byte)destPixel.blue;
+                                            dest.rgbReserved = destPixel.alpha > 255.0 ? (byte)255 : (byte)destPixel.alpha;
+                                            destLine[destX] = dest;
+                                        }
+                                        else
+                                            destLine[destX] = srcLine[x];
+                                    }
+                                }
+                            }
+                            break;
+                        case FREE_IMAGE_TYPE.FIT_RGB16:
+                            for (int y = 0; y < slice.Height; y++)
+                            {
+                                int srcY = (slice.Height - 1) - y;
+                                int destY = (combined.Height - 1) - (srcY + (int)top);
+                                int topY = y + (int)top;
+                                Scanline<FIRGB16> srcLine = (Scanline<FIRGB16>)slice.GetScanline(y);
+                                Scanline<FIRGB16> destLine = (Scanline<FIRGB16>)combined.GetScanline(destY);
+
+                                for (int x = 0; x < slice.Width; x++)
+                                {
+                                    int destX = x + (int)left;
+
+                                    // Make sure it's not out of bounds
+                                    if (destY >= Height || destY >= Width)
+                                        continue;
+                                    // Is the pixel in an overlapping Area
+                                    if (topY < realTop || destX < realLeft)
+                                    {
+                                        MergePixel srcPixel = new MergePixel(srcLine[x].red, srcLine[x].green, srcLine[x].blue, 0);
+                                        MergePixel destPixel = new MergePixel(destLine[destX].red, destLine[destX].green, destLine[destX].blue, 0);
+
+                                        destPixel = CalculatePixelWeight(overlapV, overlapH, realLeft, left, realTop, top, y, topY, x, srcPixel, destPixel);
+
+                                        FIRGB16 dest = new FIRGB16();
+                                        dest.red = (ushort)destPixel.red;
+                                        dest.green = (ushort)destPixel.green;
+                                        dest.blue = (ushort)destPixel.blue;
+                                        destLine[destX] = dest;
+                                    }
+                                    else
+                                        destLine[destX] = srcLine[x];
+                                }
+                            }
+                            break;
+                        case FREE_IMAGE_TYPE.FIT_RGBA16:
+                            for (int y = 0; y < slice.Height; y++)
+                            {
+                                int srcY = (slice.Height - 1) - y;
+                                int destY = (combined.Height - 1) - (srcY + (int)top);
+                                int topY = y + (int)top;
+                                Scanline<FIRGBA16> srcLine = (Scanline<FIRGBA16>)slice.GetScanline(y);
+                                Scanline<FIRGBA16> destLine = (Scanline<FIRGBA16>)combined.GetScanline(destY);
+
+                                for (int x = 0; x < slice.Width; x++)
+                                {
+                                    int destX = x + (int)left;
+
+                                    // Make sure it's not out of bounds
+                                    if (destY >= Height || destY >= Width)
+                                        continue;
+                                    // Is the pixel in an overlapping Area
+                                    if (topY < realTop || destX < realLeft)
+                                    {
+                                        MergePixel srcPixel = new MergePixel(srcLine[x].red, srcLine[x].green, srcLine[x].blue, srcLine[x].alpha);
+                                        MergePixel destPixel = new MergePixel(destLine[destX].red, destLine[destX].green, destLine[destX].blue, destLine[destX].alpha);
+
+                                        destPixel = CalculatePixelWeight(overlapV, overlapH, realLeft, left, realTop, top, y, topY, x, srcPixel, destPixel);
+
+                                        FIRGBA16 dest = new FIRGBA16();
+                                        dest.red = (ushort)destPixel.red;
+                                        dest.green = (ushort)destPixel.green;
+                                        dest.blue = (ushort)destPixel.blue;
+                                        dest.alpha = (ushort)destPixel.alpha;
+                                        destLine[destX] = dest;
+                                    }
+                                    else
+                                        destLine[destX] = srcLine[x];
+                                }
+                            }
+                            break;
+                        case FREE_IMAGE_TYPE.FIT_RGBAF:
+                            for (int y = 0; y < slice.Height; y++)
+                            {
+                                int srcY = (slice.Height - 1) - y;
+                                int destY = (combined.Height - 1) - (srcY + (int)top);
+                                int topY = y + (int)top;
+                                Scanline<FIRGBAF> srcLine = (Scanline<FIRGBAF>)slice.GetScanline(y);
+                                Scanline<FIRGBAF> destLine = (Scanline<FIRGBAF>)combined.GetScanline(destY);
+
+                                for (int x = 0; x < slice.Width; x++)
+                                {
+                                    int destX = x + (int)left;
+
+                                    // Make sure it's not out of bounds
+                                    if (destY >= Height || destY >= Width)
+                                        continue;
+                                    // Is the pixel in an overlapping Area
+                                    if (topY < realTop || destX < realLeft)
+                                    {
+                                        MergePixel srcPixel = new MergePixel(srcLine[x].red, srcLine[x].green, srcLine[x].blue, destLine[destX].alpha);
+                                        MergePixel destPixel = new MergePixel(destLine[destX].red, destLine[destX].green, destLine[destX].blue, destLine[destX].alpha);
+
+                                        destPixel = CalculatePixelWeight(overlapV, overlapH, realLeft, left, realTop, top, y, topY, x, srcPixel, destPixel);
+
+                                        FIRGBAF dest = new FIRGBAF();
+                                        dest.red = (float)destPixel.red;
+                                        dest.green = (float)destPixel.green;
+                                        dest.blue = (float)destPixel.blue;
+                                        dest.alpha = (float)destPixel.alpha;
+                                        destLine[destX] = dest;
+                                    }
+                                    else
+                                        destLine[destX] = srcLine[x];
+                                }
+                            }
+                            break;
+                        case FREE_IMAGE_TYPE.FIT_RGBF:
+                            for (int y = 0; y < slice.Height; y++)
+                            {
+                                int srcY = (slice.Height - 1) - y;
+                                int destY = (combined.Height - 1) - (srcY + (int)top);
+                                int topY = y + (int)top;
+                                Scanline<FIRGBF> srcLine = (Scanline<FIRGBF>)slice.GetScanline(y);
+                                Scanline<FIRGBF> destLine = (Scanline<FIRGBF>)combined.GetScanline(destY);
+
+                                for (int x = 0; x < slice.Width; x++)
+                                {
+                                    int destX = x + (int)left;
+
+                                    // Make sure it's not out of bounds
+                                    if (destY >= Height || destY >= Width)
+                                        continue;
+                                    // Is the pixel in an overlapping Area
+                                    if (topY < realTop || destX < realLeft)
+                                    {
+                                        MergePixel srcPixel = new MergePixel(srcLine[x].red, srcLine[x].green, srcLine[x].blue, 0);
+                                        MergePixel destPixel = new MergePixel(destLine[destX].red, destLine[destX].green, destLine[destX].blue, 0);
+
+                                        destPixel = CalculatePixelWeight(overlapV, overlapH, realLeft, left, realTop, top, y, topY, x, srcPixel, destPixel);
+
+                                        FIRGBF dest = new FIRGBF();
+                                        dest.red = (float)destPixel.red;
+                                        dest.green = (float)destPixel.green;
+                                        dest.blue = (float)destPixel.blue;
+                                        destLine[destX] = dest;
+                                    }
+                                    else
+                                        destLine[destX] = srcLine[x];
+                                }
+                            }
+                            break;
+                    }
+                    slice.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Error merging image files");
+                    mergeSuccessful = false;
+                }
+            }
+            try
+            {
+                if (mergeSuccessful)
+                {
+                    combined.Save(mergedFile);
+                    combined.Dispose();
+                    combined = null;
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+
+                    Log += DateTime.Now.ToLongTimeString() + " Full frame " + frameNum + " reconstructed.\n";
+                    RenderedFrames.Add(new FinishedFrame(SceneId, mergedFile));
+                    File.Delete(tempFile);
+                }
+                else
+                {
+                    Log += DateTime.Now.ToLongTimeString() + " Merging frame " + frameNum + " failed.\n";
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error writing combined file");
+                mergeSuccessful = false;
+            }
+
+            return mergeSuccessful;
+        }
+
+        private MergePixel CalculatePixelWeight(double overlapV, double overlapH, double realLeft, double left, double realTop, double top, int y, int topY, int x, MergePixel srcPixel, MergePixel destPixel)
+        {
+            double srcWeight;
+            double destWeight;
+
+            // Check if it's overlapping on the X or Y axis and generate weighting accordingly
+            if (topY < realTop)
+            {
+                srcWeight = 1.0 - Math.Abs(realTop - (y + top)) / Math.Ceiling(overlapV);
+                destWeight = 1.0 - srcWeight;
+            }
+            else
+            {
+                srcWeight = 1.0 - Math.Abs(realLeft - (x + left)) / Math.Ceiling(overlapH);
+                destWeight = 1.0 - srcWeight;
+            }
+
+            destPixel.red = (srcPixel.red * srcWeight) + (srcPixel.red * destWeight);
+            destPixel.green = (srcPixel.green * srcWeight) + (srcPixel.green * destWeight);
+            destPixel.blue = (srcPixel.blue * srcWeight) + (srcPixel.blue * destWeight);
+            destPixel.alpha = (srcPixel.alpha * srcWeight) + (srcPixel.alpha * destWeight);
+
+            return destPixel;
         }
 
         public void ReleaseFrame(int frame, int sliceNumber, string node)
@@ -592,7 +862,7 @@ namespace RemoteExecution
         	}
         }
 
-    	public int NbRemainingJobs()
+    	public int RemainingJobs()
         {
             return _jobs.Count;
         }

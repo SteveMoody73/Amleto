@@ -37,7 +37,7 @@ namespace RemoteExecution
 		private static List<ClientConnection> _clients = new List<ClientConnection>();
 		private static List<string> _oldMessages = new List<string>();
 		private ClientConnection _currConnection;
-        
+
         public static string LogFile = "";
         public static bool LogEnabled;
 
@@ -320,7 +320,7 @@ namespace RemoteExecution
 
             return new FileInfo(file);
         }
-        
+
         public byte[] GetFile(FileType t, string filename)
         {
             if (_currConnection == null)
@@ -328,7 +328,7 @@ namespace RemoteExecution
             string file = GetFullFilename(t, filename);
 
             if (!File.Exists(file))
-                return new byte[] { }; 
+                return new byte[] { };
 
             return File.ReadAllBytes(file);
         }
@@ -397,7 +397,7 @@ namespace RemoteExecution
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex, "Error getting priority");                    
+                    logger.Error(ex, "Error getting priority");
                 }
             }
             return pri;
@@ -467,7 +467,7 @@ namespace RemoteExecution
                     _currConnection.CurrentRender.UpdateTime = DateTime.Now;
                     _currConnection.CurrentRender.UpdateTimeSet = true;
 
-                    if (_currConnection.CurrentRender.NbRemainingJobs() == 0)
+                    if (_currConnection.CurrentRender.RemainingJobs() == 0)
                     {
                         _currConnection.CurrentRender.CloseLogs();
                         RemoveProject(_currConnection.CurrentRender, false);
@@ -479,12 +479,12 @@ namespace RemoteExecution
                 AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " uploaded slice " + sliceNumber + " of frame " + frame + ".");
             else
                 AddMessage(4, "Node " + _currConnection.HostName + " (" + _currConnection.IPAddress + ")" + ":" + _currConnection.Instance + " uploaded frame " + frame + ".");
-            
+
             if (fname != null)
             {
                 AddMessage(4, "Frame " + frame + " rebuilt.");
                 CallUpdateImagesPreview(sceneId, fname);
-            }            
+            }
             CallUpdateProjectList();
         }
 
@@ -637,7 +637,7 @@ namespace RemoteExecution
         {
             string lwExtFile = Path.GetFileName(Configs[_currConnection.Config].ConfigFile).ToUpper().Replace("LW", "LWEXT");
             lwExtFile = Path.Combine(Configs[_currConnection.Config].ConfigPath, lwExtFile);
-           
+
             List<string> res = new List<string>();
 
             if (_currConnection == null || lwExtFile == "")
@@ -771,7 +771,7 @@ namespace RemoteExecution
 
             FinishedProjects.Add(project);
             Projects.Remove(project);
-            
+
             foreach (ClientConnection t in _clients)
             {
             	if (t.CurrentRender == project)
@@ -919,7 +919,7 @@ namespace RemoteExecution
                 lock (Projects)
                 {
                     fname = _currConnection.CurrentRender.SaveImage(frame, sliceNumber, img);
-                    
+
                 }
             }
             CallUpdateImagesPreview(_currConnection.CurrentRender.SceneId, fname);
@@ -980,12 +980,12 @@ namespace RemoteExecution
 
             while (_oldMessages.Count > 3000)
                 _oldMessages.RemoveAt(0);
-            
+
 			_oldMessages.Add(fullMsg);
-            
+
 			if (MessageConsumer == null)
                 return;
-            
+
 			for (int i = 0; i < MessageConsumer.GetInvocationList().Length; )
             {
                 Delegate d = MessageConsumer.GetInvocationList()[i];
@@ -1112,7 +1112,7 @@ namespace RemoteExecution
                     }
                 }
 
-                // Check all the clients if any use the current project, 
+                // Check all the clients if any use the current project,
                 // if yes set as null and kill any jobs.
                 if (proj != null)
                 {

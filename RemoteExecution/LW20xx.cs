@@ -34,7 +34,7 @@
             "LW_PyBobImageSaver(.bob)",
             "LW_RLA24(.rla)",
             "LW_RLA32(.rla)",
-            "Radiance(.hdr)",
+            "LW_Radiance(.hdr)",
             "LW_SGI24(.rgb)",
             "LW_SGI32(.rgb)",
             "SGI 48-bit(.rgb)",

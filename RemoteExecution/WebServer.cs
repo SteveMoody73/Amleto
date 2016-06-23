@@ -161,9 +161,9 @@ namespace RemoteExecution
                 writer.Write("<TD STYLE='border-bottom: 1px solid #A0A0A0;'>" + p.StartFrame + "</TD>");
                 writer.Write("<TD STYLE='border-bottom: 1px solid #A0A0A0;'>" + p.EndFrame + "</TD>");
                 if (p.Paused)
-                    writer.Write("<TD STYLE='border-bottom: 1px solid #A0A0A0;'>(Paused) " + ((p.StartJobs - p.NbRemainingJobs()) * 100 / p.StartJobs) + "%</TD>");
+                    writer.Write("<TD STYLE='border-bottom: 1px solid #A0A0A0;'>(Paused) " + ((p.StartJobs - p.RemainingJobs()) * 100 / p.StartJobs) + "%</TD>");
                 else
-                    writer.Write("<TD STYLE='border-bottom: 1px solid #A0A0A0;'>" + ((p.StartJobs - p.NbRemainingJobs()) * 100 / p.StartJobs) + "%</TD>");
+                    writer.Write("<TD STYLE='border-bottom: 1px solid #A0A0A0;'>" + ((p.StartJobs - p.RemainingJobs()) * 100 / p.StartJobs) + "%</TD>");
                 writer.WriteLine("</TR>");
             }
             writer.WriteLine("</TABLE></DIV></TD></TR></TABLE>");
