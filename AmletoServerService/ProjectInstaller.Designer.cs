@@ -41,8 +41,8 @@ namespace AmletoServerService
             // 
             this.serviceServerInstaller.Description = "Node controller and job dispatcher for the Amleto distributed rendering solution." +
                 "";
-            this.serviceServerInstaller.DisplayName = "Amleto Server";
-            this.serviceServerInstaller.ServiceName = "Amleto Server";
+            this.serviceServerInstaller.DisplayName = "AmletoServer";
+            this.serviceServerInstaller.ServiceName = "AmletoServer";
             this.serviceServerInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

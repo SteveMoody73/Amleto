@@ -31,7 +31,7 @@ namespace AmletoClientService
             // 
             // AmletoClientService
             // 
-            this.ServiceName = "Amleto Client";
+            this.ServiceName = "AmletoClient";
 
         }
 

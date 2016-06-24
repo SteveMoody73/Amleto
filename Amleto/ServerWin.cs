@@ -12,6 +12,7 @@ using System.IO;
 using System.Runtime.Remoting.Activation;
 using System.Collections;
 using RemoteExecution.Jobs;
+using Manina.Windows.Forms;
 
 namespace Amleto
 {
@@ -1035,7 +1036,9 @@ namespace Amleto
 
         private void refreshTimer_Tick(object sender, EventArgs e)
         {
-            _masterServer.KeepAlive();
+            if (_masterServer != null)
+                _masterServer.KeepAlive();
+
             if (_clientListRefresh.ElapsedMilliseconds > 500)
             {
                 _clientListRefresh.Reset();
@@ -1540,6 +1543,18 @@ namespace Amleto
                 }
             }
             Cursor.Current = Cursors.Default;
+        }
+
+        private void ImagePreviewsItemDoubleClick(object sender, Manina.Windows.Forms.ItemClickEventArgs e)
+        {
+            ImageListViewItem item = null;
+            if (ImagePreviews.SelectedItems.Count > 0)
+            {
+                item = ImagePreviews.SelectedItems[0];
+                string imageFile = item.FileName;
+                ImageViewer view = new ImageViewer(imageFile);
+                view.Show();
+            }
         }
     }
 }

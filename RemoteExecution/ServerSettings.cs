@@ -14,6 +14,9 @@ namespace RemoteExecution
         public string SubjectNotOk { get; set; }
         public bool SendEmail { get; set; }
         public bool EmailIncludeActivity { get; set; }
+        public int ViewerWidth { get; set; }
+        public int ViewerHeight { get; set; }
+
 
         public ServerSettings()
         {
@@ -23,6 +26,8 @@ namespace RemoteExecution
             SubjectNotOk = "Render job has finished with errors";
             SendEmail = false;
             EmailIncludeActivity = true;
+            ViewerHeight = 600;
+            ViewerWidth = 800;
         }
 
         static public ServerSettings LoadSettings()

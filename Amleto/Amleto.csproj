@@ -166,6 +166,12 @@
       <DependentUpon>ClientLogWin.cs</DependentUpon>
     </Compile>
     <Compile Include="DataGridViewProgressCell.cs" />
+    <Compile Include="ImageViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageViewer.Designer.cs">
+      <DependentUpon>ImageViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="PromptNewConfigWin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -202,6 +208,9 @@
     <EmbeddedResource Include="ClientLogWin.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ClientLogWin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageViewer.resx">
+      <DependentUpon>ImageViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PromptNewConfigWin.resx">
       <SubType>Designer</SubType>
@@ -280,6 +289,9 @@
     <Content Include="Libraries\HtmlRenderer.dll" />
     <Content Include="Libraries\HtmlRenderer.WinForms.dll" />
     <Content Include="Libraries\ImageListView.dll" />
+    <None Include="Resources\image-resize-actual.png" />
+    <None Include="Resources\magnifier-zoom-out.png" />
+    <None Include="Resources\magnifier-zoom-in.png" />
     <None Include="images\table_save.png" />
     <None Include="images\folder_table.png" />
     <None Include="images\folder_explore.png" />

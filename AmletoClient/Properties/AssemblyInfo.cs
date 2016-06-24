@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Virtualcoder.co.uk")]
 [assembly: AssemblyProduct("Amleto client - with interface")]
-[assembly: AssemblyCopyright("Copyright © 2003-2014")]
+[assembly: AssemblyCopyright("Copyright © 2003-2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

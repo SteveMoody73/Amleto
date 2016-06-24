@@ -384,7 +384,6 @@ namespace RemoteExecution
     	public string FinishFrame(int frame, int sliceNumber, string node)
     	{
     	    bool mergeImage = false;
-            bool mergeAlpha = false;
 
             for (int i = 0; i < _jobs.Count; i++)
             {
@@ -411,13 +410,32 @@ namespace RemoteExecution
 
                 sImageFormat = ServerServices.Configs[Config].ImageFormats[ImageFormat];
                 ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1, (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
-                mergeImage = MergeImages(FileNameFormats[FileNameFormat], OutputDir, Prefix, ext, StartFrame);
+                fname = string.Format(FileNameFormats[FileNameFormat], OutputDir, Prefix, StartFrame, ext);
+
+                mergeImage = MergeImages(FileNameFormats[FileNameFormat], OutputDir, Prefix, StartFrame, ext);
+
+                if (mergeImage)
+                {
+                    Log += DateTime.Now.ToLongTimeString() + " Full frame " + fname + " reconstructed.\n";
+                    RenderedFrames.Add(new FinishedFrame(SceneId, fname));
+                }
+                else
+                    Log += DateTime.Now.ToLongTimeString() + " Merging frame " + StartFrame + " Failed.\n";
+
 
                 if (SaveAlpha)
                 {
                     sImageFormat = ServerServices.Configs[Config].ImageFormats[AlphaImageFormat];
                     ext = sImageFormat.Substring(sImageFormat.IndexOf('(') + 1, (sImageFormat.IndexOf(')') - sImageFormat.IndexOf('(')) - 1);
-                    mergeAlpha = MergeImages(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, ext, StartFrame);
+                    string aname = string.Format(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, StartFrame, ext);
+
+                    if (MergeImages(FileNameFormats[FileNameFormat], OutputDir, AlphaPrefix, StartFrame, ext))
+                    {
+                        Log += DateTime.Now.ToLongTimeString() + " Full frame " + fname + " reconstructed.\n";
+                        RenderedFrames.Add(new FinishedFrame(SceneId, aname));
+                    }
+                    else
+                        Log += DateTime.Now.ToLongTimeString() + " Merging frame " + StartFrame + " Alpha Failed.\n";
                 }
 
                 // Delete intermediate files if needed
@@ -429,15 +447,14 @@ namespace RemoteExecution
                         File.Delete(string.Format(FileNameFormats[FileNameFormat], OutputDir, "slice_" + i + "_" + AlphaPrefix, StartFrame, ext));
                     }
                 }
-                Log += DateTime.Now.ToLongTimeString() + " Full frame " + StartFrame + " reconstructed.\n";
-                RenderedFrames.Add(new FinishedFrame(SceneId, fname));
+
                 return fname;
             }
             return null;
         }
 
 
-        private bool MergeImages(string fileNameFormat, string outputDir, string prefix, string ext, int frameNum)
+        private bool MergeImages(string fileNameFormat, string outputDir, string prefix, int frameNum, string ext)
         {
             FreeImageBitmap combined = null;
             string fname = "";
@@ -784,9 +801,6 @@ namespace RemoteExecution
                     combined = null;
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
-
-                    Log += DateTime.Now.ToLongTimeString() + " Full frame " + frameNum + " reconstructed.\n";
-                    RenderedFrames.Add(new FinishedFrame(SceneId, mergedFile));
                     File.Delete(tempFile);
                 }
                 else
@@ -961,7 +975,7 @@ namespace RemoteExecution
                 s.Serialize(w, this);
                 w.WriteLine("");
                 w.WriteLine("<!-- Project Definition - Amleto 3.3 -->");
-                w.WriteLine("<!-- (c) 2014 - Virtualcoder.co.uk -->");
+                w.WriteLine("<!-- (c) 2016 - Virtualcoder.co.uk -->");
                 w.Close();
                 success = true;
             }

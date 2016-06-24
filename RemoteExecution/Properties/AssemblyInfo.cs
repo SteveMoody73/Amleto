@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("virtualcoder.co.uk")]
 [assembly: AssemblyProduct("RemoteExecution")]
-[assembly: AssemblyCopyright("Copyright © 2003-2014")]
+[assembly: AssemblyCopyright("Copyright © 2003-2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
