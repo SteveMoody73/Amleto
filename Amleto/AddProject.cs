@@ -29,6 +29,7 @@ namespace Amleto
 		    _settings = ServerSettings.LoadSettings();
             InitializeComponent();
 
+            server.LoadFileFormats();
             foreach (string s in server.ImageFormats(0))
             {
                 listImageFormat.Items.Add(s);

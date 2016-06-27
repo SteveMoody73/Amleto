@@ -32,9 +32,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "Amleto\bin\x64\Release\Amleto.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected;
 Source: "AmletoClient\bin\x64\Release\AmletoClient.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsClientSelected;
 Source: "RemoteExecution\bin\x64\Release\RemoteExecution.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "AmletoClientService\bin\x64\Release\AmletoClientService.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsClientServiceSelected;
-Source: "AmletoServerService\bin\x64\Release\AmletoServerService.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerServiceSelected;
-Source: "Amleto\Libraries\CommonMark.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected Or IsServerServiceSelected;
+Source: "AmletoClientService\bin\x64\Release\AmletoClientService.exe"; DestDir: "{app}"; Flags: ignoreversion; BeforeInstall: StopClientService; Check: IsClientServiceSelected;
+Source: "AmletoServerService\bin\x64\Release\AmletoServerService.exe"; DestDir: "{app}"; Flags: ignoreversion; BeforeInstall: StopServerService; Check: IsServerServiceSelected;
+Source: "Amleto\Libraries\CommonMark.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected Or IsServerServiceSelected;     
 Source: "Amleto\Libraries\Cyotek.Windows.Forms.ImageBox.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected Or IsServerServiceSelected;
 Source: "Amleto\Libraries\HtmlRenderer.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected Or IsServerServiceSelected;
 Source: "Amleto\Libraries\HtmlRenderer.WinForms.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected Or IsServerServiceSelected;
@@ -52,13 +52,11 @@ Name: "{commondesktop}\Amelto Client"; Filename: "{app}\AmletoClient.exe"; Tasks
 
 [Run]
 Filename: "{app}\AmletoServerService.exe"; Parameters: "--install"; Check: IsServerServiceSelected;
-Filename: "net"; Parameters:"start AmletoServer"; Flags:runhidden; StatusMsg:"Starting Server Service"; Check: IsServerServiceSelected;
 Filename: "{app}\AmletoClientService.exe"; Parameters: "--install"; Check: IsClientServiceSelected;
+Filename: "net"; Parameters:"start AmletoServer"; Flags:runhidden; StatusMsg:"Starting Server Service"; Check: IsServerServiceSelected;
 Filename: "net"; Parameters:"start AmletoClient"; Flags:runhidden; StatusMsg:"Starting Client Service"; Check: IsClientServiceSelected;
 
 [UninstallRun]
-Filename: "net"; Parameters:"stop AmletoServer"; Flags:runhidden; StatusMsg:"Stopping Server Service"
-Filename: "net"; Parameters:"stop AmletoClient"; Flags:runhidden; StatusMsg:"Stopping Client Service"
 Filename: "{app}\AmletoServerService.exe"; Parameters: "--uninstall"
 Filename: "{app}\AmletoClientService.exe"; Parameters: "--uninstall"
 
@@ -102,11 +100,80 @@ begin
 end;
 
 
-procedure StopService();
+procedure StopClientService();
 var
   ResultCode: Integer;
 begin
-  if Exec('net', 'stop MiMethodEngine', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  if Exec('net', 'stop AmletoClient', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
   begin
+  end;
+end;
+
+procedure StopServerService();
+var
+  ResultCode: Integer;
+begin
+  if Exec('net', 'stop AmletoService', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+  end;
+end;
+
+
+/////////////////////////////////////////////////////////////////////
+function GetUninstallString(): String;
+var
+  sUnInstPath: String;
+  sUnInstallString: String;
+begin
+  sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#emit SetupSetting("AppId")}_is1');
+  sUnInstallString := '';
+  if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
+    RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
+  Result := sUnInstallString;
+end;
+
+
+/////////////////////////////////////////////////////////////////////
+function IsUpgrade(): Boolean;
+begin
+  Result := (GetUninstallString() <> '');
+end;
+
+
+/////////////////////////////////////////////////////////////////////
+function UnInstallOldVersion(): Integer;
+var
+  sUnInstallString: String;
+  iResultCode: Integer;
+begin
+// Return Values:
+// 1 - uninstall string is empty
+// 2 - error executing the UnInstallString
+// 3 - successfully executed the UnInstallString
+
+  // default return value
+  Result := 0;
+
+  // get the uninstall string of the old app
+  sUnInstallString := GetUninstallString();
+  if sUnInstallString <> '' then begin
+    sUnInstallString := RemoveQuotes(sUnInstallString);
+    if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
+end;
+
+/////////////////////////////////////////////////////////////////////
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if (CurStep=ssInstall) then
+  begin
+    if (IsUpgrade()) then
+    begin
+      UnInstallOldVersion();
+    end;
   end;
 end;

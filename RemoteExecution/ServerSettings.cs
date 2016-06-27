@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Xml.Serialization;
@@ -17,6 +18,34 @@ namespace RemoteExecution
         public int ViewerWidth { get; set; }
         public int ViewerHeight { get; set; }
 
+        public int Port { get; set; }
+        public bool AutoOfferPort { get; set; }
+        public string ServerLogFile { get; set; }
+        public bool ServerLogEnable { get; set; }
+        public string EmailFrom { get; set; }
+        public string SMTPServer { get; set; }
+        public string SMTPUsername { get; set; }
+        public string SMTPPassword { get; set; }
+        public bool OfferWeb { get; set; }
+        public int OfferWebPort { get; set; }
+        public int RenderBlocks { get; set; }
+        public int LightwaveConfigs { get; set; }
+
+        [XmlArray]
+        public List<ConfigSet> Configs { get; set; }
+        [XmlArray]
+        public List<MapDrive> MappedDrives { get; set; }
+        [XmlArray]
+        public List<string> StrippedMaster { get; set; }
+
+        public static string SettingsFileName()
+        {
+            string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
+            Directory.CreateDirectory(settingsFile);
+            settingsFile = Path.Combine(settingsFile, "ServerSettings.xml");
+
+            return settingsFile;
+        }
 
         public ServerSettings()
         {
@@ -28,13 +57,25 @@ namespace RemoteExecution
             EmailIncludeActivity = true;
             ViewerHeight = 600;
             ViewerWidth = 800;
+
+            OfferWebPort = 9080;
+            OfferWeb = true;
+            SMTPPassword = "";
+            SMTPUsername = "";
+            SMTPServer = "mail.yourdomain.com";
+            EmailFrom = "amleto@yourdomain.com";
+            Port = 2080;
+            AutoOfferPort = true;
+            RenderBlocks = 5;
+            Configs = new List<ConfigSet>();
+            MappedDrives = new List<MapDrive>();
+            StrippedMaster = new List<string>();
         }
 
         static public ServerSettings LoadSettings()
         {
-            string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-            Directory.CreateDirectory(settingsFile);
-            settingsFile = Path.Combine(settingsFile, "ServerSettings.xml");
+            string settingsFile = SettingsFileName();
+
             ServerSettings settings = new ServerSettings();
 
             if (File.Exists(settingsFile))
@@ -51,8 +92,7 @@ namespace RemoteExecution
 
         static public void SaveSettings(ServerSettings settings)
         {
-            string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
-            settingsFile = Path.Combine(settingsFile, "ServerSettings.xml");
+            string settingsFile = SettingsFileName();
 
             XmlSerializer seriaizer = new XmlSerializer(settings.GetType());
             TextWriter writer = new StreamWriter(settingsFile);

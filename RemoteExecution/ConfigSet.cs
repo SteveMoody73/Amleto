@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace RemoteExecution
 {
@@ -15,6 +16,8 @@ namespace RemoteExecution
         public int BitSize { get; set; }
         public int LightwaveVersion { get; set; }
         public bool DefaultConfig;
+
+        [XmlIgnore]
         public List<string> ImageFormats { get; set; }
 
         public ConfigSet()

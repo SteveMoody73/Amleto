@@ -13,6 +13,7 @@ using System.Runtime.Remoting.Activation;
 using System.Collections;
 using RemoteExecution.Jobs;
 using Manina.Windows.Forms;
+using FreeImageAPI;
 
 namespace Amleto
 {
@@ -24,9 +25,9 @@ namespace Amleto
         private bool _isMaster;
         private TcpChannel _channel;
 
-        private List<ClientConnection> _clients;
-        private List<RenderProject> _projects;
-        private List<RenderProject> _finishedProjects;
+        private List<ClientConnection> _clients = new List<ClientConnection>();
+        private List<RenderProject> _projects = new List<RenderProject>();
+        private List<RenderProject> _finishedProjects = new List<RenderProject>();
         private readonly object _clientsLock = new object();
         private readonly object _projectsLock = new object();
         private readonly object _previewLock = new object();
@@ -44,8 +45,6 @@ namespace Amleto
 
         private readonly Queue<FinishedFrame> _framesToAdd = new Queue<FinishedFrame>();
 
-        private ServerSettings _settings;
-
         private int _thumbSize = 150;
 
 
@@ -54,7 +53,7 @@ namespace Amleto
             InitializeComponent();
 
             // Try to recover old setting...
-            _settings = ServerSettings.LoadSettings();
+            ServerSettings settings = ServerSettings.LoadSettings();
 
             ClientStatusGrid.DataError += dataGrid_DataError;
             ActiveProjectGrid.DataError += dataGrid_DataError;
@@ -65,7 +64,13 @@ namespace Amleto
 
             ImagePreviews.ThumbnailSize = new Size(_thumbSize, _thumbSize);
 
-            Size = _settings.WinSize;
+            Size = settings.WinSize;
+
+            // Check if FreeImage.dll is available (can be in %path%).
+            if (!FreeImage.IsAvailable())
+            {
+                logger.Error("FreeImage.dll seems to be missing, Image Viewing and thumbnail grid may not work");
+            }
         }
 
         private void dataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -309,104 +314,107 @@ namespace Amleto
                     logger.Error(ex, "Error clearing client status list");
                 }
 
-                List<string> configsName = _masterServer.ConfigNames;
-
-                foreach (ClientConnection client in hosts)
+                if (_clients != null)
                 {
-                    DataGridViewRow row = new DataGridViewRow();
-                    DataGridViewCell cell = new DataGridViewTextBoxCell();
+                    List<string> configsName = _masterServer.ConfigNames;
 
-                    try
+                    foreach (ClientConnection client in hosts)
                     {
-                        // Client ID
-                        cell.Value = client.Id;
-                        row.Cells.Add(cell);
+                        DataGridViewRow row = new DataGridViewRow();
+                        DataGridViewCell cell = new DataGridViewTextBoxCell();
 
-                        // Hostname
-                        cell = new DataGridViewTextBoxCell {Value = client.HostName + " (" + client.IPAddress + ")"};
-                        row.Cells.Add(cell);
-
-                        // Instance
-                        cell = new DataGridViewTextBoxCell {Value = client.Instance};
-                        row.Cells.Add(cell);
-    
-                        // Configs
-                        DataGridViewComboBoxCell configList = new DataGridViewComboBoxCell();
-                        foreach (string s in configsName)
+                        try
                         {
-                            try
+                            // Client ID
+                            cell.Value = client.Id;
+                            row.Cells.Add(cell);
+
+                            // Hostname
+                            cell = new DataGridViewTextBoxCell { Value = client.HostName + " (" + client.IPAddress + ")" };
+                            row.Cells.Add(cell);
+
+                            // Instance
+                            cell = new DataGridViewTextBoxCell { Value = client.Instance };
+                            row.Cells.Add(cell);
+
+                            // Configs
+                            DataGridViewComboBoxCell configList = new DataGridViewComboBoxCell();
+                            foreach (string s in configsName)
                             {
-                                configList.Items.Add(s);
+                                try
+                                {
+                                    configList.Items.Add(s);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.Error(ex, "Error adding config item");
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                logger.Error(ex, "Error adding config item");
-                            }
-                        }
-                        configList.Value = configsName[client.Config];
-                        row.Cells.Add(configList);
-                    
-                        // Status
-                        cell = new DataGridViewImageCell();
-                        if (client.CurrentJob.StartsWith("Downloading"))
-                            cell.Value = iconList.Images[2];
-                        else if (client.CurrentJob.StartsWith("Project"))
-                            cell.Value = iconList.Images[5];
-                        else if (client.CurrentJob.StartsWith("Render"))
-                            cell.Value = iconList.Images[4];
-                        else if (client.CurrentJob == "" && client.CanBeUsed == false)
-                            cell.Value = iconList.Images[6];
-                        else if (client.CurrentJob == "")
-                            cell.Value = iconList.Images[3];
-                        else
-                            cell.Value = iconList.Images[2];
+                            configList.Value = configsName[client.Config];
+                            row.Cells.Add(configList);
 
-                        row.Cells.Add(cell);
-
-                        // Last render time
-                        cell = new DataGridViewTextBoxCell();
-                        if (client.LastFrameTimeSet)
-                        {
-                            cell.Value = String.Format("{0:00}:{1:00}:{2:00}",
-                                                       (client.LastFrameTime.Days*24) + client.LastFrameTime.Hours,
-                                                       client.LastFrameTime.Minutes, client.LastFrameTime.Seconds);
-                        }
-                        row.Cells.Add(cell);
-
-                        // Current Job
-                        cell = new DataGridViewTextBoxCell {Value = client.CurrentJob};
-                        row.Cells.Add(cell);
-
-                        ClientStatusGrid.Rows.Add(row);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex, "Error adding cells");
-                    }
-
-                    try
-                    {
-                        foreach (string s in oldSelected)
-                        {
-                            if (s == row.Cells[0].Value.ToString())
-                                row.Selected = true;
+                            // Status
+                            cell = new DataGridViewImageCell();
+                            if (client.CurrentJob.StartsWith("Downloading"))
+                                cell.Value = iconList.Images[2];
+                            else if (client.CurrentJob.StartsWith("Project"))
+                                cell.Value = iconList.Images[5];
+                            else if (client.CurrentJob.StartsWith("Render"))
+                                cell.Value = iconList.Images[4];
+                            else if (client.CurrentJob == "" && client.CanBeUsed == false)
+                                cell.Value = iconList.Images[6];
+                            else if (client.CurrentJob == "")
+                                cell.Value = iconList.Images[3];
                             else
-                                row.Selected = false;
+                                cell.Value = iconList.Images[2];
+
+                            row.Cells.Add(cell);
+
+                            // Last render time
+                            cell = new DataGridViewTextBoxCell();
+                            if (client.LastFrameTimeSet)
+                            {
+                                cell.Value = String.Format("{0:00}:{1:00}:{2:00}",
+                                                           (client.LastFrameTime.Days * 24) + client.LastFrameTime.Hours,
+                                                           client.LastFrameTime.Minutes, client.LastFrameTime.Seconds);
+                            }
+                            row.Cells.Add(cell);
+
+                            // Current Job
+                            cell = new DataGridViewTextBoxCell { Value = client.CurrentJob };
+                            row.Cells.Add(cell);
+
+                            ClientStatusGrid.Rows.Add(row);
                         }
+                        catch (Exception ex)
+                        {
+                            logger.Error(ex, "Error adding cells");
+                        }
+
+                        try
+                        {
+                            foreach (string s in oldSelected)
+                            {
+                                if (s == row.Cells[0].Value.ToString())
+                                    row.Selected = true;
+                                else
+                                    row.Selected = false;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error(ex, "Error selecting cell");
+                        }
+                    }
+                    try
+                    {
+                        if (pos != -1)
+                            ClientStatusGrid.FirstDisplayedScrollingRowIndex = pos;
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex, "Error selecting cell");
+                        logger.Error(ex, "Error repainting client list");
                     }
-                }
-                try
-                {
-                    if (pos != -1)
-                        ClientStatusGrid.FirstDisplayedScrollingRowIndex = pos;
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, "Error repainting client list");
                 }
             }
         }
@@ -661,9 +669,6 @@ namespace Amleto
 
         private void ServerWinFormClosing(object sender, FormClosingEventArgs e)
         {
-            _settings.WinSize = Size;
-            ServerSettings.SaveSettings(_settings);
-
             if (_isMaster &&
                 MessageBox.Show("Are you sure you want to exit?", "Closing Amleto", MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Question) != DialogResult.Yes)
@@ -674,6 +679,10 @@ namespace Amleto
             {
                 try
                 {
+                    ServerSettings settings = ServerSettings.LoadSettings();
+                    settings.WinSize = Size;
+                    ServerSettings.SaveSettings(settings);
+
                     // Save currently rendering jobs
                     string savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Amleto");
                     savePath = Path.Combine(savePath, "RenderJobs");
@@ -1323,6 +1332,7 @@ namespace Amleto
 
         private void ServerWin_Shown(object sender, EventArgs e)
         {
+            bool showSetupDiaglog = false;
             Text = "Amleto Server " + Assembly.GetExecutingAssembly().GetName().Version;
 
             BroadcastFinder findMaster = new BroadcastFinder();
@@ -1385,28 +1395,34 @@ namespace Amleto
                 _masterServer = new MasterServer(Environment.UserName);
                 if (_masterServer.RestoreSettings() == false)
                 {
-                    SetupWin dlg = new SetupWin(_masterServer, false);
-                    dlg.ScanAllConfigs();
-                    if (dlg.ShowDialog() != DialogResult.OK)
-                        Application.Exit();
-                    _masterServer.Port = dlg.Port;
-                    _masterServer.AutoOfferPort = dlg.AutoPort;
-                    _masterServer.ReplaceConfigs(dlg.Configs);
-                    _masterServer.LogFile = dlg.LogFile;
-                    _masterServer.EmailFrom = dlg.EmailFrom;
-                    _masterServer.SmtpServer = dlg.SmtpServer;
-                    _masterServer.SmtpUsername = dlg.SmtpUsername;
-                    _masterServer.SmtpPassword = dlg.SmtpPassword;
-                    _masterServer.OfferWeb = dlg.OfferWeb;
-                    _masterServer.OfferWebPort = dlg.OfferWebPort;
-                    _masterServer.RenderBlocks = dlg.RenderBlocks;
-                    string res = _masterServer.SetMappedDrives(dlg.MappedDrives);
-                    if (res != "")
-                        MessageBox.Show(res);
-                    _masterServer.SaveSettings();
+                    showSetupDiaglog = true;
                 }
                 _isMaster = true;
                 Text = Text + " - Master";
+            }
+
+            if (showSetupDiaglog == true || _masterServer.NbConfigs == 0)
+            {
+                SetupWin dlg = new SetupWin(_masterServer, false);
+                dlg.ScanAllConfigs();
+                if (dlg.ShowDialog() != DialogResult.OK)
+                    Application.Exit();
+
+                _masterServer.Port = dlg.Port;
+                _masterServer.AutoOfferPort = dlg.AutoPort;
+                _masterServer.ReplaceConfigs(dlg.Configs);
+                _masterServer.LogFile = dlg.LogFile;
+                _masterServer.EmailFrom = dlg.EmailFrom;
+                _masterServer.SmtpServer = dlg.SmtpServer;
+                _masterServer.SmtpUsername = dlg.SmtpUsername;
+                _masterServer.SmtpPassword = dlg.SmtpPassword;
+                _masterServer.OfferWeb = dlg.OfferWeb;
+                _masterServer.OfferWebPort = dlg.OfferWebPort;
+                _masterServer.RenderBlocks = dlg.RenderBlocks;
+                string res = _masterServer.SetMappedDrives(dlg.MappedDrives);
+                if (res != "")
+                    MessageBox.Show(res);
+                _masterServer.SaveSettings();
             }
 
             _eventBridge = new EventBridge(RefreshClientList, RefreshProjectList, RefreshFinishedList, ShowImage, ConsumeMessage, ShowClientLog);

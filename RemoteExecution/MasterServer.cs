@@ -342,176 +342,65 @@ namespace RemoteExecution
             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
             Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator = "'";
 
-            RegistryKey key = null;
-            try
-            {
-            	var openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
-            	if (openSubKey != null)
-            		key = openSubKey.CreateSubKey("Amleto");
-            }
-            catch
-            {
-                return false;
-            }
-
-            if (key == null)
+            if (!File.Exists(ServerSettings.SettingsFileName()))
                 return false;
 
-            object o = key.GetValue("Port");
-            if (o == null)
-                return false;
+            ServerSettings settings = ServerSettings.LoadSettings();
+
+			Port = settings.Port;
+            AutoOfferPort = settings.AutoOfferPort;
+
+            foreach (ConfigSet c in settings.Configs)
+            { 
+        		// Insert the main config at the top
+        		if (c.DefaultConfig)
+        			ServerServices.Configs.Insert(0, c);
+        		else
+        			ServerServices.Configs.Add(c);
+        	}
+
+            _mappedDrives = settings.MappedDrives;
+            _strippedMaster = settings.StrippedMaster;
             
-			Port = 2080;
-            Port = Convert.ToInt32(o);
-
-            o = key.GetValue("AutoPort");
-            AutoOfferPort = true;
-            if (o != null)
-                AutoOfferPort = Convert.ToBoolean(o);
-
-            RegistryKey configKey = key.CreateSubKey("Configs");
-
-        	if (configKey != null)
-        	{
-        		foreach (string s in configKey.GetSubKeyNames())
-        		{
-        			ConfigSet c = new ConfigSet();
-        			RegistryKey subkey = configKey.OpenSubKey(s);
-        			c.Name = s;
-        			if (subkey != null)
-        			{
-        			    c.ProgramPath = (string) subkey.GetValue("ProgPath");
-        			    c.ConfigPath = (string) subkey.GetValue("ConfigPath");
-        			    c.ConfigFile = (string) subkey.GetValue("ConfigFile");
-        			    c.PluginPath = (string) subkey.GetValue("PluginPath");
-        			    c.SupportPath = (string) subkey.GetValue("SupportPath");
-        			    if ((string) subkey.GetValue("DefaultConfig") == "False")
-        			        c.DefaultConfig = false;
-        			    else 
-                            c.DefaultConfig = true;
-        			    c.LightwaveVersion = (int) subkey.GetValue("LightwaveVersion");
-        			    if (subkey.GetValue("BitSize") != null)
-        			        c.BitSize = (int) subkey.GetValue("BitSize");
-                        else
-                            c.BitSize = 32;
-        				subkey.Close();
-        			}
-
-        			// Insert the main config at the top
-        			if (c.DefaultConfig)
-        				ServerServices.Configs.Insert(0, c);
-        			else
-        				ServerServices.Configs.Add(c);
-        		}
-        		configKey.Close();
-        	}
-
-        	_mappedDrives = MapDrive.ReadMapDrives(key);
-
-            _strippedMaster.Clear();
-            RegistryKey maskerKey = key.CreateSubKey("StripMaster");
-        	if (maskerKey != null)
-        	{
-        		foreach (string s in maskerKey.GetValueNames())
-        		{
-        			_strippedMaster.Add(s);
-        		}
-        		maskerKey.Close();
-        	}
-
-            ServerServices.LogFile = "";
-            if (key.GetValue("ServerLogFile") != null)
-                LogFile = (string)key.GetValue("ServerLogFile");
-
-            if (key.GetValue("ServerLogEnable") != null)
-                LogEnabled = key.GetValue("ServerLogEnable").ToString() == "True";
-
-            if (key.GetValue("EmailFrom") != null)
-                EmailFrom = (string)key.GetValue("EmailFrom");
-            if (key.GetValue("SMTPServer") != null)
-                SmtpServer = (string)key.GetValue("SMTPServer");
-            if (key.GetValue("SMTPUsername") != null)
-                SmtpUsername = (string)key.GetValue("SMTPUsername");
-            if (key.GetValue("SMTPPassword") != null)
-                SmtpPassword = (string)key.GetValue("SMTPPassword");
-
-            if (key.GetValue("OfferWeb") != null && (string)key.GetValue("OfferWeb") == "True")
-                OfferWeb = true;
-            else
-                OfferWeb = false;
-            if (key.GetValue("OfferWebPort") != null)
-                OfferWebPort = (int)key.GetValue("OfferWebPort");
-            else
-                OfferWebPort = 9080;
-
-            if (key.GetValue("RenderBlocks") != null)
-                RenderBlocks = (int) key.GetValue("RenderBlocks");
-            else
-                RenderBlocks = 5;
+            LogFile = settings.ServerLogFile;
+            LogEnabled = settings.ServerLogEnable;
+            EmailFrom = settings.EmailFrom;
+            SmtpServer = settings.SMTPServer;
+            SmtpUsername = settings.SMTPUsername;
+            SmtpPassword = settings.SMTPPassword;
+            OfferWeb = settings.OfferWeb;
+            OfferWebPort = settings.OfferWebPort;
+            RenderBlocks = settings.RenderBlocks;
 
             return true;
         }
 
         public void SaveSettings()
         {
-        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
+            ServerSettings settings = ServerSettings.LoadSettings();
 
-            if (openSubKey != null)
-        	{
-        		RegistryKey key = openSubKey.CreateSubKey("Amleto");
+            settings.Port = Port;
+            settings.AutoOfferPort = AutoOfferPort;
+            settings.ServerLogFile = LogFile;
+            settings.ServerLogEnable = LogEnabled;
 
-        		if (key != null)
-        		{
-        			key.SetValue("Port", Port);
-        			key.SetValue("AutoPort", AutoOfferPort);
-        			key.SetValue("ServerLogFile", ServerServices.LogFile);
-        			key.SetValue("ServerLogEnable", ServerServices.LogEnabled);
+            settings.EmailFrom = EmailFrom;
+            settings.SMTPServer = SmtpServer;
+            settings.SMTPUsername = SmtpUsername;
+            settings.SMTPPassword = SmtpPassword;
 
-        			key.SetValue("EmailFrom", EmailFrom);
-        			key.SetValue("SMTPServer", SmtpServer);
-        			key.SetValue("SMTPUsername", SmtpUsername);
-        			key.SetValue("SMTPPassword", SmtpPassword);
+            settings.OfferWeb = OfferWeb;
+            settings.OfferWebPort = OfferWebPort;
+            settings.RenderBlocks = RenderBlocks;
 
-        			key.SetValue("OfferWeb", OfferWeb);
-        			key.SetValue("OfferWebPort", OfferWebPort);
-                    key.SetValue("RenderBlocks", RenderBlocks);
+            settings.Configs = ServerServices.Configs;
+        	settings.MappedDrives = _mappedDrives;
+            settings.StrippedMaster = _strippedMaster;
 
-        			// Remove all sub keys
-        			RegistryKey configKey = key.CreateSubKey("Configs");
-        			if (configKey != null)
-        				foreach (string s in configKey.GetSubKeyNames())
-        					configKey.DeleteSubKey(s);
-
-        			// Recreate all sub keys
-        			foreach (ConfigSet c in ServerServices.Configs)
-        			{
-        				if (configKey != null)
-        				{
-        					RegistryKey subkey = configKey.CreateSubKey(c.Name);
-        					if (subkey != null)
-        					{
-        						subkey.SetValue("ProgPath", c.ProgramPath);
-        						subkey.SetValue("ConfigPath", c.ConfigPath);
-                                subkey.SetValue("ConfigFile", c.ConfigFile);
-        						subkey.SetValue("PluginPath", c.PluginPath);
-                                subkey.SetValue("SupportPath", c.SupportPath);
-                                subkey.SetValue("DefaultConfig", c.DefaultConfig);
-                                subkey.SetValue("LightwaveVersion", c.LightwaveVersion);
-        						subkey.SetValue("BitSize", c.BitSize);
-        						subkey.Close();
-                            }
-        				}
-        			}
-        			if (configKey != null) configKey.Close();
-        		}
-
-        		MapDrive.StoreMapDrives(key, _mappedDrives);
-
-        		if (key != null) key.Close();
-        	}
+            ServerSettings.SaveSettings(settings);
         }
 
-    	public bool IsStripped(string s)
+        public bool IsStripped(string s)
         {
             return _strippedMaster.Contains(s);
         }
@@ -521,20 +410,6 @@ namespace RemoteExecution
             if (_strippedMaster.Contains(s))
                 return;
             _strippedMaster.Add(s);
-        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
-        	if (openSubKey != null)
-        	{
-        		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto");
-        		if (registryKey != null)
-        		{
-        			RegistryKey key = registryKey.CreateSubKey("StripMaster");
-        			if (key != null)
-        			{
-        				key.SetValue(s, "");
-        				key.Close();
-        			}
-        		}
-        	}
         }
 
         public void StrippedMasterRemove(string s)
@@ -542,20 +417,6 @@ namespace RemoteExecution
             if (!_strippedMaster.Contains(s))
                 return;
             _strippedMaster.Remove(s);
-        	RegistryKey openSubKey = Registry.CurrentUser.OpenSubKey("SOFTWARE", true);
-        	if (openSubKey != null)
-        	{
-        		RegistryKey registryKey = openSubKey.CreateSubKey("Amleto");
-        		if (registryKey != null)
-        		{
-        			RegistryKey key = registryKey.CreateSubKey("StripMaster");
-        			if (key != null)
-        			{
-        				key.DeleteValue(s);
-        				key.Close();
-        			}
-        		}
-        	}
         }
 
         public List<string> DriveList()
@@ -615,11 +476,6 @@ namespace RemoteExecution
                 logger.Error(ex, "Error listing files");
             }
             return res;
-        }
-
-        public bool FileExists(string path)
-        {
-            return File.Exists(path);
         }
 
         public string[] FileReadAllLines(string path)
@@ -711,6 +567,18 @@ namespace RemoteExecution
             return ServerServices.IsClientPaused(id);
         }
 
+        public bool LogEnabled
+        {
+            get
+            {
+                return ServerServices.LogEnabled;
+            }
+            set
+            {
+                ServerServices.LogEnabled = value;
+            }
+        }
+        
         public string LogFile
         {           
             get
@@ -729,18 +597,6 @@ namespace RemoteExecution
 					Debug.WriteLine("Setting Log File: " + ex);
                 }
                 ServerServices.LogFile = value;
-            }
-        }
-
-        public bool LogEnabled
-        {
-            get
-            {
-                return ServerServices.LogEnabled;
-            }
-            set
-            {
-                ServerServices.LogEnabled = value;
             }
         }
 
