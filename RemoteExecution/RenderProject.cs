@@ -974,7 +974,7 @@ namespace RemoteExecution
                 TextWriter w = new StreamWriter(filename);
                 s.Serialize(w, this);
                 w.WriteLine("");
-                w.WriteLine("<!-- Project Definition - Amleto 3.3 -->");
+                w.WriteLine("<!-- Project Definition - Amleto 3.4 -->");
                 w.WriteLine("<!-- (c) 2016 - Virtualcoder.co.uk -->");
                 w.Close();
                 success = true;

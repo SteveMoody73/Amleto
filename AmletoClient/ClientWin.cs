@@ -93,7 +93,11 @@ namespace AmletoClient
 
         private void ClientWin_Load(object sender, EventArgs e)
         {
-            Text = "Amleto Client " + Assembly.GetExecutingAssembly().GetName().Version;
+            string version = Assembly.GetExecutingAssembly().GetName().Version.Major.ToString();
+            version = version + "." + Assembly.GetExecutingAssembly().GetName().Version.Minor;
+            version = version + "." + Assembly.GetExecutingAssembly().GetName().Version.Build;
+
+            Text = "Amleto Client " + version;
 
             _messageAdder = DoAddMessage;
             ClientServices.MessageConsumer += AddMessage;
