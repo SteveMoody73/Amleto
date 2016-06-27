@@ -986,19 +986,26 @@ namespace RemoteExecution
 			if (MessageConsumer == null)
                 return;
 
-			for (int i = 0; i < MessageConsumer.GetInvocationList().Length; )
+            try
             {
-                Delegate d = MessageConsumer.GetInvocationList()[i];
-                try
+                for (int i = 0; i < MessageConsumer.GetInvocationList().Length;)
                 {
-                    d.DynamicInvoke(new object[] { fullMsg });
-                    i++;
+                    Delegate d = MessageConsumer.GetInvocationList()[i];
+                    try
+                    {
+                        d.DynamicInvoke(new object[] { fullMsg });
+                        i++;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex, "Error adding message");
+                        MessageConsumer -= (StatusStringChange)d;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, "Error adding message");
-                    MessageConsumer -= (StatusStringChange)d;
-                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error adding message");
             }
         }
 

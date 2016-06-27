@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -9,6 +10,9 @@ namespace RemoteExecution
     [Serializable]
     public class ServerSettings
     {
+        [XmlIgnore]
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public Size WinSize { get; set; }
         public string ToEmail { get; set; }
         public string SubjectOk { get; set; }
@@ -80,12 +84,19 @@ namespace RemoteExecution
 
             if (File.Exists(settingsFile))
             {
-                XmlSerializer serializer = new XmlSerializer(settings.GetType());
-                TextReader reader = new StreamReader(settingsFile);
-                object deserialised = serializer.Deserialize(reader);
-                reader.Close();
+                try
+                {
+                    XmlSerializer serializer = new XmlSerializer(settings.GetType());
+                    TextReader reader = new StreamReader(settingsFile);
+                    object deserialised = serializer.Deserialize(reader);
+                    reader.Close();
 
-                settings = (ServerSettings)deserialised;
+                    settings = (ServerSettings)deserialised;
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Error loading settings file");
+                }
             }
             return settings;
         }
@@ -94,10 +105,17 @@ namespace RemoteExecution
         {
             string settingsFile = SettingsFileName();
 
-            XmlSerializer seriaizer = new XmlSerializer(settings.GetType());
-            TextWriter writer = new StreamWriter(settingsFile);
-            seriaizer.Serialize(writer, settings);
-            writer.Close();
+            try
+            {
+                XmlSerializer seriaizer = new XmlSerializer(settings.GetType());
+                TextWriter writer = new StreamWriter(settingsFile);
+                seriaizer.Serialize(writer, settings);
+                writer.Close();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error saving settings file");
+            }
         }
     }
 

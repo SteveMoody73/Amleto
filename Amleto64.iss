@@ -28,6 +28,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
+[Dirs]
+Name: "{commonappdata}\{AppName}}"; Permissions: users-modify;
+
 [Files]
 Source: "Amleto\bin\x64\Release\Amleto.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected;
 Source: "AmletoClient\bin\x64\Release\AmletoClient.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsClientSelected;
