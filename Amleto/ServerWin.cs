@@ -24,9 +24,9 @@ namespace Amleto
         private bool _isMaster;
         private TcpChannel _channel;
 
-        private List<ClientConnection> _clients;
-        private List<RenderProject> _projects;
-        private List<RenderProject> _finishedProjects;
+        private List<ClientConnection> _clients = new List<ClientConnection>();
+        private List<RenderProject> _projects = new List<RenderProject>();
+        private List<RenderProject> _finishedProjects = new List<RenderProject>();
         private readonly object _clientsLock = new object();
         private readonly object _projectsLock = new object();
         private readonly object _previewLock = new object();
@@ -1387,30 +1387,31 @@ namespace Amleto
             else // We should be master
             {
                 _masterServer = new MasterServer(Environment.UserName);
-                if (_masterServer.RestoreSettings() == false)
-                {
-                    SetupWin dlg = new SetupWin(_masterServer, false);
-                    dlg.ScanAllConfigs();
-                    if (dlg.ShowDialog() != DialogResult.OK)
-                        Application.Exit();
-                    _masterServer.Port = dlg.Port;
-                    _masterServer.AutoOfferPort = dlg.AutoPort;
-                    _masterServer.ReplaceConfigs(dlg.Configs);
-                    _masterServer.LogFile = dlg.LogFile;
-                    _masterServer.EmailFrom = dlg.EmailFrom;
-                    _masterServer.SmtpServer = dlg.SmtpServer;
-                    _masterServer.SmtpUsername = dlg.SmtpUsername;
-                    _masterServer.SmtpPassword = dlg.SmtpPassword;
-                    _masterServer.OfferWeb = dlg.OfferWeb;
-                    _masterServer.OfferWebPort = dlg.OfferWebPort;
-                    _masterServer.RenderBlocks = dlg.RenderBlocks;
-                    string res = _masterServer.SetMappedDrives(dlg.MappedDrives);
-                    if (res != "")
-                        MessageBox.Show(res);
-                    _masterServer.SaveSettings();
-                }
                 _isMaster = true;
                 Text = Text + " - Master";
+            }
+
+            if (_masterServer.RestoreSettings() == false || _masterServer.NbConfigs == 0)
+            {
+                SetupWin dlg = new SetupWin(_masterServer, false);
+                dlg.ScanAllConfigs();
+                if (dlg.ShowDialog() != DialogResult.OK)
+                    Application.Exit();
+                _masterServer.Port = dlg.Port;
+                _masterServer.AutoOfferPort = dlg.AutoPort;
+                _masterServer.ReplaceConfigs(dlg.Configs);
+                _masterServer.LogFile = dlg.LogFile;
+                _masterServer.EmailFrom = dlg.EmailFrom;
+                _masterServer.SmtpServer = dlg.SmtpServer;
+                _masterServer.SmtpUsername = dlg.SmtpUsername;
+                _masterServer.SmtpPassword = dlg.SmtpPassword;
+                _masterServer.OfferWeb = dlg.OfferWeb;
+                _masterServer.OfferWebPort = dlg.OfferWebPort;
+                _masterServer.RenderBlocks = dlg.RenderBlocks;
+                string res = _masterServer.SetMappedDrives(dlg.MappedDrives);
+                if (res != "")
+                    MessageBox.Show(res);
+                _masterServer.SaveSettings();
             }
 
             _eventBridge = new EventBridge(RefreshClientList, RefreshProjectList, RefreshFinishedList, ShowImage, ConsumeMessage, ShowClientLog);
