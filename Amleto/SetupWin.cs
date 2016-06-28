@@ -283,7 +283,9 @@ namespace Amleto
         
         public void ScanAllConfigs()
         {
-            string newtekFolder = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName;
+            string newtekFolder = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
+            newtekFolder = Directory.GetParent(newtekFolder).FullName;
+            
             newtekFolder = Path.Combine(newtekFolder, ".NewTek");
             newtekFolder = Path.Combine(newtekFolder, "LightWave");
 
