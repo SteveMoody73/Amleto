@@ -7,12 +7,12 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{3C37B532-D178-4B8D-9169-08AB76E045B1}
 AppName=Amleto
-AppVerName=Amleto 3.4 (beta)
+AppVerName=Amleto 3.4
 AppVersion=3.4
 AppPublisher=Virtualcoder
 AppPublisherURL=http://virtualcoder.co.uk/
-AppSupportURL=http://virtualcoder.co.uk/
-AppUpdatesURL=http://virtualcoder.co.uk/
+AppSupportURL=http://virtualcoder.co.uk/amleto
+AppUpdatesURL=http://virtualcoder.co.uk/amleto
 DefaultDirName={pf}\Amleto
 DefaultGroupName=Amleto
 OutputBaseFilename=Amleto64
@@ -29,7 +29,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Dirs]
-Name: "{commonappdata}\{AppName}}"; Permissions: users-modify;
+Name: "{commonappdata}\Amleto"; Permissions: everyone-modify
 
 [Files]
 Source: "Amleto\bin\x64\Release\Amleto.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected;
@@ -54,12 +54,14 @@ Name: "{commondesktop}\Amleto Server"; Filename: "{app}\Amleto.exe"; Tasks: desk
 Name: "{commondesktop}\Amelto Client"; Filename: "{app}\AmletoClient.exe"; Tasks: desktopicon; Check: IsClientSelected;
 
 [Run]
-Filename: "{app}\AmletoServerService.exe"; Parameters: "--install"; Check: IsServerServiceSelected;
-Filename: "{app}\AmletoClientService.exe"; Parameters: "--install"; Check: IsClientServiceSelected;
-Filename: "net"; Parameters:"start AmletoServer"; Flags:runhidden; StatusMsg:"Starting Server Service"; Check: IsServerServiceSelected;
-Filename: "net"; Parameters:"start AmletoClient"; Flags:runhidden; StatusMsg:"Starting Client Service"; Check: IsClientServiceSelected;
+Filename: "{app}\AmletoServerService.exe"; Parameters: "--install"; Check: IsServerServiceSelected
+Filename: "{app}\AmletoClientService.exe"; Parameters: "--install"; Check: IsClientServiceSelected
+Filename: "net"; Parameters: "start AmletoServer"; Flags: runhidden; StatusMsg: "Starting Server Service"; Check: IsServerServiceSelected
+Filename: "net"; Parameters: "start AmletoClient"; Flags: runhidden; StatusMsg: "Starting Client Service"; Check: IsClientServiceSelected
 
 [UninstallRun]
+Filename: "net"; Parameters: "stop AmletoServer"; Flags: runhidden; StatusMsg: "Stopping Server Service";
+Filename: "net"; Parameters: "stop AmletoClient"; Flags: runhidden; StatusMsg: "Stopping Client Service";
 Filename: "{app}\AmletoServerService.exe"; Parameters: "--uninstall"
 Filename: "{app}\AmletoClientService.exe"; Parameters: "--uninstall"
 

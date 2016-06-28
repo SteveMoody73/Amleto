@@ -40,7 +40,7 @@ namespace AmletoClientService
             // serviceAmletoClientInstaller
             // 
             this.serviceAmletoClientInstaller.Description = "Render node service for the Amleto distributed rendering solution.";
-            this.serviceAmletoClientInstaller.DisplayName = "AmletoClient";
+            this.serviceAmletoClientInstaller.DisplayName = "Amleto Client";
             this.serviceAmletoClientInstaller.ServiceName = "AmletoClient";
             this.serviceAmletoClientInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
