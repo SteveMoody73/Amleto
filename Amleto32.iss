@@ -32,7 +32,7 @@ Name: "{commonappdata}\Amleto"; Permissions: everyone-modify
 
 [Files]
 Source: "Amleto\bin\x86\Release\Amleto.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected;
-Source: "AmletoClient\bin\x64\Release\AmletoClient.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsClientSelected;
+Source: "AmletoClient\bin\x86\Release\AmletoClient.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsClientSelected;
 Source: "RemoteExecution\bin\x86\Release\RemoteExecution.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AmletoClientService\bin\x86\Release\AmletoClientService.exe"; DestDir: "{app}"; Flags: ignoreversion; BeforeInstall: StopClientService; Check: IsClientServiceSelected;
 Source: "AmletoServerService\bin\x86\Release\AmletoServerService.exe"; DestDir: "{app}"; Flags: ignoreversion; BeforeInstall: StopServerService; Check: IsServerServiceSelected;
