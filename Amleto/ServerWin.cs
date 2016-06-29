@@ -44,8 +44,6 @@ namespace Amleto
 
         private readonly Queue<FinishedFrame> _framesToAdd = new Queue<FinishedFrame>();
 
-        private ServerSettings _settings;
-
         private int _thumbSize = 150;
 
 
@@ -54,7 +52,7 @@ namespace Amleto
             InitializeComponent();
 
             // Try to recover old setting...
-            _settings = ServerSettings.LoadSettings();
+            ServerSettings settings = ServerSettings.LoadSettings();
 
             ClientStatusGrid.DataError += dataGrid_DataError;
             ActiveProjectGrid.DataError += dataGrid_DataError;
@@ -65,7 +63,7 @@ namespace Amleto
 
             ImagePreviews.ThumbnailSize = new Size(_thumbSize, _thumbSize);
 
-            Size = _settings.WinSize;
+            Size = settings.WinSize;
         }
 
         private void dataGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -661,8 +659,9 @@ namespace Amleto
 
         private void ServerWinFormClosing(object sender, FormClosingEventArgs e)
         {
-            _settings.WinSize = Size;
-            ServerSettings.SaveSettings(_settings);
+            ServerSettings settings = ServerSettings.LoadSettings();
+            settings.WinSize = Size;
+            ServerSettings.SaveSettings(settings);
 
             if (_isMaster &&
                 MessageBox.Show("Are you sure you want to exit?", "Closing Amleto", MessageBoxButtons.YesNo,

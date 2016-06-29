@@ -293,7 +293,8 @@ namespace RemoteExecution
             {
                 lock (_lock)
                 {
-                    _server.RegisterClient(Environment.MachineName, GetIP(), Settings.RenderPriority, IntPtr.Size * 8);
+                    int bitsize = Environment.Is64BitOperatingSystem ? 64 : 32;
+                    _server.RegisterClient(Environment.MachineName, GetIP(), Settings.RenderPriority, bitsize);
                 }
                 AddMessage(0, "Connected to the server " + Settings.ServerHost + " on port " + Settings.ServerPort + ".");
                 try

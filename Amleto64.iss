@@ -30,6 +30,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Dirs]
 Name: "{commonappdata}\Amleto"; Permissions: everyone-modify
+Name: "{commonappdata}\Amleto\Logs"; Permissions: everyone-modify
 
 [Files]
 Source: "Amleto\bin\x64\Release\Amleto.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: IsServerSelected;
