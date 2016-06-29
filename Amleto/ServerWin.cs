@@ -1391,7 +1391,7 @@ namespace Amleto
                 Text = Text + " - Master";
             }
 
-            if (_masterServer.RestoreSettings() == false || _masterServer.NbConfigs == 0)
+            if (_masterServer.RestoreSettings() == false || _masterServer.ConfigCount == 0)
             {
                 SetupWin dlg = new SetupWin(_masterServer, false);
                 dlg.ScanAllConfigs();

@@ -13,7 +13,8 @@ namespace RemoteExecution
         public string ConfigPath { get; set; }
         public string ConfigFile { get; set; }
         public string Name { get; set; }
-        public int BitSize { get; set; }
+        public bool Has64Bit { get; set; }
+        public bool Has32Bit { get; set; }
         public int LightwaveVersion { get; set; }
         public bool DefaultConfig;
 
@@ -23,7 +24,8 @@ namespace RemoteExecution
         public ConfigSet()
         {
             ImageFormats = new List<string>();
-            BitSize = 32;
+            Has32Bit = false;
+            Has64Bit = false;
             Name = "";
             ConfigPath = "";
             ConfigFile = "";
@@ -35,7 +37,20 @@ namespace RemoteExecution
 
         public string ConfigLabel
         {
-            get { return Name + " (" + BitSize + "-bit)"; }
+            get
+            {
+                string bitString = string.Empty;
+                if (Has64Bit)
+                    bitString = "64";
+                if (Has32Bit)
+                {
+                    if (string.IsNullOrEmpty(bitString))
+                        bitString = "32";
+                    else
+                        bitString += ",32";
+                }
+                return Name + " (" + bitString +"-bit)";
+            }
         }
 
     }

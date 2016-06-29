@@ -294,7 +294,7 @@ namespace RemoteExecution
             return ServerServices.GetProjects();
         }
 
-        public int NbConfigs
+        public int ConfigCount
         {
             get { return ServerServices.Configs.Count; }
         }
