@@ -31,19 +31,6 @@ Adjust Render parameters
 
 Allows you to change the render settings of the scene without having to reload the scene in Lightwave.
 
-
-## Downloads
-
-### Download 3.4
-
-[Amleto 3.4 (32-bit) 2.24 MB](/downloads/Amleto3.4_32.zip)
-
-[Amleto 3.4 (64-bit) 2.45 MB](/downloads/Amleto3.4_64.zip)
-
-### Download 3.3.9 
-
-[Amleto 3.3.9 596.89 KB](/downloads/Amleto3.3.9.zip)
-
 ## Update history
 
 New in version 3.4
